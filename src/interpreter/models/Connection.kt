@@ -18,11 +18,16 @@ class Connection(
         this.to.setValue(this.from.getValue())
     }
 
-    fun getFrom(): Pin? {
+    fun getFrom(): Pin {
         return from
     }
 
-    fun getTo(): Pin? {
+    fun getTo(): Pin {
         return to
+    }
+
+    // Как бы удаляем коннект. Деструторов нет, сорямба😶‍🌫️
+    fun destroy() {
+        this.to.reset()
     }
 }

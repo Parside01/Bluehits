@@ -1,12 +1,13 @@
 package interpreter.blocks
 
 import interpreter.models.Block
+import interpreter.models.BlockId
 import interpreter.models.Connection
 import interpreter.models.PinManager
 import java.io.Writer
 
 class PrintBlock internal constructor(
-    id: String,
+    id: BlockId,
     val writer: Writer
 ) : Block(
     id,

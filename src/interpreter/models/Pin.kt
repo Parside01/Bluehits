@@ -23,5 +23,6 @@ abstract class Pin internal constructor(
 enum class PinType {
     INT,
     BOOL,
-    ANY
+    ANY,
+    BLOCK
 }
