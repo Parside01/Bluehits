@@ -6,7 +6,7 @@ import interpreter.models.PinType
 class PinAny internal constructor(
     id: String,
     name: String,
-    private var value: Any
+    private var value: Any = "null"
 ) : Pin(id, name, PinType.ANY) {
     override var zeroValue: Any = "null"
 

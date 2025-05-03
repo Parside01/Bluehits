@@ -1,6 +1,7 @@
 package interpreter.blocks
 
 import interpreter.models.Block
+import interpreter.models.Connection
 import interpreter.models.PinManager
 import java.io.Writer
 
