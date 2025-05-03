@@ -1,6 +1,6 @@
-package model
+package interpreter.models
 
-abstract class Block (
+abstract class Block internal constructor (
     val id: String,
     val name: String?,
     val inputs: List<Pin> = emptyList(),

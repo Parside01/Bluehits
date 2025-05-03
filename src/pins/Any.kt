@@ -1,4 +1,0 @@
-package pins
-
-class Any {
-}
