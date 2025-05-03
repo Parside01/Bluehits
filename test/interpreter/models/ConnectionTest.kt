@@ -1,50 +1,71 @@
 package test.model.model
 
 import interpreter.models.Connection
+import interpreter.models.Id
+import interpreter.pins.PinBlockId
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import interpreter.pins.PinBool
 import interpreter.pins.PinInt
+import org.junit.jupiter.api.assertThrows
 
 class ConnectionTest {
     @Test
     fun testConnectionWithSameTypes() {
-        val pin1 = PinBool("1", "a", true)
-        val pin2 = PinBool("2", "b", false)
+        val pin1 = PinBool(Id("1"), "a", true)
+        val pin2 = PinBool(Id("2"), "b", false)
 
-        val connection = Connection(pin1, pin2)
-
-        val result = assertDoesNotThrow {
+        assertDoesNotThrow {
             Connection(pin1, pin2)
         }
     }
 
     @Test
     fun testSetConnectionWithSamePin() {
-        val pin = PinInt("3", "a", 10)
+        val pin = PinInt(Id("3"), "a", 10)
 
-        val exception = assertThrows(IllegalArgumentException::class.java) {
+        assertThrows(IllegalArgumentException::class.java) {
             Connection(pin, pin)
         }
     }
 
     @Test
     fun testSetConnectionDifferentTypes() {
-        val intPin = PinInt("4", "intPin", 5)
-        val boolPin = PinBool("5", "boolPin", true)
+        val intPin = PinInt(Id("4"), "intPin", 5)
+        val boolPin = PinBool(Id("5"), "boolPin", true)
 
-        val exception = assertThrows(IllegalArgumentException::class.java) {
+        assertThrows(IllegalArgumentException::class.java) {
             Connection(intPin, boolPin)
         }
     }
 
     @Test
     fun testSetConnectionWithSameId() {
-        val pin1 = PinInt("6", "a", 10)
-        val pin2 = PinInt("6", "b", 20)
+        val pin1 = PinInt(Id("6"), "a", 10)
+        val pin2 = PinInt(Id("6"), "b", 20)
 
-        val exception = assertThrows(IllegalArgumentException::class.java) {
+        assertThrows(IllegalArgumentException::class.java) {
+            Connection(pin1, pin2)
+        }
+    }
+
+    @Test
+    fun testSetConnectionWithBlockPins() {
+        val pin1 = PinBlockId(Id("1"), "a", Id("2"))
+        val pin2 = PinBlockId(Id("2"), "b", Id("3"))
+
+        assertDoesNotThrow {
+            Connection(pin1, pin2)
+        }
+    }
+
+    @Test // :)
+    fun testSetConnectionWithBlockPinsWithDifferentTypes() {
+        val pin1 = PinInt(Id("1"), "a", 3)
+        val pin2 = PinBlockId(Id("2"), "b", Id("3"))
+
+        assertThrows(IllegalArgumentException::class.java) {
             Connection(pin1, pin2)
         }
     }

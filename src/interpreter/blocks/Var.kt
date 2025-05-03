@@ -1,12 +1,11 @@
 package interpreter.blocks
 
 import interpreter.models.Block
-import interpreter.models.BlockId
-import interpreter.models.Connection
+import interpreter.models.Id
 import interpreter.models.PinManager
 
 class IntBlock internal constructor(
-    id: BlockId,
+    id: Id,
     default: Int = 0
 ) : Block(
     id,
@@ -26,7 +25,7 @@ class IntBlock internal constructor(
 }
 
 class BoolBlock internal constructor(
-    id: BlockId,
+    id: Id,
     default: Boolean = false
 ) : Block(
     id,

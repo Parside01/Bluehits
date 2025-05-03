@@ -12,13 +12,13 @@ object BlockManager {
     private val blockRegistry = mutableMapOf<String, Block>()
     private val idCounter = AtomicInteger(0)
 
-    private fun generateId(): BlockId {
-        return BlockId("block-${idCounter.getAndIncrement()}")
+    private fun generateId(): Id {
+        return Id("block-${idCounter.getAndIncrement()}")
     }
 
     fun getBlock(id: String) = blockRegistry[id]
 
-    private fun <T : Block> createBlock(createBlockFunc: (BlockId) -> T): T {
+    private fun <T : Block> createBlock(createBlockFunc: (Id) -> T): T {
         val id = generateId()
         val block = createBlockFunc(id)
         blockRegistry[id.string()] = block

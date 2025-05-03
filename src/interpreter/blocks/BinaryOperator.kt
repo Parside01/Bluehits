@@ -1,11 +1,11 @@
 package interpreter.blocks
 
 import interpreter.models.Block
-import interpreter.models.BlockId
+import interpreter.models.Id
 import interpreter.models.PinManager
 
 class BinaryOperatorBlock (
-    id: BlockId,
+    id: Id,
     name: String,
     private val operation: (Any, Any) -> Any
 ) : Block(

@@ -3,7 +3,7 @@ package interpreter.models
 
 // TODO: Может надо на жавовский Type переписать.
 abstract class Pin internal constructor(
-    val id: String,
+    val id: Id,
     val name: String,
     val type: PinType,
     protected var isSet: Boolean = false,
@@ -12,7 +12,6 @@ abstract class Pin internal constructor(
 
     abstract fun getValue(): Any
     abstract fun setValue(value: Any)
-
 
     fun isPinSet() = isSet
     fun reset() {

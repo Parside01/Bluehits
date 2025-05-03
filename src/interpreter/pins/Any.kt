@@ -1,10 +1,11 @@
 package interpreter.pins
 
+import interpreter.models.Id
 import interpreter.models.Pin
 import interpreter.models.PinType
 
 class PinAny internal constructor(
-    id: String,
+    id: Id,
     name: String,
     private var value: Any = "null"
 ) : Pin(id, name, PinType.ANY) {
