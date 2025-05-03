@@ -10,7 +10,7 @@ class Connection(
     init {
         if (from == to) throw IllegalArgumentException("Cannot connect the same pin.")
         if (from.id == to.id) throw IllegalArgumentException("Cannot connect pins with the same ID.")
-        if (from.type != to.type) throw IllegalArgumentException("Cannot connect pins of different types.")
+        if (to.type != PinType.ANY && from.type != to.type) throw IllegalArgumentException("Cannot connect pins of different types.")
 
         this.from = from
         this.to = to
