@@ -1,8 +1,18 @@
 package interpreter.models
 
-object Program  {
+object Program {
+    // TODO: Щас пока делаем базу, потом надо при необходимости оптимизировать.
     fun run() {
+        try {
+            // Стартовые блоки - у которых нет входных пинов.
+            val startBlocks = BlockManager.getAllBlocks().filter { block -> getBlockInConnections(block).isEmpty() }
+            startBlocks.forEach { startBlock -> startBlock.execute() }
 
+            // Выполняем связи.
+            startBlocks.forEach { startBlock -> getBlockOutConnections(startBlock).forEach { outConnection -> outConnection.execute() } }
+        } catch (e: Exception) {
+            throw e
+        }
     }
 
     fun getBlockOutConnections(block: Block): List<Connection> {

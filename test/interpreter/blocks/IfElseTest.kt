@@ -10,10 +10,12 @@ class IfElseTest {
         val boolBlock = BlockManager.createBoolBlock(false)
         val ifElseBlock = BlockManager.createIfElseBlock()
 
-        Connection(boolBlock.outputs.single(), ifElseBlock.inputs.single())
+        val connection = Connection(boolBlock.outputs.single(), ifElseBlock.inputs.single())
 
         boolBlock.execute()
+        connection.execute()
         ifElseBlock.execute()
+
 
         val output = ifElseBlock.outputs[0].getValue()
         println(output.toString())

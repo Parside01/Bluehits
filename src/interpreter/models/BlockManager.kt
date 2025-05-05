@@ -17,6 +17,8 @@ object BlockManager {
         return Id("block-${idCounter.getAndIncrement()}")
     }
 
+    fun getAllBlocks() = blockRegistry.values.toList()
+
     fun getBlock(id: String) = blockRegistry[id]
 
     private fun <T : Block> createBlock(createBlockFunc: (Id) -> T): T {
