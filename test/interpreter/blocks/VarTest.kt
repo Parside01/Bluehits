@@ -5,7 +5,6 @@ import interpreter.models.Connection
 import org.junit.jupiter.api.Test
 
 class VarTest {
-
     @Test
     fun testDefaultVarIntValue() {
         val intBlock = BlockManager.createIntBlock(10)
@@ -32,6 +31,7 @@ class VarTest {
         val connection = Connection(aIntBlock.outputs.single(), bIntBlock.inputs.single())
 
         aIntBlock.execute()
+        connection.execute()
         bIntBlock.execute()
 
         assert(bIntBlock.outputs.size == 1) {

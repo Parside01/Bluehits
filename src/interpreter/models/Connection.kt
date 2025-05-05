@@ -7,6 +7,7 @@ class Connection internal constructor(
 ) {
     private var from: Pin
     private var to: Pin
+    private var isExecuted: Boolean = false
 
     init {
         if (from == to) throw IllegalArgumentException("Cannot connect the same pin.")
@@ -16,9 +17,9 @@ class Connection internal constructor(
 
         this.from = from
         this.to = to
-
-        this.to.setValue(this.from.getValue())
     }
+
+    fun executed() = isExecuted
 
     fun getFrom(): Pin {
         return from
@@ -33,5 +34,10 @@ class Connection internal constructor(
     // а в to обязательно одна.
     fun destroy() {
         this.to.reset()
+    }
+
+    fun execute() {
+        this.to.setValue(this.from.getValue())
+        isExecuted = true
     }
 }

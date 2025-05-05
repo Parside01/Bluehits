@@ -11,7 +11,16 @@ object ConnectionManager {
         return Id("conn-${idCounter.getAndIncrement()}")
     }
 
+    // TODO: Надо как-то оптимизированее это делать, явно.
+    fun getPinConnections(pin: Pin): List<Connection> {
+        return connectionRegistry.values.filter { it.getFrom() == pin || it.getTo() == pin }
+    }
+
     fun getConnection(id: String) = connectionRegistry[id]
+
+    fun executeConnection(id: String) {
+        connectionRegistry[id]?.execute()
+    }
 
     fun connect(from: Pin, to: Pin): Connection {
         try {
