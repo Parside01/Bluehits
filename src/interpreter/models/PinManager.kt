@@ -1,6 +1,7 @@
 package interpreter.models
 
 import interpreter.pins.PinAny
+import interpreter.pins.PinBlockId
 import interpreter.pins.PinBool
 import interpreter.pins.PinInt
 import java.util.concurrent.atomic.AtomicInteger
@@ -23,6 +24,13 @@ object PinManager {
             return createPinInt(name, value)
         }
         return createPinAny(name, value)
+    }
+
+    fun createPinBlock(name: String, block: Id = Id("pin-block-")): Pin {
+        val id = generateId()
+        val pin = PinBlockId(id, name, block);
+        pinRegistry[id.string()] = pin
+        return pin
     }
 
     fun createPinInt(name: String, value: Int = 0): Pin {

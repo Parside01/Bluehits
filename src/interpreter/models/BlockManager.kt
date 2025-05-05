@@ -2,6 +2,7 @@ package interpreter.models
 
 import interpreter.blocks.BinaryOperatorBlock
 import interpreter.blocks.BoolBlock
+import interpreter.blocks.IfElseBlock
 import interpreter.blocks.IntBlock
 import interpreter.blocks.PrintBlock
 import java.io.OutputStreamWriter
@@ -23,6 +24,13 @@ object BlockManager {
         val block = createBlockFunc(id)
         blockRegistry[id.string()] = block
         return block
+    }
+
+    fun createIfElseBlock(): Block {
+        return createBlock {
+            id ->
+            IfElseBlock(id)
+        }
     }
 
     fun createAddBlock(): Block {

@@ -1,14 +1,11 @@
-package test.model.model
+package interpreter.models
 
-import interpreter.models.Connection
-import interpreter.models.Id
 import interpreter.pins.PinBlockId
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import interpreter.pins.PinBool
 import interpreter.pins.PinInt
-import org.junit.jupiter.api.assertThrows
 
 class ConnectionTest {
     @Test

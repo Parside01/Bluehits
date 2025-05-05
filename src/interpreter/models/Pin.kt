@@ -14,6 +14,7 @@ abstract class Pin internal constructor(
     abstract fun setValue(value: Any)
 
     fun isPinSet() = isSet
+
     fun reset() {
         this.isSet = false
     }

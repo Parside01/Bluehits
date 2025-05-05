@@ -10,8 +10,8 @@ class IntBlock internal constructor(
 ) : Block(
     id,
     "Int",
-    listOf(PinManager.createPinInt("a", default)),
-    listOf(PinManager.createPinInt("b", default))
+    mutableListOf(PinManager.createPinInt("a", default)),
+    mutableListOf(PinManager.createPinInt("b", default))
 ) {
     override fun execute() {
         if (inputs.size != outputs.size) {
@@ -30,8 +30,8 @@ class BoolBlock internal constructor(
 ) : Block(
     id,
     "Bool",
-    listOf(PinManager.createPinBool("a", default)),
-    listOf(PinManager.createPinBool("b", default))
+    mutableListOf(PinManager.createPinBool("a", default)),
+    mutableListOf(PinManager.createPinBool("b", default))
 ) {
     override fun execute() {
         if (inputs.size != outputs.size) {

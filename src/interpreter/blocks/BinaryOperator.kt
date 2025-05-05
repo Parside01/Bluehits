@@ -11,8 +11,8 @@ class BinaryOperatorBlock (
 ) : Block(
     id,
     name,
-    listOf(PinManager.createPinAny("a"), PinManager.createPinAny("b")),
-    listOf(PinManager.createPinAny("c")),
+    mutableListOf(PinManager.createPinAny("a"), PinManager.createPinAny("b")),
+    mutableListOf(PinManager.createPinAny("c")),
 ) {
     override fun execute() {
         try {

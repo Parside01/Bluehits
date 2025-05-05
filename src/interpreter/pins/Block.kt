@@ -10,9 +10,13 @@ import interpreter.models.PinType
 class PinBlockId (
     id: Id,
     name: String,
-    var block: Id = Id("block-")
+    var block: Id = Id("pin-block-")
 ): Pin(id, name, PinType.BLOCK) {
-    override var zeroValue: Any = Id("block-")
+    override var zeroValue: Any = Id("pin-block-")
+
+    init {
+        isSet = block != zeroValue
+    }
 
     override fun getValue(): Any {
         if (!isSet) return zeroValue

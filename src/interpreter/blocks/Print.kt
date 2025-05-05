@@ -11,8 +11,8 @@ class PrintBlock internal constructor(
 ) : Block(
     id,
     "Print",
-    listOf(PinManager.createPinAny("a", "null")),
-    emptyList()
+    mutableListOf(PinManager.createPinAny("a", "null")),
+    mutableListOf()
 ) {
     override fun execute() {
         inputs.forEach { input ->
