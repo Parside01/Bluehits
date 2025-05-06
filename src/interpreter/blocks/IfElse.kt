@@ -11,7 +11,7 @@ class IfElseBlock(
     id,
     "IfElse",
     mutableListOf(PinManager.createPinBool("a")),
-    mutableListOf(PinManager.createPinBlock("if"), PinManager.createPinBlock("else")),
+    mutableListOf(PinManager.createPinBlock("if", ownId = id), PinManager.createPinBlock("else", ownId = id)),
 ) {
     override fun execute() {
         if (inputs.single().getValue() == true) {

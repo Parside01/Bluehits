@@ -8,6 +8,7 @@ import interpreter.blocks.PrintBlock
 import java.io.OutputStreamWriter
 import java.util.concurrent.atomic.AtomicInteger
 import java.io.Writer
+import java.net.IDN
 
 object BlockManager {
     private val blockRegistry = mutableMapOf<String, Block>()
@@ -19,7 +20,7 @@ object BlockManager {
 
     fun getAllBlocks() = blockRegistry.values.toList()
 
-    fun getBlock(id: String) = blockRegistry[id]
+    fun getBlock(id: Id) = blockRegistry[id.string()]
 
     private fun <T : Block> createBlock(createBlockFunc: (Id) -> T): T {
         val id = generateId()

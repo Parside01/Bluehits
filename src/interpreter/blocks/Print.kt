@@ -11,7 +11,7 @@ class PrintBlock internal constructor(
 ) : Block(
     id,
     "Print",
-    mutableListOf(PinManager.createPinAny("a", "null")),
+    mutableListOf(PinManager.createPinAny("a", "null", id)),
     mutableListOf()
 ) {
     override fun execute() {

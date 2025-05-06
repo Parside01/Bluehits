@@ -9,7 +9,47 @@ object Program {
             startBlocks.forEach { startBlock -> startBlock.execute() }
 
             // Выполняем связи.
-            startBlocks.forEach { startBlock -> getBlockOutConnections(startBlock).forEach { outConnection -> outConnection.execute() } }
+            val startOutConnections = mutableListOf<Connection>()
+            startBlocks.forEach { startBlock ->
+                val outConnections = getBlockOutConnections(startBlock)
+                startOutConnections.addAll(outConnections)
+                outConnections.forEach { outConnection -> outConnection.execute() }
+            }
+
+            val executionQueue: MutableList<Block> = mutableListOf()
+            val executeSet: MutableSet<Id> = mutableSetOf()
+
+            startOutConnections.forEach { conn ->
+                val nextId = conn.getTo().ownId
+                if (executeSet.add(nextId)) {
+                    BlockManager.getBlock(nextId)?.let { block -> executionQueue.add(block) }
+                }
+            }
+
+            while (executionQueue.isNotEmpty()) {
+                val currentBlock = executionQueue.removeFirst()
+
+                val inConnections = getBlockInConnections(currentBlock)
+                var connIsExecuted = true
+                inConnections.forEach { conn ->
+                    connIsExecuted = conn.executed()
+                }
+                if (!connIsExecuted) {
+                    executionQueue.add(currentBlock)
+                    continue
+                }
+
+                currentBlock.execute()
+                val blockOutConn = getBlockOutConnections(currentBlock)
+                blockOutConn.forEach { conn ->
+                    conn.execute()
+                    val nextId = conn.getTo().ownId
+                    if (executeSet.add(nextId)) {
+                        BlockManager.getBlock(nextId)?.let { block -> executionQueue.add(block) }
+                    }
+                }
+            }
+
         } catch (e: Exception) {
             throw e
         }

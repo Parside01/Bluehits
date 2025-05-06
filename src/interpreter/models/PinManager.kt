@@ -16,16 +16,6 @@ object PinManager {
 
     fun getPin(id: String) = pinRegistry[id]
 
-    // Лучше пока не использовать.
-    fun createPin(name: String, type: PinType, value: Any): Pin? {
-        if (type == PinType.BOOL && value is Boolean) {
-            return createPinBool(name, value)
-        } else if (type == PinType.INT && value is Int) {
-            return createPinInt(name, value)
-        }
-        return createPinAny(name, value)
-    }
-
     private fun <T : Pin> createPin(createPinFunc: (Id) -> T): T {
         val id = generateId()
         val pin = createPinFunc(id)

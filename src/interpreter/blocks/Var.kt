@@ -10,8 +10,8 @@ class IntBlock internal constructor(
 ) : Block(
     id,
     "Int",
-    mutableListOf(PinManager.createPinInt("a", default)),
-    mutableListOf(PinManager.createPinInt("b", default))
+    mutableListOf(PinManager.createPinInt("a", default, id)),
+    mutableListOf(PinManager.createPinInt("b", default, id))
 ) {
     override fun execute() {
         if (inputs.size != outputs.size) {
