@@ -6,9 +6,10 @@ import interpreter.models.PinType
 
 class PinBool internal constructor(
     id: Id,
+    ownId: Id,
     name: String,
     private var value: Boolean = false
-) : Pin(id, name, PinType.BOOL) {
+) : Pin(id, ownId, name, PinType.BOOL) {
     override var zeroValue: Any = false
 
     init {

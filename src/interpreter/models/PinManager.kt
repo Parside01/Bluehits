@@ -26,31 +26,26 @@ object PinManager {
         return createPinAny(name, value)
     }
 
-    fun createPinBlock(name: String, block: Id = Id("pin-block-")): Pin {
+    private fun <T : Pin> createPin(createPinFunc: (Id) -> T): T {
         val id = generateId()
-        val pin = PinBlockId(id, name, block);
+        val pin = createPinFunc(id)
         pinRegistry[id.string()] = pin
         return pin
     }
 
-    fun createPinInt(name: String, value: Int = 0): Pin {
-        val id = generateId()
-        val pin = PinInt(id, name, value);
-        pinRegistry[id.string()] = pin
-        return pin
+    fun createPinBlock(name: String, block: Id = Id("pin-block-"), ownId: Id = Id("null")): Pin {
+        return createPin { id -> PinBlockId(id, ownId, name, block) }
     }
 
-    fun createPinAny(name : String, value : Any = "null") : Pin {
-        val id = generateId()
-        val pin = PinAny(id, name, value)
-        pinRegistry[id.string()] = pin
-        return pin
+    fun createPinInt(name: String, value: Int = 0, ownId: Id = Id("null")): Pin {
+        return createPin { id -> PinInt(id, ownId,  name, value) }
     }
 
-    fun createPinBool(name: String, value: Boolean = false): Pin {
-        val id = generateId()
-        val pin = PinBool(id, name, value);
-        pinRegistry[id.string()] = pin
-        return pin
+    fun createPinAny(name: String, value: Any = "null", ownId: Id = Id("null")): Pin {
+        return createPin { id -> PinAny(id, ownId, name, value) }
+    }
+
+    fun createPinBool(name: String, value: Boolean = false, ownId: Id = Id("null")): Pin {
+        return createPin { id -> PinBool(id, ownId, name, value) }
     }
 }

@@ -9,9 +9,10 @@ import interpreter.models.PinType
 // Мы просто можем захотеть выполнить два блока последовательно.
 class PinBlockId (
     id: Id,
+    ownId: Id,
     name: String,
     var block: Id = Id("pin-block-")
-): Pin(id, name, PinType.BLOCK) {
+): Pin(id, ownId, name, PinType.BLOCK) {
     override var zeroValue: Any = Id("pin-block-")
 
     init {

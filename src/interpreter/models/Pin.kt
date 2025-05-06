@@ -4,6 +4,7 @@ package interpreter.models
 // TODO: Может надо на жавовский Type переписать.
 abstract class Pin internal constructor(
     val id: Id,
+    val ownId: Id,
     val name: String,
     val type: PinType,
     protected var isSet: Boolean = false,
