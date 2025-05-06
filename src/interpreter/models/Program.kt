@@ -60,7 +60,12 @@ object Program {
     }
 
     fun getBlockInConnections(block: Block): List<Connection> {
-        return block.inputs.flatMap { pin -> ConnectionManager.getPinConnections(pin) }
+        val connections = mutableListOf<Connection>()
+        connections.addAll(block.inputs.flatMap { pin ->
+            ConnectionManager.getPinConnections(pin)
+        })
+        connections.addAll(ConnectionManager.getPinConnections(block.blockPin))
+        return connections
     }
 
     fun validateBlock(block: Block) {

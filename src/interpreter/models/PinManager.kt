@@ -23,8 +23,12 @@ object PinManager {
         return pin
     }
 
-    fun createPinBlock(name: String, block: Id = Id("pin-block-"), ownId: Id = Id("null")): Pin {
-        return createPin { id -> PinBlockId(id, ownId, name, block) }
+//    fun createPinBlock(name: String, block: Id = Id("pin-block-"), ownId: Id = Id("null")): Pin {
+//        return createPin { id -> PinBlockId(id, ownId, name, block) }
+//    }
+
+    fun createPinBlock(name: String, ownId: Id = Id("null")): Pin {
+        return createPin { id -> PinBlockId(id, ownId, name) }
     }
 
     fun createPinInt(name: String, value: Int = 0, ownId: Id = Id("null")): Pin {

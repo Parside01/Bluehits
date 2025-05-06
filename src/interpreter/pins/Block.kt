@@ -11,8 +11,8 @@ class PinBlockId (
     id: Id,
     ownId: Id,
     name: String,
-    var block: Id = Id("pin-block-")
 ): Pin(id, ownId, name, PinType.BLOCK) {
+    private var block: Id = Id("pin-block-")
     override var zeroValue: Any = Id("pin-block-")
 
     init {
@@ -20,8 +20,7 @@ class PinBlockId (
     }
 
     override fun getValue(): Any {
-        if (!isSet) return zeroValue
-        return block
+        return id
     }
 
     override fun setValue(value: Any) {

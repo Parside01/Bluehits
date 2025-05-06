@@ -10,7 +10,7 @@ class IfElseBlock(
 ) : Block(
     id,
     "IfElse",
-    mutableListOf(PinManager.createPinBool("a")),
+    mutableListOf(PinManager.createPinBool("a", ownId = id)),
     mutableListOf(PinManager.createPinBlock("if", ownId = id), PinManager.createPinBlock("else", ownId = id)),
 ) {
     override fun execute() {

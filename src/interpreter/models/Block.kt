@@ -6,6 +6,6 @@ abstract class Block internal constructor (
     val inputs: MutableList<Pin> = mutableListOf(),
     val outputs: MutableList<Pin> = mutableListOf()
 ) {
-    protected val blockPin: Pin = PinManager.createPinBlock("block")
+    val blockPin: Pin = PinManager.createPinBlock("block", ownId = id)
     abstract fun execute();
 }
