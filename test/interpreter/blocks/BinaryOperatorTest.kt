@@ -12,11 +12,11 @@ class BinaryOperatorTest {
 
         val addBlock = BlockManager.createAddBlock()
 
-        Connection(aIntBlock.outputs.single(), addBlock.inputs[0])
-        Connection(bIntBlock.outputs.single(), addBlock.inputs[1])
-
         aIntBlock.execute()
         bIntBlock.execute()
+
+        Connection(aIntBlock.outputs.single(), addBlock.inputs[0]).execute()
+        Connection(bIntBlock.outputs.single(), addBlock.inputs[1]).execute()
 
         addBlock.execute()
 
@@ -31,11 +31,12 @@ class BinaryOperatorTest {
         val bIntBlock = BlockManager.createIntBlock(10)
 
         val subBlock = BlockManager.createSubBlock()
-        Connection(aIntBlock.outputs.single(), subBlock.inputs[0])
-        Connection(bIntBlock.outputs.single(), subBlock.inputs[1])
 
         aIntBlock.execute()
         bIntBlock.execute()
+
+        Connection(aIntBlock.outputs.single(), subBlock.inputs[0]).execute()
+        Connection(bIntBlock.outputs.single(), subBlock.inputs[1]).execute()
 
         subBlock.execute()
 

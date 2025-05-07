@@ -1,7 +1,10 @@
 package interpreter.models
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import java.io.BufferedWriter
+import java.io.StringWriter
 
 class ProgramTest {
     @Test
@@ -20,16 +23,16 @@ class ProgramTest {
 
     @Test
     fun testProgramWithIfElse() {
-        val aIntBlock = BlockManager.createIntBlock(10)
-        val bIntBlock = BlockManager.createIntBlock(1000)
+        val stringWriter = StringWriter()
+        val bufferedWriter = BufferedWriter(stringWriter)
 
-        val aPrintBlock = BlockManager.createPrintBlock()
-        val bPrintBlock = BlockManager.createPrintBlock()
+        val aPrintBlock = BlockManager.createPrintBlock(bufferedWriter)
+        val bPrintBlock = BlockManager.createPrintBlock(bufferedWriter)
 
-        aPrintBlock.inputs.single().setValue("Hello from if")
-        bPrintBlock.inputs.single().setValue("Hello from else")
+        aPrintBlock.inputs.single().setValue("if")
+        bPrintBlock.inputs.single().setValue("else")
 
-        val boolBlock = BlockManager.createBoolBlock(false)
+        val boolBlock = BlockManager.createBoolBlock(true)
         val ifElseBlock = BlockManager.createIfElseBlock()
 
         ConnectionManager.connect(boolBlock.outputs.first(), ifElseBlock.inputs.first())
@@ -37,5 +40,8 @@ class ProgramTest {
         ConnectionManager.connect(ifElseBlock.outputs.last(), bPrintBlock.blockPin)
 
         Program.run()
+
+        val output = stringWriter.toString()
+        assertTrue(output.contains("if") && !output.contains("else"), "Output should contain 'if'")
     }
 }

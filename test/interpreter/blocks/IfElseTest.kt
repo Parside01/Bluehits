@@ -18,7 +18,6 @@ class IfElseTest {
 
 
         val output = ifElseBlock.outputs[0].getValue()
-        println(output.toString())
-        assert(output == 0)
+        assert(output == ifElseBlock.outputs[1].getValue())
     }
 }
