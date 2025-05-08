@@ -28,7 +28,7 @@ object Program {
             }
 
             while (executionQueue.isNotEmpty()) {
-                val currentBlock = executionQueue.removeFirst()
+                val currentBlock = executionQueue.removeAt(0)
 
                 val inConnections = getBlockInConnections(currentBlock)
                 var connIsExecuted = true
