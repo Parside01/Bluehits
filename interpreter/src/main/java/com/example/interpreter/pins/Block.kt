@@ -12,6 +12,7 @@ class PinBlockId (
     ownId: Id,
     name: String,
 ): Pin(id, ownId, name, PinType.BLOCK) {
+    // По факту - заглушка.
     private var block: Id = Id("pin-block-")
     override var zeroValue: Any = Id("pin-block-")
 
