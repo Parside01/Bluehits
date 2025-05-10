@@ -14,6 +14,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import interpreter.models.Pin
+import interpreter.models.Block
 
 class BlockLayout(
     val totalWidth: Float,
@@ -64,22 +66,21 @@ class BlueBlock(
     val width: Float,
     val height: Float,
     var title: String = "Block",
-    val leftPinsCount: Int = 1,
-    val rightPinsCount: Int = 1
+    val inputPins: List<Pin> = emptyList(),
+    val outputPins: List<Pin> = emptyList()
 ) {
+    val leftPins: List<Offset>
+        get() = calculateVerticalPins(inputPins.size, layout.leftPinArea)
+
+    val rightPins: List<Offset>
+        get() = calculateVerticalPins(outputPins.size, layout.rightPinArea)
 
     var x by mutableStateOf(initialX)
     var y by mutableStateOf(initialY)
+    var logicBlock: Block? = null
 
     val layout: BlockLayout
         get() = BlockLayout(width, height)
-
-
-    val leftPins: List<Offset>
-        get() = calculateVerticalPins(leftPinsCount, layout.leftPinArea)
-
-    val rightPins: List<Offset>
-        get() = calculateVerticalPins(rightPinsCount, layout.rightPinArea)
 
     private fun calculateVerticalPins(count: Int, area: Rect): List<Offset> {
         if (count == 0) return emptyList()
@@ -92,31 +93,6 @@ class BlueBlock(
             )
         }
     }
-
-    fun copy(
-        initialX: Float = this.initialX,
-        initialY: Float = this.initialY,
-        color: Color = this.color,
-        width: Float = this.width,
-        height: Float = this.height,
-        title: String = this.title,
-        leftPinsCount: Int = this.leftPinsCount,
-        rightPinsCount: Int = this.rightPinsCount
-    ) = BlueBlock(
-        initialX,
-        initialY,
-        color,
-        width,
-        height,
-        title,
-        leftPinsCount,
-        rightPinsCount
-    ).apply {
-        x = this@BlueBlock.x
-        y = this@BlueBlock.y
-    }
-
-
 }
 
 fun DrawScope.drawBlock(
