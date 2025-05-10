@@ -2,52 +2,30 @@ package com.example.bluehits.ui
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
+import interpreter.models.BlockManager
 
 class BlocksManager {
-    private val _blocks = mutableStateListOf<BlueBlock>()
-    val blocks: List<BlueBlock> get() = _blocks
+    private val _uiBlocks = mutableStateListOf<BlueBlock>()
+    val uiBlocks: List<BlueBlock> get() = _uiBlocks
 
-    fun addBlock(block: BlueBlock) {
-        _blocks.add(block)
+    fun addNewBlock(type: String) {
+        val logicBlock = when(type) {
+            "Int" -> BlockManager.createIntBlock()
+            "Add" -> BlockManager.createAddBlock()
+            "Bool" -> BlockManager.createBoolBlock()
+            "Print" -> BlockManager.createPrintBlock()
+            "Sub" -> BlockManager.createSubBlock()
+            "IfElse" -> BlockManager.createIfElseBlock()
+            else -> throw IllegalArgumentException("Unsupported type")
+        }
+        _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock))
     }
 
     fun moveBlock(block: BlueBlock, delta: Offset) {
-        _blocks.forEachIndexed { index, blueBlock ->
-            if (blueBlock == block) {
-                _blocks[index].x += delta.x
-                _blocks[index].y += delta.y
-            }
+        val index = _uiBlocks.indexOf(block)
+        if (index != -1) {
+            _uiBlocks[index].x += delta.x
+            _uiBlocks[index].y += delta.y
         }
-    }
-}
-
-@Composable
-fun createSampleBlocks(manager: BlocksManager) {
-    LaunchedEffect(Unit) {
-        manager.addBlock(
-            BlueBlock(
-                initialX = 200f,
-                initialY = 200f,
-                color = Color(0xFF2196F3),
-                width = 300f,
-                height = 150f,
-                title = "Start",
-                leftPinsCount = 1,
-                rightPinsCount = 2
-            )
-        )
-        manager.addBlock(
-            BlueBlock(
-                initialX = 100f,
-                initialY = 500f,
-                color = Color(0xFFE91E63),
-                width = 280f,
-                height = 180f,
-                title = "End",
-                leftPinsCount = 1,
-                rightPinsCount = 1
-            )
-        )
     }
 }
