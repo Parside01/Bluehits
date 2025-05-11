@@ -1,4 +1,9 @@
-package interpreter.models
+package com.example.interpreter.models
+
+import interpreter.models.Connection
+import interpreter.models.ConnectionManager
+import interpreter.models.Id
+import kotlin.collections.forEach
 
 object Program {
     // TODO: Щас пока делаем базу, потом надо при необходимости оптимизировать.
@@ -54,6 +59,12 @@ object Program {
         } catch (e: Exception) {
             throw e
         }
+    }
+
+    fun prebuild() {
+        val allScopeBlocks = BlockManager.getAllBlocks().filter { block -> block is ScopeBlock  }
+
+
     }
 
     fun getBlockOutConnections(block: Block): List<Connection> {

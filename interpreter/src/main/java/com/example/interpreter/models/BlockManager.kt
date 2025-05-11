@@ -1,14 +1,15 @@
-package interpreter.models
+package com.example.interpreter.models
 
 import interpreter.blocks.BinaryOperatorBlock
 import interpreter.blocks.BoolBlock
+import com.example.interpreter.blocks.ForBlock
 import interpreter.blocks.IfElseBlock
 import interpreter.blocks.IntBlock
 import interpreter.blocks.PrintBlock
+import interpreter.models.Id
 import java.io.OutputStreamWriter
 import java.util.concurrent.atomic.AtomicInteger
 import java.io.Writer
-import java.net.IDN
 
 object BlockManager {
     private val blockRegistry = mutableMapOf<String, Block>()
@@ -33,6 +34,13 @@ object BlockManager {
         return createBlock {
             id ->
             IfElseBlock(id)
+        }
+    }
+
+    fun createForBlock(): Block {
+        return createBlock {
+            id ->
+            ForBlock(id)
         }
     }
 

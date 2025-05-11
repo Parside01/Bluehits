@@ -1,4 +1,4 @@
-package interpreter.pins
+package com.example.interpreter.pins
 
 import interpreter.models.Id
 import interpreter.models.Pin

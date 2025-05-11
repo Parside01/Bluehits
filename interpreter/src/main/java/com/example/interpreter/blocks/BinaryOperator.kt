@@ -1,7 +1,7 @@
 package interpreter.blocks
 
-import interpreter.models.Block
-import interpreter.models.ExecutionState
+import com.example.interpreter.models.Block
+import com.example.interpreter.models.ExecutionState
 import interpreter.models.Id
 import interpreter.models.PinManager
 

@@ -1,4 +1,8 @@
-package interpreter.models
+package com.example.interpreter.models
+
+import interpreter.models.Id
+import interpreter.models.Pin
+import interpreter.models.PinManager
 
 abstract class Block internal constructor (
     val id: Id,
@@ -9,11 +13,18 @@ abstract class Block internal constructor (
     val blockPin: Pin = PinManager.createPinBlock("block", ownId = id)
     abstract fun execute(): ExecutionState;
 
-    // Чтобы не было строй привязки к индексам.
+    // Чтобы не было строй привязки к индексам. Хз посмотрим + или -
     fun pinByName(name: String): Pin? {
         return inputs.find { it.name == name } ?: outputs.find { it.name == name }
     }
 }
+
+abstract class ScopeBlock internal constructor (
+    id: Id,
+    name: String?,
+    inputs: MutableList<Pin> = mutableListOf(),
+    outputs: MutableList<Pin> = mutableListOf()
+) : Block(id, name, inputs, outputs) {}
 
 
 enum class ExecutionState {
