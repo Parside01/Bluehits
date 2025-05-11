@@ -1,12 +1,11 @@
 package com.example.interpreter.models
 
-import interpreter.blocks.BinaryOperatorBlock
-import interpreter.blocks.BoolBlock
+import com.example.interpreter.blocks.BinaryOperatorBlock
+import com.example.interpreter.blocks.BoolBlock
 import com.example.interpreter.blocks.ForBlock
-import interpreter.blocks.IfElseBlock
-import interpreter.blocks.IntBlock
-import interpreter.blocks.PrintBlock
-import interpreter.models.Id
+import com.example.interpreter.blocks.IfElseBlock
+import com.example.interpreter.blocks.IntBlock
+import com.example.interpreter.blocks.PrintBlock
 import java.io.OutputStreamWriter
 import java.util.concurrent.atomic.AtomicInteger
 import java.io.Writer

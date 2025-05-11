@@ -1,8 +1,8 @@
-package interpreter.pins
+package com.example.interpreter.pins
 
-import interpreter.models.Id
-import interpreter.models.Pin
-import interpreter.models.PinType
+import com.example.interpreter.models.Id
+import com.example.interpreter.models.Pin
+import com.example.interpreter.models.PinType
 
 // По задумке этот пин связывает выполнение двух блоков
 // Ведь они необязательно должны быть связаны переменными,

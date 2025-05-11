@@ -1,8 +1,8 @@
-package interpreter.models
+package com.example.interpreter.models
 
-import interpreter.pins.PinAny
-import interpreter.pins.PinBlockId
-import interpreter.pins.PinBool
+import com.example.interpreter.pins.PinAny
+import com.example.interpreter.pins.PinBlockId
+import com.example.interpreter.pins.PinBool
 import com.example.interpreter.pins.PinInt
 import java.util.concurrent.atomic.AtomicInteger
 

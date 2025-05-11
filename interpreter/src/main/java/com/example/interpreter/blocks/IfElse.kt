@@ -1,9 +1,9 @@
-package interpreter.blocks
+package com.example.interpreter.blocks
 
 import com.example.interpreter.models.Block
 import com.example.interpreter.models.ExecutionState
-import interpreter.models.Id
-import interpreter.models.PinManager
+import com.example.interpreter.models.Id
+import com.example.interpreter.models.PinManager
 
 class IfElseBlock(
     id: Id,

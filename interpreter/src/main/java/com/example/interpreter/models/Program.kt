@@ -1,8 +1,5 @@
 package com.example.interpreter.models
 
-import interpreter.models.Connection
-import interpreter.models.ConnectionManager
-import interpreter.models.Id
 import kotlin.collections.forEach
 
 object Program {

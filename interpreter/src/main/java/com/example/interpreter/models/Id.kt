@@ -1,4 +1,4 @@
-package interpreter.models
+package com.example.interpreter.models
 
 data class Id (
     private val id: String
