@@ -13,4 +13,13 @@ class ForTest {
         forBlock.inputs[2].setValue(20)
         assert(forBlock.execute() == ExecutionState.RUNNING)
     }
+
+    @Test
+    fun testForBlockMoreFirstIndex() {
+        val forBlock = BlockManager.createForBlock()
+        forBlock.inputs[0].setValue(101)
+        forBlock.inputs[1].setValue(100)
+        forBlock.inputs[2].setValue(20)
+        assert(forBlock.execute() == ExecutionState.COMPLETED)
+    }
 }
