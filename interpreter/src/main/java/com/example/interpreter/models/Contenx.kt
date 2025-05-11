@@ -3,9 +3,14 @@ package com.example.interpreter.models
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.collections.set
 
+
+
 object ContextManager {
     private val contextRegistry = mutableMapOf<String, Context>()
     private val idCounter = AtomicInteger(0)
+
+    // Это надо для иерархии контекстов.
+    private val ctxParents = mutableMapOf<String, String>();
 
     fun createContext(startBlock: ScopeBlock): Context {
         val context = Context(startBlock)
@@ -27,6 +32,8 @@ class Context internal constructor (
         blockIds.add(ownBlock.id)
         prebuild()
     }
+
+    fun blocksList() = blockIds.toList()
 
     fun prebuild() {
         val ids = getLinkOutBlocks(ownBlock)
