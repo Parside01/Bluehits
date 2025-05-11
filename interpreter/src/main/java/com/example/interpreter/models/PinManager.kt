@@ -1,9 +1,9 @@
-package interpreter.models
+package com.example.interpreter.models
 
-import interpreter.pins.PinAny
-import interpreter.pins.PinBlockId
-import interpreter.pins.PinBool
-import interpreter.pins.PinInt
+import com.example.interpreter.pins.PinAny
+import com.example.interpreter.pins.PinBlockId
+import com.example.interpreter.pins.PinBool
+import com.example.interpreter.pins.PinInt
 import java.util.concurrent.atomic.AtomicInteger
 
 object PinManager {
@@ -21,6 +21,10 @@ object PinManager {
         val pin = createPinFunc(id)
         pinRegistry[id.string()] = pin
         return pin
+    }
+
+    fun setPinValue(id: Id, value: Any) {
+        getPin(id.toString())?.setValue(value)
     }
 
 //    fun createPinBlock(name: String, block: Id = Id("pin-block-"), ownId: Id = Id("null")): Pin {

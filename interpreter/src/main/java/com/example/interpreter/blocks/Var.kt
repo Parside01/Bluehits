@@ -1,8 +1,9 @@
-package interpreter.blocks
+package com.example.interpreter.blocks
 
-import interpreter.models.Block
-import interpreter.models.Id
-import interpreter.models.PinManager
+import com.example.interpreter.models.Block
+import com.example.interpreter.models.ExecutionState
+import com.example.interpreter.models.Id
+import com.example.interpreter.models.PinManager
 
 class IntBlock internal constructor(
     id: Id,
@@ -13,7 +14,7 @@ class IntBlock internal constructor(
     mutableListOf(PinManager.createPinInt("a", default, id)),
     mutableListOf(PinManager.createPinInt("b", default, id))
 ) {
-    override fun execute() {
+    override fun execute(): ExecutionState {
         if (inputs.size != outputs.size) {
             throw Exception("Number of outputs must be equal")
         }
@@ -21,6 +22,7 @@ class IntBlock internal constructor(
         for (i in inputs.indices) {
             outputs[i].setValue(inputs[i].getValue())
         }
+        return ExecutionState.COMPLETED
     }
 }
 
@@ -33,7 +35,7 @@ class BoolBlock internal constructor(
     mutableListOf(PinManager.createPinBool("a", default)),
     mutableListOf(PinManager.createPinBool("b", default))
 ) {
-    override fun execute() {
+    override fun execute(): ExecutionState {
         if (inputs.size != outputs.size) {
             throw Exception("Number of outputs must be equal")
         }
@@ -41,5 +43,6 @@ class BoolBlock internal constructor(
         for (i in inputs.indices) {
             outputs[i].setValue(inputs[i].getValue())
         }
+        return ExecutionState.COMPLETED
     }
 }

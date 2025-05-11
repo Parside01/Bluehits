@@ -1,11 +1,4 @@
-package interpreter.models
-
-import interpreter.pins.PinBlockId
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertDoesNotThrow
-import interpreter.pins.PinBool
-import interpreter.pins.PinInt
+package com.example.interpreter.models
 
 //class ConnectionTest {
 //    @Test

@@ -1,7 +1,7 @@
-package interpreter.blocks
+package com.example.interpreter.blocks
 
-import interpreter.models.BlockManager
-import interpreter.models.Connection
+import com.example.interpreter.models.BlockManager
+import com.example.interpreter.models.Connection
 import org.junit.jupiter.api.Test
 
 class IfElseTest {

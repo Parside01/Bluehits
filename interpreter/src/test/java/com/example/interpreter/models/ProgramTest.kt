@@ -1,4 +1,4 @@
-package interpreter.models
+package com.example.interpreter.models
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
