@@ -1,5 +1,6 @@
-package interpreter.models
+package com.example.interpreter.models
 
+import interpreter.models.ConnectionManager
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test

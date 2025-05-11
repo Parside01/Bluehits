@@ -1,13 +1,13 @@
-package interpreter.blocks
+package com.example.interpreter.blocks
 
-import interpreter.models.Block
-import interpreter.models.ExecutionState
+import com.example.interpreter.models.ExecutionState
 import interpreter.models.Id
+import com.example.interpreter.models.ScopeBlock
 import interpreter.models.PinManager
 
 class ForBlock (
     id: Id
-): Block(
+): ScopeBlock(
     id,
     "For",
     mutableListOf(PinManager.createPinInt("first", ownId = id), PinManager.createPinInt("last", ownId = id), PinManager.createPinInt("step", ownId = id)),
@@ -20,10 +20,15 @@ class ForBlock (
         val last = pinByName("last")?.getValue() as? Int?: throw Exception("Last must be an int")
         val step = pinByName("step")?.getValue() as? Int?: throw Exception("Step must be an int")
 
-        currentIndex = (currentIndex ?: first) + step
+        currentIndex = (currentIndex ?: first)
+
+        // Вроде как можем утверждать что оно точно не null.
         if (currentIndex!! < last) {
             return ExecutionState.RUNNING
         }
+
+        currentIndex = (currentIndex ?: first) + step
+
         return ExecutionState.COMPLETED
     }
 }
