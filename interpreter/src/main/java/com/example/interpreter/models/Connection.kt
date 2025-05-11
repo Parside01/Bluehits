@@ -1,4 +1,4 @@
-package interpreter.models
+package com.example.interpreter.models
 
 class Connection internal constructor(
     from: Pin,

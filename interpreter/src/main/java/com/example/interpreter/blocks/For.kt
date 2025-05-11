@@ -1,9 +1,9 @@
 package com.example.interpreter.blocks
 
 import com.example.interpreter.models.ExecutionState
-import interpreter.models.Id
+import com.example.interpreter.models.Id
 import com.example.interpreter.models.ScopeBlock
-import interpreter.models.PinManager
+import com.example.interpreter.models.PinManager
 
 class ForBlock (
     id: Id
