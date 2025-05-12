@@ -22,6 +22,19 @@ import androidx.compose.ui.unit.dp
 import com.example.bluehits.ui.BlocksManager
 import com.example.bluehits.ui.createCanvas
 
+//добавил еще импортов были ошибки
+
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.remember
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.text.font.FontWeight
+import com.example.bluehits.ui.DebugButton
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,28 +42,20 @@ class MainActivity : ComponentActivity() {
             val textMeasurer = rememberTextMeasurer()
             val blocksManager = remember { BlocksManager() }
 
-            Column(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                ControlPanel(
-                    blocksManager = blocksManager,
+            Box(modifier = Modifier.fillMaxSize()) {
+                DebugButton(
+                    onClick = { /* ... */ },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
+                        .offset(x = 707.dp, y = 24.5.dp) // ← Прямо как в Figma
+                        .size(width = 100.dp, height = 48.dp)
                 )
+            }
 
-                createCanvas(
-                    blocks = blocksManager.uiBlocks,
-                    textMeasurer = textMeasurer,
-                    onDrag = {  },
-                    onBlockDrag = { block, delta ->
-                        blocksManager.moveBlock(block, delta)
-                    }
-                )
+
             }
         }
     }
-}
+
 
 @Composable
 private fun ControlPanel(

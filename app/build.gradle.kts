@@ -1,3 +1,26 @@
+android {
+    compileSdk = 34 // Целевая версия SDK
+    defaultConfig {
+        applicationId = "com.example.figmatocompose"
+        minSdk = 24 // Минимальная версия SDK
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0"
+    }
+    buildFeatures {
+        compose = true // Включение поддержки Compose
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.14" // Версия компилятора Compose
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -40,6 +63,14 @@ android {
 }
 
 dependencies {
+    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.activity:activity-compose:1.9.2") // Для интеграции Compose с Activity
+    implementation("androidx.compose.ui:ui:1.7.0") // Основные компоненты Compose
+    implementation("androidx.compose.material3:material3:1.3.0") // Material 3
+    implementation("androidx.compose.ui:ui-tooling-preview:1.7.0") // Для предпросмотра
+    debugImplementation("androidx.compose.ui:ui-tooling:1.7.0") // Для отладки Compose
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6") // Для работы с жизненным циклом
+    implementation("androidx.compose.runtime:runtime:1.7.0") // Runtime для Compose
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
