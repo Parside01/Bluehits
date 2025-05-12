@@ -33,7 +33,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.zIndex
 import com.example.bluehits.ui.DebugButton
+import com.example.bluehits.ui.RunButton
+import com.example.bluehits.ui.TrashButton
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,16 +46,38 @@ class MainActivity : ComponentActivity() {
             val blocksManager = remember { BlocksManager() }
 
             Box(modifier = Modifier.fillMaxSize()) {
-                DebugButton(
+               DebugButton(
                     onClick = { /* ... */ },
                     modifier = Modifier
                         .offset(x = 707.dp, y = 24.5.dp) // ← Прямо как в Figma
-                        .size(width = 100.dp, height = 48.dp)
+                        .zIndex(1f)
                 )
+                RunButton(
+                    onClick = { /* ... */ },
+                    modifier = Modifier
+                        .offset(x = 635.dp, y = 24.5.dp)
+                        .zIndex(1f)
+                )
+                TrashButton(
+                    onClick = { /* ... */ },
+                    modifier = Modifier
+                        .offset(x = 713.dp, y = 284.5.dp)
+
+                        .zIndex(1f)
+                )
+                Column(modifier = Modifier.fillMaxSize()) {
+                    createCanvas(
+                        blocks = blocksManager.uiBlocks,
+                        textMeasurer = textMeasurer,
+                        onDrag = { /* Обработка перетаскивания */ },
+                        onBlockDrag = { block, delta -> blocksManager.moveBlock(block, delta) }
+                    )
+                }
             }
 
 
-            }
+
+        }
         }
     }
 
