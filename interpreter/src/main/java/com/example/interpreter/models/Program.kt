@@ -1,67 +1,84 @@
 package com.example.interpreter.models
 
+import com.example.interpreter.blocks.MainBlock
 import kotlin.collections.forEach
 
 object Program {
+    private var mainBlock: MainBlock = BlockManager.createMainBlock()
+
     // TODO: Щас пока делаем базу, потом надо при необходимости оптимизировать.
     // TODO: Щас на ui по идее что-то может поломаться. Можно попробовать это решить. Создавать промежуточные снимки программы через новые объекты менеджеров, а потом их подменять.
+//    fun run() {
+//        try {
+//            // Стартовые блоки - у которых нет входных пинов.
+//            val startBlocks = BlockManager.getAllBlocks().filter { block -> getBlockInConnections(block).isEmpty() }
+//            startBlocks.forEach { startBlock -> startBlock.execute() }
+//
+//            // Выполняем связи.
+//            val startOutConnections = mutableListOf<Connection>()
+//            startBlocks.forEach { startBlock ->
+//                val outConnections = getBlockOutConnections(startBlock)
+//                startOutConnections.addAll(outConnections)
+//                outConnections.forEach { outConnection -> outConnection.execute() }
+//            }
+//
+//            val executionQueue: MutableList<Block> = mutableListOf()
+//            val executeSet: MutableSet<Id> = mutableSetOf()
+//
+//            startOutConnections.forEach { conn ->
+//                val nextId = conn.getTo().ownId
+//                if (executeSet.add(nextId)) {
+//                    BlockManager.getBlock(nextId)?.let { block -> executionQueue.add(block) }
+//                }
+//            }
+//
+//            while (executionQueue.isNotEmpty()) {
+//                val currentBlock = executionQueue.removeAt(0)
+//
+//                val inConnections = getBlockInConnections(currentBlock)
+//                var connIsExecuted = true
+//                inConnections.forEach { conn ->
+//                    connIsExecuted = conn.executed()
+//                }
+//                if (!connIsExecuted) {
+//                    executionQueue.add(currentBlock)
+//                    continue
+//                }
+//
+//                currentBlock.execute()
+//                val blockOutConn = getBlockOutConnections(currentBlock)
+//                blockOutConn.forEach { conn ->
+//                    conn.execute()
+//                    val nextId = conn.getTo().ownId
+//                    if (executeSet.add(nextId)) {
+//                        BlockManager.getBlock(nextId)?.let { block -> executionQueue.add(block) }
+//                    }
+//                }
+//            }
+//
+//        } catch (e: Exception) {
+//            throw e
+//        }
+//    }
+
+
+    fun getMainBlock(): Block {
+        return mainBlock
+    }
+
     fun run() {
-        try {
-            // Стартовые блоки - у которых нет входных пинов.
-            val startBlocks = BlockManager.getAllBlocks().filter { block -> getBlockInConnections(block).isEmpty() }
-            startBlocks.forEach { startBlock -> startBlock.execute() }
-
-            // Выполняем связи.
-            val startOutConnections = mutableListOf<Connection>()
-            startBlocks.forEach { startBlock ->
-                val outConnections = getBlockOutConnections(startBlock)
-                startOutConnections.addAll(outConnections)
-                outConnections.forEach { outConnection -> outConnection.execute() }
-            }
-
-            val executionQueue: MutableList<Block> = mutableListOf()
-            val executeSet: MutableSet<Id> = mutableSetOf()
-
-            startOutConnections.forEach { conn ->
-                val nextId = conn.getTo().ownId
-                if (executeSet.add(nextId)) {
-                    BlockManager.getBlock(nextId)?.let { block -> executionQueue.add(block) }
-                }
-            }
-
-            while (executionQueue.isNotEmpty()) {
-                val currentBlock = executionQueue.removeAt(0)
-
-                val inConnections = getBlockInConnections(currentBlock)
-                var connIsExecuted = true
-                inConnections.forEach { conn ->
-                    connIsExecuted = conn.executed()
-                }
-                if (!connIsExecuted) {
-                    executionQueue.add(currentBlock)
-                    continue
-                }
-
-                currentBlock.execute()
-                val blockOutConn = getBlockOutConnections(currentBlock)
-                blockOutConn.forEach { conn ->
-                    conn.execute()
-                    val nextId = conn.getTo().ownId
-                    if (executeSet.add(nextId)) {
-                        BlockManager.getBlock(nextId)?.let { block -> executionQueue.add(block) }
-                    }
-                }
-            }
-
-        } catch (e: Exception) {
-            throw e
-        }
+        prebuild()
+        ContextManager.getContext(mainBlock.id)!!.execute()
     }
 
     fun prebuild() {
+        val contexts = mutableListOf<Context>()
         val allScopeBlocks = BlockManager.getAllBlocks().filter { block -> block is ScopeBlock  }
+        allScopeBlocks.forEach { block ->
+            ContextManager.createContext(block as ScopeBlock)
+        }
 
-
+        // Тут мы просто потом собираем мапку для контекстов Контекст:Родитель или пустота.
     }
 
     fun getBlockOutConnections(block: Block): List<Connection> {
