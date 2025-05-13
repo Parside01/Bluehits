@@ -10,7 +10,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,7 +25,7 @@ fun DebugButton(
     OutlinedButton(
         onClick = onClick,
         modifier = modifier
-            .size(width = 75.dp, height = 35.dp), // фиксированный размер
+            .size(width = 75.dp, height = 35.dp),
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.outlinedButtonColors(
             containerColor = Color.White // фон
@@ -51,7 +50,7 @@ fun RunButton(
     OutlinedButton(
         onClick = onClick,
         modifier = modifier
-            .size(width = 62.dp, height = 35.dp), // фиксированный размер
+            .size(width = 62.dp, height = 35.dp),
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.outlinedButtonColors(
             containerColor = Color.White
@@ -76,7 +75,7 @@ fun TrashButton(
     OutlinedButton(
         onClick = onClick,
         modifier = modifier
-            .size(width = 69.dp, height = 35.dp), // фиксированный размер
+            .size(width = 69.dp, height = 35.dp),
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.outlinedButtonColors(
             containerColor = Color.White
@@ -86,6 +85,31 @@ fun TrashButton(
     ) {
         Text(
             text = "Trash",
+            color = Color.Black,
+            fontSize = 12.sp,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+@Composable
+fun Add(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+
+) {
+    OutlinedButton(
+        onClick = onClick,
+        modifier = modifier
+            .size(width = 75.dp, height = 35.dp),
+        shape = RoundedCornerShape(8.dp),
+        colors = ButtonDefaults.outlinedButtonColors(
+            containerColor = Color.White // фон
+        ),
+        contentPadding = PaddingValues(horizontal = 17.dp, vertical = 1.dp),
+        border = BorderStroke(1.dp, Color.Black)
+    ) {
+        Text(
+            text = "add",
             color = Color.Black,
             fontSize = 12.sp,
             textAlign = TextAlign.Center
