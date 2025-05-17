@@ -14,6 +14,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.example.bluehits.ui.pinCreator.drawPin
 import interpreter.models.Pin
 import interpreter.models.Block
 
@@ -113,8 +114,8 @@ fun DrawScope.drawBlock(
         style = Fill
     )
 
-    drawPins(block, block.leftPins, Color.Green)
-    drawPins(block, block.rightPins, Color.Red)
+    drawPins(block, block.leftPins, "Input")
+    drawPins(block, block.rightPins, "Output")
 
     val textLayout = textMeasurer.measure(
         text = block.title,
@@ -142,22 +143,11 @@ fun DrawScope.drawBlock(
 
 private fun DrawScope.drawPins(
     block: BlueBlock,
-    pins: List<Offset>,
-    color: Color
-) {
-    pins.forEach { pin ->
-        drawCircle(
-            color = color,
-            radius = 10f,
-            center = Offset(block.x + pin.x, block.y + pin.y),
-            style = Fill
-        )
-        drawCircle(
-            color = Color.Black,
-            radius = 10f,
-            center = Offset(block.x + pin.x, block.y + pin.y),
-            style = Stroke(width = 1.5f)
-        )
+    pinsCoordinates: List<Offset>,
+    type: String) {
+    pinsCoordinates.forEach { coordinate ->
+        var newPin = pinCreator.createPin(Offset(coordinate.x, coordinate.y), block, type)
+        drawPin(newPin)
     }
 }
 

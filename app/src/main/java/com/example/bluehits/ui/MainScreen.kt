@@ -51,19 +51,19 @@ fun MainScreen() {
         )
 
         DebugButton(
-            onClick = { /* ... */ },
+            onClick = { },
             modifier = Modifier
                 .offset(x = 707.dp, y = 24.5.dp)
                 .zIndex(1f)
         )
         RunButton(
-            onClick = { /* ... */ },
+            onClick = { },
             modifier = Modifier
                 .offset(x = 635.dp, y = 24.5.dp)
                 .zIndex(1f)
         )
         TrashButton(
-            onClick = { /* ... */ },
+            onClick = { },
             modifier = Modifier
                 .offset(x = 713.dp, y = 284.5.dp)
                 .zIndex(1f)
@@ -87,7 +87,7 @@ fun MainScreen() {
                 createCanvas(
                     blocks = blocksManager.uiBlocks,
                     textMeasurer = textMeasurer,
-                    onDrag = { /* ... */ },
+                    onDrag = { },
                     onBlockDrag = { block, delta ->
                         blocksManager.moveBlock(block, delta)
                     }

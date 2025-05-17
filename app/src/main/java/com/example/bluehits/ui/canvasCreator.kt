@@ -1,8 +1,10 @@
 package com.example.bluehits.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,7 +19,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextMeasurer
-
+import androidx.compose.ui.platform.LocalContext
 @Composable
 fun createCanvas(blocks: List<BlueBlock>,
                  textMeasurer: TextMeasurer,
@@ -26,11 +28,12 @@ fun createCanvas(blocks: List<BlueBlock>,
                                dragAmount: Offset) -> Unit) {
     var canvasOffset by remember { mutableStateOf(Offset.Zero) }
     var selectedBlock by remember { mutableStateOf<BlueBlock?>(null) }
+    val context = LocalContext.current
 
     Canvas(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.LightGray)
+            .background(Color(0xFF212121))
             .pointerInput(Unit) {
                 detectDragGestures(
                     onDragStart = { offset ->
@@ -50,6 +53,14 @@ fun createCanvas(blocks: List<BlueBlock>,
                     },
                     onDragEnd = { selectedBlock = null }
                 )
+            }
+            .pointerInput(Unit) {
+                detectTapGestures {  offset ->
+                    val adjustedOffset = offset - canvasOffset
+                    PinManager.findPinAt(adjustedOffset)?.let { pin ->
+                        Toast.makeText(context, "Касание в: ${offset.x}, ${offset.y}", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
     ) {
         translate(left = canvasOffset.x, top = canvasOffset.y) {
