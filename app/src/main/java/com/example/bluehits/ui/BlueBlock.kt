@@ -141,7 +141,7 @@ fun DrawScope.drawBlock(
     )
 }
 
-private fun DrawScope.drawPins(
+fun DrawScope.drawPins(
     block: BlueBlock,
     pinsCoordinates: List<Offset>,
     type: String) {

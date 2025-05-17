@@ -14,9 +14,8 @@ object PinManager {
                 pin.parentBlock.x + pin.ownOffset.x,
                 pin.parentBlock.y + pin.ownOffset.y
             )
-            position.minus(center).getDistance() <= PIN_RADIUS * 10
+            position.minus(center).getDistance() <= PIN_RADIUS
         }
     }
-
     fun clear() = pins.clear()
 }

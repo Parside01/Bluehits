@@ -20,6 +20,8 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.platform.LocalContext
+import com.example.bluehits.ui.ConnectionsManager
+
 @Composable
 fun createCanvas(blocks: List<BlueBlock>,
                  textMeasurer: TextMeasurer,
@@ -29,6 +31,8 @@ fun createCanvas(blocks: List<BlueBlock>,
     var canvasOffset by remember { mutableStateOf(Offset.Zero) }
     var selectedBlock by remember { mutableStateOf<BlueBlock?>(null) }
     val context = LocalContext.current
+    val connectionManager = remember { ConnectionsManager() }
+    val lineCreator = remember { LineCreator() }
 
     Canvas(
         modifier = Modifier
@@ -58,7 +62,7 @@ fun createCanvas(blocks: List<BlueBlock>,
                 detectTapGestures {  offset ->
                     val adjustedOffset = offset - canvasOffset
                     PinManager.findPinAt(adjustedOffset)?.let { pin ->
-                        Toast.makeText(context, "Касание в: ${offset.x}, ${offset.y}", Toast.LENGTH_SHORT).show()
+                        connectionManager.handlePinClick(pin)
                     }
                 }
             }
@@ -75,6 +79,9 @@ fun createCanvas(blocks: List<BlueBlock>,
                         style = Stroke(width = 4f)
                     )
                 }
+            }
+            connectionManager.connections.forEach { (pin1, pin2) ->
+                lineCreator.run { drawBezierCurve(pin1, pin2) }
             }
         }
     }
