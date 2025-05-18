@@ -5,6 +5,7 @@ import com.example.interpreter.blocks.BoolBlock
 import com.example.interpreter.blocks.ForBlock
 import com.example.interpreter.blocks.IfElseBlock
 import com.example.interpreter.blocks.IntBlock
+import com.example.interpreter.blocks.MainBlock
 import com.example.interpreter.blocks.PrintBlock
 import java.io.OutputStreamWriter
 import java.util.concurrent.atomic.AtomicInteger
@@ -27,6 +28,12 @@ object BlockManager {
         val block = createBlockFunc(id)
         blockRegistry[id.string()] = block
         return block
+    }
+
+    internal fun createMainBlock(): MainBlock {
+        val main = MainBlock()
+        blockRegistry[main.id.string()] = main
+        return main
     }
 
     fun createIfElseBlock(): Block {
@@ -70,7 +77,6 @@ object BlockManager {
                 })
         }
     }
-
 
     fun createIntBlock(value: Int = 0): Block {
         return createBlock { id -> IntBlock(id, value) }
