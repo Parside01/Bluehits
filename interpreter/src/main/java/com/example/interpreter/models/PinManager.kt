@@ -14,7 +14,7 @@ object PinManager {
         return Id("pin-${idCounter.getAndIncrement()}")
     }
 
-    fun getPin(id: String) = pinRegistry[id]
+    fun getPin(id: Id) = pinRegistry[id.string()]
 
     private fun <T : Pin> createPin(createPinFunc: (Id) -> T): T {
         val id = generateId()
@@ -24,7 +24,7 @@ object PinManager {
     }
 
     fun setPinValue(id: Id, value: Any) {
-        getPin(id.toString())?.setValue(value)
+        getPin(id)?.setValue(value)
     }
 
 //    fun createPinBlock(name: String, block: Id = Id("pin-block-"), ownId: Id = Id("null")): Pin {
