@@ -78,7 +78,6 @@ object BlockManager {
         }
     }
 
-
     fun createIntBlock(value: Int = 0): Block {
         return createBlock { id -> IntBlock(id, value) }
     }
