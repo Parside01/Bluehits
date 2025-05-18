@@ -5,14 +5,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
+import interpreter.models.Id
+import interpreter.models.Pin
 
 class PinUi(var ownOffset: Offset,
     var parentBlock: BlueBlock,
-    var type: String)
+    var type: String,
+    val id: Id)
 
 object pinCreator {
-    fun createPin(ownOffset: Offset, parentBlock: BlueBlock, type: String): PinUi {
-        return PinUi(ownOffset, parentBlock, type).also {
+    fun createPin(ownOffset: Offset, parentBlock: BlueBlock, type: String, logicPin: Pin): PinUi {
+        return PinUi(ownOffset, parentBlock, type, id = logicPin.id).also {
             PinManager.addPin(it)
         }
     }

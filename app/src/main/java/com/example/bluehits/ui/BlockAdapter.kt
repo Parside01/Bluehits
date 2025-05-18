@@ -15,6 +15,7 @@ object BlockAdapter {
 
     fun wrapLogicBlock(logicBlock: Block): BlueBlock {
         return BlueBlock(
+            id = logicBlock.id,
             initialX = 0f,
             initialY = 0f,
             color = colorMapping[logicBlock.name] ?: Color.Gray,

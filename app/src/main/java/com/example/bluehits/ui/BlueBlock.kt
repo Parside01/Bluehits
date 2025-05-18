@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import com.example.bluehits.ui.pinCreator.drawPin
 import interpreter.models.Pin
 import interpreter.models.Block
+import interpreter.models.Id
 
 class BlockLayout(
     val totalWidth: Float,
@@ -61,6 +62,7 @@ class BlockLayout(
 }
 
 class BlueBlock(
+    val id: Id,
     val initialX: Float,
     val initialY: Float,
     val color: Color,
@@ -75,6 +77,9 @@ class BlueBlock(
 
     val rightPins: List<Offset>
         get() = calculateVerticalPins(outputPins.size, layout.rightPinArea)
+
+    var inputPinsUi: List<PinUi> = emptyList()
+    var outputPinsUi: List<PinUi> = emptyList()
 
     var x by mutableStateOf(initialX)
     var y by mutableStateOf(initialY)
@@ -114,8 +119,8 @@ fun DrawScope.drawBlock(
         style = Fill
     )
 
-    drawPins(block, block.leftPins, "Input")
-    drawPins(block, block.rightPins, "Output")
+    drawPins(block, block.leftPins, block.inputPins, "Input")
+    drawPins(block, block.rightPins, block.outputPins,"Output")
 
     val textLayout = textMeasurer.measure(
         text = block.title,
@@ -144,10 +149,14 @@ fun DrawScope.drawBlock(
 fun DrawScope.drawPins(
     block: BlueBlock,
     pinsCoordinates: List<Offset>,
+    logicPins: List<Pin>,
     type: String) {
-    pinsCoordinates.forEach { coordinate ->
-        var newPin = pinCreator.createPin(Offset(coordinate.x, coordinate.y), block, type)
+    for (i in 0..pinsCoordinates.size - 1) {
+        var ownOffset = Offset(pinsCoordinates[i].x, pinsCoordinates[i].y)
+        var logicPin = logicPins[i]
+        var newPin = pinCreator.createPin(ownOffset, block, type, logicPin)
         drawPin(newPin)
     }
 }
+
 
