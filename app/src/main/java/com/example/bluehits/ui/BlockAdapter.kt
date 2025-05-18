@@ -1,7 +1,7 @@
 package com.example.bluehits.ui
 
 import androidx.compose.ui.graphics.Color
-import interpreter.models.Block
+import com.example.interpreter.models.Block
 
 object BlockAdapter {
     private val colorMapping = mapOf(

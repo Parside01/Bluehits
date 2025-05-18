@@ -1,6 +1,5 @@
 package com.example.bluehits.ui
 
-import android.widget.Toast
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -20,7 +19,6 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.platform.LocalContext
-import com.example.bluehits.ui.ConnectionsManager
 
 @Composable
 fun createCanvas(blocks: List<BlueBlock>,
@@ -31,7 +29,7 @@ fun createCanvas(blocks: List<BlueBlock>,
     var canvasOffset by remember { mutableStateOf(Offset.Zero) }
     var selectedBlock by remember { mutableStateOf<BlueBlock?>(null) }
     val context = LocalContext.current
-    val connectionManager = remember { ConnectionsManager() }
+    val connectionManager = remember { UIConnectionManager() }
     val lineCreator = remember { LineCreator() }
 
     Canvas(
@@ -61,7 +59,7 @@ fun createCanvas(blocks: List<BlueBlock>,
             .pointerInput(Unit) {
                 detectTapGestures {  offset ->
                     val adjustedOffset = offset - canvasOffset
-                    PinManager.findPinAt(adjustedOffset)?.let { pin ->
+                    UIPinManager.findPinAt(adjustedOffset)?.let { pin ->
                         connectionManager.handlePinClick(pin)
                     }
                 }

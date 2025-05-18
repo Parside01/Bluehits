@@ -2,7 +2,7 @@ package com.example.bluehits.ui
 
 import androidx.compose.ui.geometry.Offset
 
-object PinManager {
+object UIPinManager {
     private val pins = mutableListOf<PinUi>()
     private const val PIN_RADIUS = 10f
 
