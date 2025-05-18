@@ -1,6 +1,6 @@
-package interpreter.blocks
+package com.example.interpreter.blocks
 
-import interpreter.models.BlockManager
+import com.example.interpreter.models.BlockManager
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 import java.io.StringWriter

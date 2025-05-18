@@ -1,4 +1,4 @@
-package interpreter.models
+package com.example.interpreter.models
 
 
 // TODO: Может надо на жавовский Type переписать.

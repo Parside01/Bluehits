@@ -1,4 +1,4 @@
-package interpreter.models
+package com.example.interpreter.models
 
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.collections.set

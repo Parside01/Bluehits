@@ -1,8 +1,9 @@
-package interpreter.blocks
+package com.example.interpreter.blocks
 
-import interpreter.models.Block
-import interpreter.models.Id
-import interpreter.models.PinManager
+import com.example.interpreter.models.Block
+import com.example.interpreter.models.ExecutionState
+import com.example.interpreter.models.Id
+import com.example.interpreter.models.PinManager
 
 class BinaryOperatorBlock (
     id: Id,
@@ -14,12 +15,13 @@ class BinaryOperatorBlock (
     mutableListOf(PinManager.createPinAny("a", ownId = id), PinManager.createPinAny("b", ownId = id)),
     mutableListOf(PinManager.createPinAny("c", ownId = id)),
 ) {
-    override fun execute() {
+    override fun execute(): ExecutionState {
         try {
             val result = operation(inputs.first().getValue(), inputs.last().getValue())
             outputs.single().setValue(result)
         } catch (e: Exception) {
             throw e
         }
+        return ExecutionState.COMPLETED
     }
 }
