@@ -16,6 +16,8 @@ object Program {
     }
 
     fun prebuild() {
+        ContextManager.deleteAll()
+
         val contexts = mutableListOf<Context>()
         val allScopeBlocks = BlockManager.getAllBlocks().filter { block -> block is ScopeBlock  }
         allScopeBlocks.forEach { block ->

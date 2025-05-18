@@ -18,6 +18,12 @@ object ContextManager {
         return context
     }
 
+    fun deleteAll() {
+        contextRegistry.clear()
+        idCounter.getAndDecrement()
+        ctxParents.clear()
+    }
+
     fun getContext(startBlockId: Id) = contextRegistry[startBlockId.string()]
 }
 
