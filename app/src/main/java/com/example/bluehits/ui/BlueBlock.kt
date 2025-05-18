@@ -15,9 +15,9 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.bluehits.ui.pinCreator.drawPin
-import interpreter.models.Pin
-import interpreter.models.Block
-import interpreter.models.Id
+import com.example.interpreter.models.Pin
+import com.example.interpreter.models.Block
+import com.example.interpreter.models.Id
 
 class BlockLayout(
     val totalWidth: Float,
@@ -119,8 +119,8 @@ fun DrawScope.drawBlock(
         style = Fill
     )
 
-    drawPins(block, block.leftPins, block.inputPins, "Input")
-    drawPins(block, block.rightPins, block.outputPins,"Output")
+    drawPins(block, block.leftPins, block.inputPins, InOutPinType.INPUT)
+    drawPins(block, block.rightPins, block.outputPins,InOutPinType.OUTPUT)
 
     val textLayout = textMeasurer.measure(
         text = block.title,
@@ -150,7 +150,7 @@ fun DrawScope.drawPins(
     block: BlueBlock,
     pinsCoordinates: List<Offset>,
     logicPins: List<Pin>,
-    type: String) {
+    type: InOutPinType) {
     for (i in 0..pinsCoordinates.size - 1) {
         var ownOffset = Offset(pinsCoordinates[i].x, pinsCoordinates[i].y)
         var logicPin = logicPins[i]
