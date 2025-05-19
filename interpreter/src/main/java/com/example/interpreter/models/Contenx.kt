@@ -139,6 +139,7 @@ class Context internal constructor(
         val executeSet: MutableSet<Id> = mutableSetOf()
 
         startOutConnections.forEach { conn ->
+            conn.execute()
             val nextId = conn.getTo().ownId
             if (executeSet.add(nextId)) {
                 BlockManager.getBlock(nextId)?.let { block -> executionQueue.add(block) }
