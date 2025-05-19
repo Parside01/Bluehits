@@ -1,6 +1,6 @@
 package com.example.interpreter.models
 
-abstract class Block internal constructor (
+abstract class Block internal constructor(
     val id: Id,
     val name: String?,
     val inputs: MutableList<Pin> = mutableListOf(),
@@ -15,7 +15,7 @@ abstract class Block internal constructor (
     }
 }
 
-abstract class ScopeBlock internal constructor (
+abstract class ScopeBlock internal constructor(
     id: Id,
     name: String?,
     inputs: MutableList<Pin> = mutableListOf(),
