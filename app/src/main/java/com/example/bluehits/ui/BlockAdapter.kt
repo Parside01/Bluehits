@@ -1,10 +1,12 @@
 package com.example.bluehits.ui
 
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import com.example.interpreter.models.Block
 
 object BlockAdapter {
     private val colorMapping = mapOf(
+        "Main" to Color (0xFF641349),
         "Int" to Color(0xFF4CAF50),
         "Bool" to Color(0xFF9C27B0),
         "Add" to Color(0xFF2196F3),
@@ -23,7 +25,8 @@ object BlockAdapter {
             height = 240f,
             title = logicBlock.name ?: "Block",
             inputPins = logicBlock.inputs,
-            outputPins = logicBlock.outputs
+            outputPins = logicBlock.outputs,
+            blockPin = logicBlock.blockPin
         ).apply {
             this.logicBlock = logicBlock
         }
