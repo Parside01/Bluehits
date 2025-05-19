@@ -22,20 +22,21 @@ class UIConnectionManager {
             return
         }
 
-        println("${ tempPin!!.type } ${pin.type}")
-        println("${PinManager.getPin(tempPin!!.id)!!.type} ${PinManager.getPin(pin.id)!!.type}")
         // TODO: Спросить как сделать лучше.
         if (pin.type == InOutPinType.INPUT && tempPin!!.type == InOutPinType.INPUT) {
             tempPin = pin
-        } else if (pin.type == InOutPinType.INPUT && tempPin!!.type == InOutPinType.OUTPUT) {
+        }
+        else if (pin.type == InOutPinType.INPUT && tempPin!!.type == InOutPinType.OUTPUT) {
             val connectionId = connect(tempPin!!.id, pin.id)
             connections.add(Pair(pin, tempPin!!))
             tempPin = null
-        } else if (pin.type == InOutPinType.OUTPUT && tempPin!!.type == InOutPinType.INPUT) {
+        }
+        else if (pin.type == InOutPinType.OUTPUT && tempPin!!.type == InOutPinType.INPUT) {
             val connectionId = connect(pin.id, tempPin!!.id)
             connections.add(Pair(tempPin!!, pin))
             tempPin = null
-        } else {
+        }
+        else {
             tempPin = pin
         }
     }

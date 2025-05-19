@@ -30,7 +30,7 @@ object BlockManager {
         return block
     }
 
-    internal fun createMainBlock(): MainBlock {
+    fun createMainBlock(): MainBlock {
         val main = MainBlock()
         blockRegistry[main.id.string()] = main
         return main

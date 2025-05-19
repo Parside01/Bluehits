@@ -14,6 +14,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.example.bluehits.ui.pinCreator.drawBlockPin
 import com.example.bluehits.ui.pinCreator.drawPin
 import com.example.interpreter.models.Pin
 import com.example.interpreter.models.Block
@@ -70,16 +71,14 @@ class BlueBlock(
     val height: Float,
     var title: String = "Block",
     val inputPins: List<Pin> = emptyList(),
-    val outputPins: List<Pin> = emptyList()
+    val outputPins: List<Pin> = emptyList(),
+    val blockPin: Pin
 ) {
     val leftPins: List<Offset>
-        get() = calculateVerticalPins(inputPins.size, layout.leftPinArea)
+        get() = calculateVerticalPins(inputPins.size + 1, layout.leftPinArea)
 
     val rightPins: List<Offset>
         get() = calculateVerticalPins(outputPins.size, layout.rightPinArea)
-
-    var inputPinsUi: List<PinUi> = emptyList()
-    var outputPinsUi: List<PinUi> = emptyList()
 
     var x by mutableStateOf(initialX)
     var y by mutableStateOf(initialY)
@@ -130,12 +129,14 @@ fun DrawScope.drawBlock(
             fontWeight = FontWeight.Bold
         )
     )
+    val textX = block.x + block.layout.titleArea.left +
+            (block.layout.titleArea.width - textLayout.size.width) / 2
+    val textY = block.y + block.layout.titleArea.height / 2 - textLayout.size.height / 2 +
+            textLayout.size.height * 0.2f
+
     drawText(
         textLayoutResult = textLayout,
-        topLeft = Offset(
-            block.x + block.layout.titleArea.left + 10f,
-            block.y + 10f
-        )
+        topLeft = Offset(textX, textY)
     )
 
     drawRect(
@@ -151,11 +152,27 @@ fun DrawScope.drawPins(
     pinsCoordinates: List<Offset>,
     logicPins: List<Pin>,
     type: InOutPinType) {
-    for (i in 0..pinsCoordinates.size - 1) {
-        var ownOffset = Offset(pinsCoordinates[i].x, pinsCoordinates[i].y)
-        var logicPin = logicPins[i]
-        var newPin = pinCreator.createPin(ownOffset, block, type, logicPin)
-        drawPin(newPin)
+    if (pinsCoordinates.isNotEmpty()) {
+        val firstPin = pinCreator.createPin(
+            pinsCoordinates[0],
+            block,
+            type,
+            block.blockPin
+        )
+        drawBlockPin(firstPin)
+    }
+
+    // Рисуем остальные пины как обычно
+    for (i in logicPins.indices) {
+        if (i + 1 < pinsCoordinates.size) {
+            val pin = pinCreator.createPin(
+                pinsCoordinates[i + 1],
+                block,
+                type,
+                logicPins[i]
+            )
+            drawPin(pin)
+        }
     }
 }
 

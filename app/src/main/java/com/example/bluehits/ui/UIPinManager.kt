@@ -4,7 +4,7 @@ import androidx.compose.ui.geometry.Offset
 
 object UIPinManager {
     private val pins = mutableListOf<PinUi>()
-    private const val PIN_RADIUS = 10f
+    private const val PIN_RADIUS = 15f
 
     fun addPin(pin: PinUi) = pins.add(pin)
 
