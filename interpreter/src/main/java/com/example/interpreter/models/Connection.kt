@@ -14,7 +14,7 @@ class Connection internal constructor(
         if (from.id == to.id) throw IllegalArgumentException("Cannot connect pins with the same ID.")
         if ((from.type == PinType.BLOCK) xor (to.type == PinType.BLOCK)) throw IllegalArgumentException("Cannot connect pins of different types. (Blocks)")
         if (to.type != PinType.ANY && from.type != to.type) throw IllegalArgumentException("Cannot connect pins of different types. (Other types)")
-        if (to.ownId == from.ownId) throw IllegalArgumentException("Cannot connect pins with the same ownId.")
+
         this.from = from
         this.to = to
     }
