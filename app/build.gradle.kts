@@ -1,26 +1,3 @@
-android {
-    compileSdk = 34 // Целевая версия SDK
-    defaultConfig {
-        applicationId = "com.example.figmatocompose"
-        minSdk = 24 // Минимальная версия SDK
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
-    }
-    buildFeatures {
-        compose = true // Включение поддержки Compose
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14" // Версия компилятора Compose
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-}
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -50,15 +27,22 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.14"
     }
 }
 
