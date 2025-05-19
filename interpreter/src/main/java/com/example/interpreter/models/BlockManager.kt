@@ -78,27 +78,12 @@ object BlockManager {
         }
     }
 
-    fun createIntBlock(varName: String = "Int", value: Int = 0): Block {
-        val block = createBlock { id -> IntBlock(id, value, varName) }
-        val blockState = VariableManager.getOrCreateVarState(varName, value, Int::class)
-        block.setVarState(blockState)
-
-        blockState.addObserver(block)
-        block.setPin.setValue(blockState.getValue() as Any)
-
-        return block
+    fun createIntBlock(value: Int = 0): Block {
+        return createBlock { id -> IntBlock(id, value) }
     }
 
-    fun createBoolBlock(varName: String = "Bool", value: Boolean = false): Block {
-        val block = createBlock { id -> BoolBlock(id, value, varName) }
-
-        val blockState = VariableManager.getOrCreateVarState(varName, value, Boolean::class)
-        block.setVarState(blockState)
-
-        blockState.addObserver(block)
-        block.setPin.setValue(blockState.getValue() as Any)
-
-        return block
+    fun createBoolBlock(value: Boolean = false): Block {
+        return createBlock { id -> BoolBlock(id, value) }
     }
 
     fun createPrintBlock(writer: Writer = OutputStreamWriter(System.out)): Block {
