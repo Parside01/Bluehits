@@ -58,8 +58,8 @@ class BoolBlock internal constructor(
         this.varState = varState
     }
 
-    val setPin: PinBool get() = inputs[0] as PinBool
-    val getPin: PinBool get() = outputs[0] as PinBool
+    internal val setPin: PinBool get() = inputs[0] as PinBool
+    internal val getPin: PinBool get() = outputs[0] as PinBool
 
     override fun execute(): ExecutionState {
         if (!::varState.isInitialized) {
