@@ -1,6 +1,7 @@
 package com.example.bluehits.ui
 
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
@@ -68,6 +69,29 @@ object pinCreator {
                 pin.ownOffset.y + pin.parentBlock.y
             ),
             style = Stroke(width = 1.5f)
+        )
+    }
+    fun DrawScope.drawBlockPin(pin : PinUi) {
+        val size = 20f
+        val halfSize = size / 2
+
+        drawRect(
+            color = Color.Green,
+            topLeft = Offset(
+                pin.ownOffset.x + pin.parentBlock.x - halfSize,
+                pin.ownOffset.y + pin.parentBlock.y - halfSize
+            ),
+            size = Size(size, size),
+            style = Fill
+        )
+        drawRect(
+            color = Color.Black,
+            topLeft = Offset(
+                pin.ownOffset.x + pin.parentBlock.x - halfSize,
+                pin.ownOffset.y + pin.parentBlock.y - halfSize
+            ),
+            size = Size(size, size),
+            style = Stroke(width = 2f)
         )
     }
 }

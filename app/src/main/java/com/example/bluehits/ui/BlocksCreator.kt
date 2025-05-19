@@ -10,6 +10,7 @@ class BlocksManager {
 
     fun addNewBlock(type: String) {
         val logicBlock = when(type) {
+            "Main" -> BlockManager.createMainBlock()
             "Int" -> BlockManager.createIntBlock()
             "Add" -> BlockManager.createAddBlock()
             "Bool" -> BlockManager.createBoolBlock()
