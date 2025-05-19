@@ -67,11 +67,13 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.9.2") // Для интеграции Compose с Activity
     implementation("androidx.compose.ui:ui:1.7.0") // Основные компоненты Compose
     implementation("androidx.compose.material3:material3:1.3.0") // Material 3
-    implementation("androidx.compose.ui:ui-tooling-preview:1.7.0") // Для предпросмотра
+    implementation("androidx.compose.ui:ui-tooling-preview:1.7.0")
+    implementation(libs.androidx.constraintlayout) // Для предпросмотра
     debugImplementation("androidx.compose.ui:ui-tooling:1.7.0") // Для отладки Compose
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6") // Для работы с жизненным циклом
     implementation("androidx.compose.runtime:runtime:1.7.0") // Runtime для Compose
 
+    implementation ("androidx.constraintlayout:constraintlayout-compose:1.0.1")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
