@@ -34,6 +34,7 @@ import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.example.interpreter.models.BlockManager
 import com.example.interpreter.models.ConnectionManager
 import com.example.interpreter.models.Program
 import kotlin.math.min
@@ -167,7 +168,8 @@ fun ControlPanel(
             "Sub" to "Sub",
             "Print" to "Print",
             "Bool" to "Bool",
-            "IfElse" to "IfElse"
+            "IfElse" to "IfElse",
+            "For" to "For"
         )
 
         buttons.forEach { (blockType, label) ->
@@ -179,3 +181,4 @@ fun ControlPanel(
         }
     }
 }
+

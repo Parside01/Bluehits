@@ -12,7 +12,8 @@ object BlockAdapter {
         "Add" to Color(0xFF2196F3),
         "Print" to Color(0xFF488185),
         "Sub" to Color(0xFF404747),
-        "IfElse" to Color(0xFFe3b202)
+        "IfElse" to Color(0xFFe3b202),
+        "For" to Color (0xFFc93c20)
     )
 
     fun wrapLogicBlock(logicBlock: Block): BlueBlock {

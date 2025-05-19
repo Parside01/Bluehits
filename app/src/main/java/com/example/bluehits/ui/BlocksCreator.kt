@@ -10,8 +10,20 @@ class BlocksManager {
     private val _uiBlocks = mutableStateListOf<BlueBlock>()
     val uiBlocks: List<BlueBlock> get() = _uiBlocks
 
+    public fun getPrintBlockValue(uiBlocks: List<BlueBlock>): Any? {
+        uiBlocks.forEach { block ->
+            if (block.title == "Print") {
+                val logicBlock = BlockManager.getBlock(block.id)
+                return logicBlock?.let { notNullBlock -> notNullBlock.inputs[0].getValue() }
+            }
+        }
+        return null
+    }
+
+
     fun addNewBlock(type: String) {
-        val logicBlock = when(type) {
+        val logicBlock = when (type) {
+            "For" -> BlockManager.createForBlock()
             "Int" -> BlockManager.createIntBlock()
             "Add" -> BlockManager.createAddBlock()
             "Bool" -> BlockManager.createBoolBlock()
