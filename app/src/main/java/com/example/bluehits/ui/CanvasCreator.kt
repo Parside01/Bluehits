@@ -18,17 +18,16 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextMeasurer
-import androidx.compose.ui.platform.LocalContext
 
 @Composable
-fun createCanvas(blocks: List<BlueBlock>,
-                 textMeasurer: TextMeasurer,
-                 onDrag: (dragAmount: Offset) -> Unit,
-                 onBlockDrag: (block: BlueBlock,
-                               dragAmount: Offset) -> Unit) {
+fun CreateCanvas(
+    blocks: List<BlueBlock>,
+    textMeasurer: TextMeasurer,
+    onDrag: (dragAmount: Offset) -> Unit,
+    onBlockDrag: (block: BlueBlock, dragAmount: Offset, isDragging: Boolean) -> Unit
+) {
     var canvasOffset by remember { mutableStateOf(Offset.Zero) }
     var selectedBlock by remember { mutableStateOf<BlueBlock?>(null) }
-    val context = LocalContext.current
     val connectionManager = remember { UIConnectionManager() }
     val lineCreator = remember { LineCreator() }
 
@@ -44,20 +43,28 @@ fun createCanvas(blocks: List<BlueBlock>,
                             adjusted.x in block.x..(block.x + block.width) &&
                                     adjusted.y in block.y..(block.y + block.height)
                         }
+                        selectedBlock?.let { block ->
+                            onBlockDrag(block, Offset.Zero, true)
+                        }
                     },
                     onDrag = { _, dragAmount ->
                         selectedBlock?.let {
-                            onBlockDrag(it, dragAmount)
+                            onBlockDrag(it, dragAmount, true)
                         } ?: run {
                             canvasOffset += dragAmount
                             onDrag(dragAmount)
                         }
                     },
-                    onDragEnd = { selectedBlock = null }
+                    onDragEnd = {
+                        selectedBlock?.let { block ->
+                            onBlockDrag(block, Offset.Zero, false)
+                        }
+                        selectedBlock = null
+                    }
                 )
             }
             .pointerInput(Unit) {
-                detectTapGestures {  offset ->
+                detectTapGestures { offset ->
                     val adjustedOffset = offset - canvasOffset
                     UIPinManager.findPinAt(adjustedOffset)?.let { pin ->
                         connectionManager.handlePinClick(pin)

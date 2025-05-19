@@ -28,4 +28,11 @@ class BlocksManager {
             _uiBlocks[index].y += delta.y
         }
     }
+
+    fun removeBlock(block: BlueBlock) {
+        _uiBlocks.remove(block)
+    }
+    fun clearAllBlocks() {
+        _uiBlocks.clear()
+    }
 }
