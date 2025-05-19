@@ -2,7 +2,7 @@ package com.example.bluehits.ui
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Offset
-import interpreter.models.BlockManager
+import com.example.interpreter.models.BlockManager
 
 class BlocksManager {
     private val _uiBlocks = mutableStateListOf<BlueBlock>()
@@ -10,6 +10,7 @@ class BlocksManager {
 
     fun addNewBlock(type: String) {
         val logicBlock = when(type) {
+            "Main" -> BlockManager.createMainBlock()
             "Int" -> BlockManager.createIntBlock()
             "Add" -> BlockManager.createAddBlock()
             "Bool" -> BlockManager.createBoolBlock()

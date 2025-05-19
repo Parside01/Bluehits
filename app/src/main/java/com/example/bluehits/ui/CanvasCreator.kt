@@ -3,6 +3,7 @@ package com.example.bluehits.ui
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,6 +18,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextMeasurer
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun createCanvas(blocks: List<BlueBlock>,
@@ -26,11 +28,14 @@ fun createCanvas(blocks: List<BlueBlock>,
                                dragAmount: Offset) -> Unit) {
     var canvasOffset by remember { mutableStateOf(Offset.Zero) }
     var selectedBlock by remember { mutableStateOf<BlueBlock?>(null) }
+    val context = LocalContext.current
+    val connectionManager = remember { UIConnectionManager() }
+    val lineCreator = remember { LineCreator() }
 
     Canvas(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.LightGray)
+            .background(Color(0xFF212121))
             .pointerInput(Unit) {
                 detectDragGestures(
                     onDragStart = { offset ->
@@ -51,6 +56,14 @@ fun createCanvas(blocks: List<BlueBlock>,
                     onDragEnd = { selectedBlock = null }
                 )
             }
+            .pointerInput(Unit) {
+                detectTapGestures {  offset ->
+                    val adjustedOffset = offset - canvasOffset
+                    UIPinManager.findPinAt(adjustedOffset)?.let { pin ->
+                        connectionManager.handlePinClick(pin)
+                    }
+                }
+            }
     ) {
         translate(left = canvasOffset.x, top = canvasOffset.y) {
             blocks.forEach { block ->
@@ -64,6 +77,9 @@ fun createCanvas(blocks: List<BlueBlock>,
                         style = Stroke(width = 4f)
                     )
                 }
+            }
+            connectionManager.connections.forEach { (pin1, pin2) ->
+                lineCreator.run { drawBezierCurve(pin1, pin2) }
             }
         }
     }

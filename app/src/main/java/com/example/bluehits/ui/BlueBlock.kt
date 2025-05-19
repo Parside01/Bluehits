@@ -14,8 +14,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import interpreter.models.Pin
-import interpreter.models.Block
+import com.example.bluehits.ui.pinCreator.drawBlockPin
+import com.example.bluehits.ui.pinCreator.drawPin
+import com.example.interpreter.models.Pin
+import com.example.interpreter.models.Block
+import com.example.interpreter.models.Id
 
 class BlockLayout(
     val totalWidth: Float,
@@ -60,6 +63,7 @@ class BlockLayout(
 }
 
 class BlueBlock(
+    val id: Id,
     val initialX: Float,
     val initialY: Float,
     val color: Color,
@@ -67,10 +71,11 @@ class BlueBlock(
     val height: Float,
     var title: String = "Block",
     val inputPins: List<Pin> = emptyList(),
-    val outputPins: List<Pin> = emptyList()
+    val outputPins: List<Pin> = emptyList(),
+    val blockPin: Pin
 ) {
     val leftPins: List<Offset>
-        get() = calculateVerticalPins(inputPins.size, layout.leftPinArea)
+        get() = calculateVerticalPins(inputPins.size + 1, layout.leftPinArea)
 
     val rightPins: List<Offset>
         get() = calculateVerticalPins(outputPins.size, layout.rightPinArea)
@@ -113,8 +118,8 @@ fun DrawScope.drawBlock(
         style = Fill
     )
 
-    drawPins(block, block.leftPins, Color.Green)
-    drawPins(block, block.rightPins, Color.Red)
+    drawPins(block, block.leftPins, block.inputPins, InOutPinType.INPUT)
+    drawPins(block, block.rightPins, block.outputPins,InOutPinType.OUTPUT)
 
     val textLayout = textMeasurer.measure(
         text = block.title,
@@ -124,12 +129,14 @@ fun DrawScope.drawBlock(
             fontWeight = FontWeight.Bold
         )
     )
+    val textX = block.x + block.layout.titleArea.left +
+            (block.layout.titleArea.width - textLayout.size.width) / 2
+    val textY = block.y + block.layout.titleArea.height / 2 - textLayout.size.height / 2 +
+            textLayout.size.height * 0.2f
+
     drawText(
         textLayoutResult = textLayout,
-        topLeft = Offset(
-            block.x + block.layout.titleArea.left + 10f,
-            block.y + 10f
-        )
+        topLeft = Offset(textX, textY)
     )
 
     drawRect(
@@ -140,24 +147,33 @@ fun DrawScope.drawBlock(
     )
 }
 
-private fun DrawScope.drawPins(
+fun DrawScope.drawPins(
     block: BlueBlock,
-    pins: List<Offset>,
-    color: Color
-) {
-    pins.forEach { pin ->
-        drawCircle(
-            color = color,
-            radius = 10f,
-            center = Offset(block.x + pin.x, block.y + pin.y),
-            style = Fill
+    pinsCoordinates: List<Offset>,
+    logicPins: List<Pin>,
+    type: InOutPinType) {
+    if (pinsCoordinates.isNotEmpty()) {
+        val firstPin = pinCreator.createPin(
+            pinsCoordinates[0],
+            block,
+            type,
+            block.blockPin
         )
-        drawCircle(
-            color = Color.Black,
-            radius = 10f,
-            center = Offset(block.x + pin.x, block.y + pin.y),
-            style = Stroke(width = 1.5f)
-        )
+        drawBlockPin(firstPin)
+    }
+
+    // Рисуем остальные пины как обычно
+    for (i in logicPins.indices) {
+        if (i + 1 < pinsCoordinates.size) {
+            val pin = pinCreator.createPin(
+                pinsCoordinates[i + 1],
+                block,
+                type,
+                logicPins[i]
+            )
+            drawPin(pin)
+        }
     }
 }
+
 

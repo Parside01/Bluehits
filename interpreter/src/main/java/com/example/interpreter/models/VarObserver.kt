@@ -5,8 +5,7 @@ interface VarObserver<T> {
 }
 
 class VarState<T>(initValue: T) {
-    var value: T = initValue
-        private set
+    private var value: T = initValue
 
     private val observers: MutableList<VarObserver<T>> = mutableListOf()
 
