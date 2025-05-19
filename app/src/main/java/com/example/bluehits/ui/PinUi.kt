@@ -75,7 +75,6 @@ object pinCreator {
         val size = 20f
         val halfSize = size / 2
 
-        // Центрируем квадрат относительно позиции пина
         drawRect(
             color = Color.Green,
             topLeft = Offset(
