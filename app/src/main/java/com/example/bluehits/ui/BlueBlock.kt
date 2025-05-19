@@ -152,25 +152,35 @@ fun DrawScope.drawPins(
     pinsCoordinates: List<Offset>,
     logicPins: List<Pin>,
     type: InOutPinType) {
-    if (pinsCoordinates.isNotEmpty()) {
-        val firstPin = pinCreator.createPin(
-            pinsCoordinates[0],
-            block,
-            type,
-            block.blockPin
-        )
-        drawBlockPin(firstPin)
-    }
-
-    for (i in logicPins.indices) {
-        if (i + 1 < pinsCoordinates.size) {
-            val pin = pinCreator.createPin(
-                pinsCoordinates[i + 1],
+    if (type == InOutPinType.INPUT) {
+        if (pinsCoordinates.isNotEmpty()) {
+            val firstPin = pinCreator.createPin(
+                pinsCoordinates[0],
                 block,
                 type,
-                logicPins[i]
+                block.blockPin
             )
-            drawPin(pin)
+            drawBlockPin(firstPin)
+        }
+
+        for (i in logicPins.indices) {
+            if (i + 1 < pinsCoordinates.size) {
+                val pin = pinCreator.createPin(
+                    pinsCoordinates[i + 1],
+                    block,
+                    type,
+                    logicPins[i]
+                )
+                drawPin(pin)
+            }
+        }
+    }
+    else {
+        for (i in 0..pinsCoordinates.size - 1) {
+            var ownOffset = Offset(pinsCoordinates[i].x, pinsCoordinates[i].y)
+            var logicPin = logicPins[i]
+            var newPin = pinCreator.createPin(ownOffset, block, type, logicPin)
+            drawPin(newPin)
         }
     }
 }
