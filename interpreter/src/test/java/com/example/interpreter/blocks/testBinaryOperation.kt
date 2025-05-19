@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test
 class testBinaryOperation {
     @Test
     fun testAddBlock() {
-        val aIntBlock = BlockManager.createIntBlock(10)
-        val bIntBlock = BlockManager.createIntBlock(10)
+        val aIntBlock = BlockManager.createIntBlock(value=10)
+        val bIntBlock = BlockManager.createIntBlock(value=10)
 
         val addBlock = BlockManager.createAddBlock()
 
@@ -28,8 +28,8 @@ class testBinaryOperation {
 
     @Test
     fun testSubBlock() {
-        val aIntBlock = BlockManager.createIntBlock(10)
-        val bIntBlock = BlockManager.createIntBlock(10)
+        val aIntBlock = BlockManager.createIntBlock(value=10)
+        val bIntBlock = BlockManager.createIntBlock(value=10)
 
         val subBlock = BlockManager.createSubBlock()
 

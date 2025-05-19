@@ -7,7 +7,7 @@ import com.example.interpreter.models.PinType
 // По задумке этот пин связывает выполнение двух блоков
 // Ведь они необязательно должны быть связаны переменными,
 // Мы просто можем захотеть выполнить два блока последовательно.
-class PinBlockId (
+internal class PinBlockId (
     id: Id,
     ownId: Id,
     name: String,
