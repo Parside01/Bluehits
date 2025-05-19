@@ -34,6 +34,7 @@ import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.example.interpreter.models.ConnectionManager
 import com.example.interpreter.models.Program
 import kotlin.math.min
 
@@ -125,8 +126,7 @@ fun MainScreen() {
 
         StyledButton(
             text = "Run",
-            onClick = { Program.run()
-                      println("Я работаю не покладая рук")},
+            onClick = { Program.run() },
             modifier = Modifier.constrainAs(runButton) {
                 end.linkTo(debugButton.start, margin = baseDimension * 0.02f)
                 top.linkTo(parent.top, margin = baseDimension * 0.05f)

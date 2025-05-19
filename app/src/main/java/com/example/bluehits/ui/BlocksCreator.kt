@@ -4,6 +4,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import com.example.interpreter.models.BlockManager
+import com.example.interpreter.models.Program
 
 class BlocksManager {
     private val _uiBlocks = mutableStateListOf<BlueBlock>()
@@ -27,7 +28,7 @@ class BlocksManager {
     }
 
     fun createMainBlockInUI() {
-        val mainLogicBlock = BlockManager.createMainBlock()
+        val mainLogicBlock = Program.getMainBlock()
         val mainBlueBlock = BlueBlock(
             id = mainLogicBlock.id,
             initialX = 0f,
