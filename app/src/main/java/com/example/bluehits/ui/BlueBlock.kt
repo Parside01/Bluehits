@@ -72,13 +72,13 @@ class BlueBlock(
     var title: String = "Block",
     val inputPins: List<Pin> = emptyList(),
     val outputPins: List<Pin> = emptyList(),
-    val blockPin: Pin
+    val blockPin: Pin,
 ) {
     val leftPins: List<Offset>
         get() = calculateVerticalPins(inputPins.size + 1, layout.leftPinArea)
 
     val rightPins: List<Offset>
-        get() = calculateVerticalPins(outputPins.size, layout.rightPinArea)
+        get() = calculateVerticalPins(outputPins.size + 1, layout.rightPinArea)
 
     var x by mutableStateOf(initialX)
     var y by mutableStateOf(initialY)
@@ -152,7 +152,7 @@ fun DrawScope.drawPins(
     pinsCoordinates: List<Offset>,
     logicPins: List<Pin>,
     type: InOutPinType) {
-    if (type == InOutPinType.INPUT) {
+
         if (pinsCoordinates.isNotEmpty()) {
             val firstPin = pinCreator.createPin(
                 pinsCoordinates[0],
@@ -175,14 +175,6 @@ fun DrawScope.drawPins(
             }
         }
     }
-    else {
-        for (i in 0..pinsCoordinates.size - 1) {
-            var ownOffset = Offset(pinsCoordinates[i].x, pinsCoordinates[i].y)
-            var logicPin = logicPins[i]
-            var newPin = pinCreator.createPin(ownOffset, block, type, logicPin)
-            drawPin(newPin)
-        }
-    }
-}
+
 
 

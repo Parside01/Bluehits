@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.platform.LocalContext
+import com.example.interpreter.models.BlockManager
 
 @Composable
 fun createCanvas(blocks: List<BlueBlock>,

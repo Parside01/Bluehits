@@ -2,6 +2,7 @@ package com.example.bluehits.ui
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import com.example.interpreter.models.BlockManager
 
 class BlocksManager {
@@ -10,7 +11,6 @@ class BlocksManager {
 
     fun addNewBlock(type: String) {
         val logicBlock = when(type) {
-            "Main" -> BlockManager.createMainBlock()
             "Int" -> BlockManager.createIntBlock()
             "Add" -> BlockManager.createAddBlock()
             "Bool" -> BlockManager.createBoolBlock()
@@ -20,6 +20,27 @@ class BlocksManager {
             else -> throw IllegalArgumentException("Unsupported type")
         }
         _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock))
+    }
+
+    init {
+        createMainBlockInUI()
+    }
+
+    fun createMainBlockInUI() {
+        val mainLogicBlock = BlockManager.createMainBlock()
+        val mainBlueBlock = BlueBlock(
+            id = mainLogicBlock.id,
+            initialX = 0f,
+            initialY = 0f,
+            color = Color.Cyan,
+            width = 400f,
+            height = 240f,
+            title = mainLogicBlock.name ?: "Block",
+            inputPins = mainLogicBlock.inputs,
+            outputPins = mainLogicBlock.outputs,
+            blockPin = mainLogicBlock.blockPin,
+        )
+        _uiBlocks.add(mainBlueBlock)
     }
 
     fun moveBlock(block: BlueBlock, delta: Offset) {

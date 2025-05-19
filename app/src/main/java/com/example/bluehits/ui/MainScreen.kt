@@ -25,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester.Companion.createRefs
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -32,6 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.example.interpreter.models.Program
 import kotlin.math.min
 
 
@@ -122,7 +125,8 @@ fun MainScreen() {
 
         StyledButton(
             text = "Run",
-            onClick = {},
+            onClick = { Program.run()
+                      println("Я работаю не покладая рук")},
             modifier = Modifier.constrainAs(runButton) {
                 end.linkTo(debugButton.start, margin = baseDimension * 0.02f)
                 top.linkTo(parent.top, margin = baseDimension * 0.05f)
@@ -158,7 +162,6 @@ fun ControlPanel(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         val buttons = listOf(
-            "Main" to "Main",
             "Int" to "Int",
             "Add" to "Add",
             "Sub" to "Sub",
