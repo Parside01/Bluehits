@@ -13,8 +13,11 @@ class Connection internal constructor(
         if (from == to) throw IllegalArgumentException("Cannot connect the same pin.")
         if (from.id == to.id) throw IllegalArgumentException("Cannot connect pins with the same ID.")
         if ((from.type == PinType.BLOCK) xor (to.type == PinType.BLOCK)) throw IllegalArgumentException("Cannot connect pins of different types. (Blocks)")
-        if (to.type != PinType.ANY && from.type != to.type) throw IllegalArgumentException("Cannot connect pins of different types. (Other types)")
+
+//        TODO: Щас можно ставить Any -> Int что как бы такое себе, надо что-то придумывать
+        if (to.type != PinType.ANY && from.type != PinType.ANY && from.type != to.type) throw IllegalArgumentException("Cannot connect pins of different types. (Other types)")
         if (to.ownId == from.ownId) throw IllegalArgumentException("Cannot connect pins with the same ownId.")
+
         this.from = from
         this.to = to
     }

@@ -4,7 +4,7 @@ import com.example.interpreter.models.Id
 import com.example.interpreter.models.Pin
 import com.example.interpreter.models.PinType
 
-class PinBool internal constructor(
+internal class PinBool internal constructor(
     id: Id,
     ownId: Id,
     name: String,
