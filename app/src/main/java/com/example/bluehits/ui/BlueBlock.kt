@@ -162,7 +162,6 @@ fun DrawScope.drawPins(
         drawBlockPin(firstPin)
     }
 
-    // Рисуем остальные пины как обычно
     for (i in logicPins.indices) {
         if (i + 1 < pinsCoordinates.size) {
             val pin = pinCreator.createPin(
