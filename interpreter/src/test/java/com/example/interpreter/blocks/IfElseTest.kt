@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test
 class IfElseTest {
     @Test
     fun testIfTest() {
-        val boolBlock = BlockManager.createBoolBlock(false)
+        val boolBlock = BlockManager.createBoolBlock(value = false)
         val ifElseBlock = BlockManager.createIfElseBlock()
 
         val connection = Connection(boolBlock.outputs.single(), ifElseBlock.inputs.single())

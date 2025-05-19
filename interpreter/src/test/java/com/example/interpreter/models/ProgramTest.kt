@@ -9,8 +9,8 @@ import java.io.StringWriter
 class ProgramTest {
     @Test
     fun testSimpleAddProgram() {
-        val aIntBlock = BlockManager.createIntBlock(10)
-        val bIntBlock = BlockManager.createIntBlock(10)
+        val aIntBlock = BlockManager.createIntBlock(value =10)
+        val bIntBlock = BlockManager.createIntBlock(value =10)
         val addBlock = BlockManager.createAddBlock()
 
         ConnectionManager.connect(aIntBlock.outputs.single(), addBlock.inputs.first())
@@ -32,7 +32,7 @@ class ProgramTest {
         aPrintBlock.inputs.single().setValue("if")
         bPrintBlock.inputs.single().setValue("else")
 
-        val boolBlock = BlockManager.createBoolBlock(true)
+        val boolBlock = BlockManager.createBoolBlock(value =true)
         val ifElseBlock = BlockManager.createIfElseBlock()
 
         ConnectionManager.connect(boolBlock.outputs.first(), ifElseBlock.inputs.first())
