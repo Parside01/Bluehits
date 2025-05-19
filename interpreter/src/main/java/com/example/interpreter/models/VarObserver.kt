@@ -20,7 +20,6 @@ class VarState<T>(initValue: T) {
 
     fun setValue(newValue: T) {
         if (this.value == newValue) return
-        val oldValue = this.value
         this.value = newValue
         observers.forEach { it.onValueChanged(newValue) }
     }
