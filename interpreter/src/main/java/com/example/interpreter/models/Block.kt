@@ -6,8 +6,8 @@ abstract class Block internal constructor(
     val inputs: MutableList<Pin> = mutableListOf(),
     val outputs: MutableList<Pin> = mutableListOf()
 ) {
-    val blockPin: Pin = PinManager.createPinBlock("in-block", ownId = id)
-    val outBlockPin: Pin = PinManager.createPinBlock("out-block", ownId = id)
+    val blockPin: Pin = PinManager.createPinBlock("", ownId = id)
+    val outBlockPin: Pin = PinManager.createPinBlock("", ownId = id)
     abstract fun execute(): ExecutionState;
 
     // Чтобы не было строй привязки к индексам. Хз посмотрим + или -
