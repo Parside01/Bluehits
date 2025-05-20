@@ -3,7 +3,7 @@ package com.example.interpreter.blocks
 import com.example.interpreter.models.Block
 import com.example.interpreter.models.ExecutionState
 import com.example.interpreter.models.Id
-import com.example.interpreter.models.Pin
+import com.example.interpreter.models.TPin
 import com.example.interpreter.models.PinManager
 import com.example.interpreter.models.VarObserver
 import com.example.interpreter.models.VarState
@@ -24,8 +24,8 @@ class IntBlock internal constructor(
         this.varState = varState
     }
 
-    internal val setPin: Pin<Int> = inputs[0] as Pin<Int>
-    internal val getPin: Pin<Int> = outputs[0] as Pin<Int>
+    internal val setPin: TPin<Int> = inputs[0] as TPin<Int>
+    internal val getPin: TPin<Int> = outputs[0] as TPin<Int>
 
     override fun execute(): ExecutionState {
         if (!::varState.isInitialized) {
@@ -58,8 +58,8 @@ class BoolBlock internal constructor(
         this.varState = varState
     }
 
-    internal val setPin: Pin<Boolean> get() = inputs[0] as Pin<Boolean>
-    internal val getPin: Pin<Boolean> get() = outputs[0] as Pin<Boolean>
+    internal val setPin: TPin<Boolean> get() = inputs[0] as TPin<Boolean>
+    internal val getPin: TPin<Boolean> get() = outputs[0] as TPin<Boolean>
 
     override fun execute(): ExecutionState {
         if (!::varState.isInitialized) {

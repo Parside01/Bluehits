@@ -1,5 +1,7 @@
 package com.example.interpreter.models
 
+import kotlin.reflect.KClass
+
 
 // TODO: Может надо на жавовский KClass переписать.
 //abstract class Pin internal constructor(
@@ -29,8 +31,9 @@ package com.example.interpreter.models
 //    BLOCK
 //}
 
+typealias Pin = TPin<*>
 
-class Pin<T>(
+class TPin<T>(
     val id: Id,
     val ownId: Id,
     val name: String,
@@ -47,6 +50,11 @@ class Pin<T>(
     fun setValue(value: Any?) {
         @Suppress("UNCHECKED_CAST")
         this.value = value as T?
+    }
+
+    // Молимся чтобы ничего не крашнулось.
+    fun getType(): KClass<*> {
+        return (value ?: zeroValue)!!::class
     }
 
     fun isPinSet() = isSet
