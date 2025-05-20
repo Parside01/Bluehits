@@ -27,7 +27,9 @@ fun createCanvas(blocks: List<BlueBlock>,
                  textMeasurer: TextMeasurer,
                  onDrag: (dragAmount: Offset) -> Unit,
                  onBlockDrag: (block: BlueBlock,
-                               dragAmount: Offset) -> Unit) {
+                               dragAmount: Offset) -> Unit,
+                 onBlockClick: (BlueBlock) -> Unit)
+{
     var canvasOffset by remember { mutableStateOf(Offset.Zero) }
     var selectedBlock by remember { mutableStateOf<BlueBlock?>(null) }
     val context = LocalContext.current
@@ -60,10 +62,17 @@ fun createCanvas(blocks: List<BlueBlock>,
                 )
             }
             .pointerInput(Unit) {
-                detectTapGestures {  offset ->
+                detectTapGestures { offset ->
                     val adjustedOffset = offset - canvasOffset
                     UIPinManager.findPinAt(adjustedOffset)?.let { pin ->
                         connectionManager.handlePinClick(pin)
+                    } ?: run {
+                        blocks.firstOrNull { block ->
+                            adjustedOffset.x in block.x..(block.x + block.width) &&
+                                    adjustedOffset.y in block.y..(block.y + block.height)
+                        }?.let { clickedBlock ->
+                            onBlockClick(clickedBlock)
+                        }
                     }
                 }
             }

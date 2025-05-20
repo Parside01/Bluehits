@@ -27,7 +27,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester.Companion.createRefs
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -36,9 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.constraintlayout.widget.ConstraintLayout
-import com.example.interpreter.models.BlockManager
-import com.example.interpreter.models.ConnectionManager
+import com.example.bluehits.ui.blockEditPanel.BlockEditManager
+import com.example.bluehits.ui.blockEditPanel.BlockEditPanel
 import com.example.interpreter.models.Program
 import kotlin.math.min
 
@@ -59,6 +57,16 @@ fun MainScreen() {
     ) {
         val (canvas, panel, addButton, debugButton, runButton, trashButton) = createRefs()
 
+        BlockEditPanel(
+            blocksManager,
+            modifier = Modifier.constrainAs(createRef()) {
+                bottom.linkTo(parent.bottom, margin = 16.dp)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                width = Dimension.fillToConstraints
+            }
+        )
+
 
         Column(
             modifier = Modifier
@@ -78,6 +86,9 @@ fun MainScreen() {
                 onDrag = { },
                 onBlockDrag = { block, delta ->
                     blocksManager.moveBlock(block, delta)
+                },
+                onBlockClick = { block ->
+                    BlockEditManager.showEditPanel(block)
                 }
             )
         }

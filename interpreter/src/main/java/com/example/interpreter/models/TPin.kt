@@ -47,6 +47,19 @@ class TPin<T>(
         return value ?: zeroValue as Any
     }
 
+    fun getStringValue(): String {
+        val value = getValue()
+        val output = when (value) {
+            is String -> value
+            is Int -> value.toString()
+            is Double -> value.toString()
+            is Boolean -> value.toString()
+            is Array<*> -> "[${value.joinToString(", ")}]"
+            else -> "Unsupported type: ${value::class.simpleName}"
+        }
+        return output
+    }
+
     fun setValue(value: Any?) {
         @Suppress("UNCHECKED_CAST")
         this.value = value as T?
