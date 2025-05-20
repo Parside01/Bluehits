@@ -3,12 +3,12 @@ package com.example.interpreter.blocks
 import com.example.interpreter.models.Block
 import com.example.interpreter.models.ExecutionState
 import com.example.interpreter.models.Id
+import com.example.interpreter.models.Pin
 import com.example.interpreter.models.PinManager
 import com.example.interpreter.models.VarObserver
 import com.example.interpreter.models.VarState
-import com.example.interpreter.pins.PinBool
-import com.example.interpreter.pins.PinInt
 
+@Suppress("UNCHECKED_CAST")
 class IntBlock internal constructor(
     id: Id,
     default: Int = 0,
@@ -24,8 +24,8 @@ class IntBlock internal constructor(
         this.varState = varState
     }
 
-    internal val setPin: PinInt = inputs[0] as PinInt
-    internal val getPin: PinInt = outputs[0] as PinInt
+    internal val setPin: Pin<Int> = inputs[0] as Pin<Int>
+    internal val getPin: Pin<Int> = outputs[0] as Pin<Int>
 
     override fun execute(): ExecutionState {
         if (!::varState.isInitialized) {
@@ -41,7 +41,7 @@ class IntBlock internal constructor(
         setPin.setValue(newValue)
     }
 }
-
+@Suppress("UNCHECKED_CAST")
 class BoolBlock internal constructor(
     id: Id,
     default: Boolean = false,
@@ -58,8 +58,8 @@ class BoolBlock internal constructor(
         this.varState = varState
     }
 
-    internal val setPin: PinBool get() = inputs[0] as PinBool
-    internal val getPin: PinBool get() = outputs[0] as PinBool
+    internal val setPin: Pin<Boolean> get() = inputs[0] as Pin<Boolean>
+    internal val getPin: Pin<Boolean> get() = outputs[0] as Pin<Boolean>
 
     override fun execute(): ExecutionState {
         if (!::varState.isInitialized) {

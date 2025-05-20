@@ -4,13 +4,13 @@
 //import com.example.interpreter.models.Pin
 //import com.example.interpreter.models.PinType
 //
-//internal class PinBool internal constructor(
+//internal class ArrayPin internal constructor(
 //    id: Id,
 //    ownId: Id,
 //    name: String,
-//    private var value: Boolean = false
-//) : Pin(id, ownId, name, PinType.BOOL) {
-//    override var zeroValue: Any = false
+//    private var value: Any = mutableListOf<>()
+//) : Pin(id, ownId, name, PinType.ANY) {
+//    override var zeroValue: Any = "null"
 //
 //    init {
 //        isSet = value != zeroValue
@@ -22,14 +22,7 @@
 //    }
 //
 //    override fun setValue(value: Any) {
-//        when (value) {
-//            is Boolean -> {
-//                this.value = value
-//                this.isSet = true
-//            }
-//            else -> {
-//                throw IllegalArgumentException("Value must be Boolean")
-//            }
-//        }
+//        this.value = value
+//        this.isSet = true
 //    }
 //}

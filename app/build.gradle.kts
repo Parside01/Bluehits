@@ -72,6 +72,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling:1.7.0") // Для отладки Compose
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6") // Для работы с жизненным циклом
     implementation("androidx.compose.runtime:runtime:1.7.0") // Runtime для Compose
+    implementation("androidx.compose.material3:material3:1.2.1")
 
     implementation ("androidx.constraintlayout:constraintlayout-compose:1.0.1")
     implementation(libs.androidx.core.ktx)

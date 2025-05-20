@@ -21,8 +21,6 @@ object BlockAdapter {
             initialX = 0f,
             initialY = 0f,
             color = colorMapping[logicBlock.name] ?: Color.Gray,
-            width = 400f,
-            height = 240f,
             title = logicBlock.name ?: "Block",
             inputPins = logicBlock.inputs,
             outputPins = logicBlock.outputs,
