@@ -169,6 +169,7 @@ fun ControlPanel(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         val buttons = listOf(
+            "Array" to "Array",
             "Int" to "Int",
             "Add" to "Add",
             "Sub" to "Sub",

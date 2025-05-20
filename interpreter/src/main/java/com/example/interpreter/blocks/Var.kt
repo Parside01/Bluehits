@@ -49,8 +49,8 @@ class BoolBlock internal constructor(
 ) : Block(
     id,
     name,
-    mutableListOf(PinManager.createPinBool("set", default)),
-    mutableListOf(PinManager.createPinBool("get", default))
+    mutableListOf(PinManager.createPinBool("set", default, ownId = id)),
+    mutableListOf(PinManager.createPinBool("get", default, ownId = id))
 ), VarObserver<Boolean> {
     lateinit var varState: VarState<Boolean>
 
@@ -72,6 +72,42 @@ class BoolBlock internal constructor(
     }
 
     override fun onValueChanged(newValue: Boolean) {
+        getPin.setValue(newValue)
+        setPin.setValue(newValue)
+    }
+}
+
+@Suppress("UNCHECKED_CAST")
+class ArrayBlock internal constructor(
+    id: Id,
+    default: List<Any> = mutableListOf(),
+    name: String = "Array"
+) : Block(
+    id,
+    name,
+    mutableListOf(PinManager.createPinArray("set", default, ownId = id)),
+    mutableListOf(PinManager.createPinArray("get", default, ownId = id))
+), VarObserver<List<Any>> {
+    lateinit var varState: VarState<List<Any>>
+
+    internal fun setVarState(varState: VarState<List<Any>>) {
+        this.varState = varState
+    }
+
+    internal val setPin: TPin<List<Any>> get() = inputs[0] as TPin<List<Any>>
+    internal val getPin: TPin<List<Any>> get() = outputs[0] as TPin<List<Any>>
+
+    override fun execute(): ExecutionState {
+        if (!::varState.isInitialized) {
+            throw IllegalStateException("ArrayBlock '${name}' (ID: ${id.string()}) not initialized.")
+        }
+
+        val inputValue = setPin.getValue() as List<Any>
+        varState.setValue(inputValue)
+        return ExecutionState.COMPLETED
+    }
+
+    override fun onValueChanged(newValue: List<Any>) {
         getPin.setValue(newValue)
         setPin.setValue(newValue)
     }
