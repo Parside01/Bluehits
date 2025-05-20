@@ -30,9 +30,7 @@ object ButtonStyles {
     @Composable
     fun baseButtonStyle(): ButtonStyle {
         val config = LocalConfiguration.current
-        // Используем меньшую размерность
         val baseDimension = min(config.screenWidthDp, config.screenHeightDp).dp
-        // Ширина кнопки 20% от меньшей размерности
         val buttonWidth = (baseDimension * 0.2f).coerceIn(60.dp, 100.dp)
         val buttonHeight = buttonWidth * 0.5f
         val cornerRadius = buttonWidth * 0.05f
