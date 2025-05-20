@@ -1,6 +1,5 @@
 package com.example.interpreter.models
 
-import com.example.interpreter.models.Program.getBlockOutConnections
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.collections.set
 
@@ -77,12 +76,12 @@ class Context internal constructor(
         }
     }
 
-    fun getLinkOutBlocks(block: Block): Set<Id> {
+    private fun getLinkOutBlocks(block: Block): Set<Id> {
         val result = mutableSetOf<Id>()
         block.outputs.forEach { pin ->
             ConnectionManager.getPinConnections(pin).forEach { connection ->
-                val block = connection.getTo().ownId
-                result.add(block)
+                val connectedBlock = connection.getTo().ownId
+                result.add(connectedBlock)
             }
         }
         return result
@@ -140,6 +139,7 @@ class Context internal constructor(
         val executeSet: MutableSet<Id> = mutableSetOf()
 
         startOutConnections.forEach { conn ->
+            conn.execute()
             val nextId = conn.getTo().ownId
             if (executeSet.add(nextId)) {
                 BlockManager.getBlock(nextId)?.let { block -> executionQueue.add(block) }

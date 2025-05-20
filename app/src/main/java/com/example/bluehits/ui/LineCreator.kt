@@ -14,8 +14,8 @@ class LineCreator {
         val endPoint =
             Offset(pin2.parentBlock.x + pin2.ownOffset.x, pin2.parentBlock.y + pin2.ownOffset.y)
 
-        val controlPoint1 = lerp(startPoint, endPoint, 0.3f) + Offset(200f, 0f)
-        val controlPoint2 = lerp(startPoint, endPoint, 0.7f) - Offset(200f, 0f)
+        val controlPoint1 = lerp(startPoint, endPoint, 0.7f) - Offset(100f, 0f)
+        val controlPoint2 = lerp(startPoint, endPoint, 0.3f) + Offset(100f, 0f)
 
         val path = androidx.compose.ui.graphics.Path().apply {
             moveTo(startPoint.x, startPoint.y)

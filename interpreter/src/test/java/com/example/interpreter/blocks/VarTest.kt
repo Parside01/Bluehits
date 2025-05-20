@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test
 class VarTest {
     @Test
     fun testDefaultVarIntValue() {
-        val intBlock = BlockManager.createIntBlock(10)
+        val intBlock = BlockManager.createIntBlock(value = 10)
         intBlock.execute()
 
         val output = intBlock.outputs.single().getValue()
@@ -16,7 +16,7 @@ class VarTest {
 
     @Test
     fun testDefaultVarBoolValue() {
-        var boolBlock = BlockManager.createBoolBlock(true)
+        var boolBlock = BlockManager.createBoolBlock(value = true)
         boolBlock.execute()
         val output = boolBlock.outputs.single().getValue()
         assert(output == true)
@@ -25,7 +25,7 @@ class VarTest {
     @Test
     fun testRelatedIntVars() {
         val testValue = 10
-        val aIntBlock = BlockManager.createIntBlock(testValue)
+        val aIntBlock = BlockManager.createIntBlock(value = testValue)
         val bIntBlock = BlockManager.createIntBlock()
 
         val connection = Connection(aIntBlock.outputs.single(), bIntBlock.inputs.single())

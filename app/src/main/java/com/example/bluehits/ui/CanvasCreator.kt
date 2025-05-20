@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextMeasurer
 
 @Composable
@@ -30,6 +31,7 @@ fun CreateCanvas(
     var selectedBlock by remember { mutableStateOf<BlueBlock?>(null) }
     val connectionManager = remember { UIConnectionManager() }
     val lineCreator = remember { LineCreator() }
+    val density = LocalDensity.current
 
     Canvas(
         modifier = Modifier
@@ -74,7 +76,7 @@ fun CreateCanvas(
     ) {
         translate(left = canvasOffset.x, top = canvasOffset.y) {
             blocks.forEach { block ->
-                drawBlock(block, textMeasurer)
+                drawBlock(block, textMeasurer, density)
 
                 if (block == selectedBlock) {
                     drawRect(
