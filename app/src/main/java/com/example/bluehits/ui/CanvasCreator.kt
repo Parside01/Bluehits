@@ -19,13 +19,15 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextMeasurer
+import com.example.interpreter.models.Id
 
 @Composable
 fun CreateCanvas(
     blocks: List<BlueBlock>,
     textMeasurer: TextMeasurer,
     onDrag: (dragAmount: Offset) -> Unit,
-    onBlockDrag: (block: BlueBlock, dragAmount: Offset, isDragging: Boolean) -> Unit
+    onBlockDrag: (block: BlueBlock, dragAmount: Offset, isDragging: Boolean) -> Unit,
+    onBlockClick: (blockId: Id) -> Unit
 ) {
     var canvasOffset by remember { mutableStateOf(Offset.Zero) }
     var selectedBlock by remember { mutableStateOf<BlueBlock?>(null) }
@@ -68,8 +70,16 @@ fun CreateCanvas(
             .pointerInput(Unit) {
                 detectTapGestures { offset ->
                     val adjustedOffset = offset - canvasOffset
-                    UIPinManager.findPinAt(adjustedOffset)?.let { pin ->
-                        connectionManager.handlePinClick(pin)
+                    val clickedBlock = blocks.firstOrNull { block ->
+                        adjustedOffset.x in block.x..(block.x + block.width) &&
+                                adjustedOffset.y in block.y..(block.y + block.height)
+                    }
+                    if (clickedBlock != null) {
+                        onBlockClick(clickedBlock.id)
+                    } else {
+                        UIPinManager.findPinAt(adjustedOffset)?.let { pin ->
+                            connectionManager.handlePinClick(pin)
+                        }
                     }
                 }
             }

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,9 +31,13 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.ui.layout.positionInRoot
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import com.example.interpreter.models.Id
 import kotlin.math.min
 
 @Composable
@@ -44,6 +49,8 @@ fun MainScreen() {
     var trashBounds by remember { mutableStateOf<Rect?>(null) }
     var isBlockOverTrash by remember { mutableStateOf(false) }
     var canvasOffset by remember { mutableStateOf(Offset.Zero) }
+    var selectedBlockId by remember { mutableStateOf<Id?>(null) }
+    var showSettingsDialog by remember { mutableStateOf(false) }
     val config = LocalConfiguration.current
     val baseDimension = min(config.screenWidthDp, config.screenHeightDp).dp
     val density = LocalDensity.current
@@ -59,14 +66,14 @@ fun MainScreen() {
         Column(
             modifier = Modifier
                 .constrainAs(canvas) {
-                    start.linkTo(if (isPanelVisible) panel.end else parent.start)
+                    start.linkTo(parent.start)
                     end.linkTo(parent.end)
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
                     width = Dimension.fillToConstraints
                     height = Dimension.fillToConstraints
                 }
-                .zIndex(0f)
+                .zIndex(if (showSettingsDialog) 0f else 0f)
         ) {
             CreateCanvas(
                 blocks = blocksManager.uiBlocks,
@@ -95,8 +102,28 @@ fun MainScreen() {
                         draggedBlock = null
                         isBlockOverTrash = false
                     }
+                },
+                onBlockClick = { blockId ->
+                    selectedBlockId = blockId
+                    showSettingsDialog = true
                 }
             )
+        }
+
+            if (showSettingsDialog && selectedBlockId != null) {
+            val selectedBlock = blocksManager.uiBlocks.find { it.id == selectedBlockId }
+            selectedBlock?.let { block ->
+                if (block.title == "For") {
+                    ForBlockSettingsDialog(
+                        block = block,
+                        onDismiss = { showSettingsDialog = false },
+                        onSave = { first, last, step ->
+
+                            showSettingsDialog = false
+                        }
+                    )
+                }
+            }
         }
 
         AnimatedVisibility(
@@ -220,7 +247,8 @@ fun ControlPanel(
             "Sub" to "Sub",
             "Print" to "Print",
             "Bool" to "Bool",
-            "IfElse" to "IfElse"
+            "IfElse" to "IfElse",
+            "For" to "For"
         )
 
         buttons.forEach { (blockType, label) ->
