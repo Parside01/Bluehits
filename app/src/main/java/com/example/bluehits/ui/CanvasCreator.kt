@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import com.example.interpreter.models.BlockManager
 
 @Composable
@@ -32,6 +33,7 @@ fun createCanvas(blocks: List<BlueBlock>,
     val context = LocalContext.current
     val connectionManager = remember { UIConnectionManager() }
     val lineCreator = remember { LineCreator() }
+    val density = LocalDensity.current
 
     Canvas(
         modifier = Modifier
@@ -68,7 +70,7 @@ fun createCanvas(blocks: List<BlueBlock>,
     ) {
         translate(left = canvasOffset.x, top = canvasOffset.y) {
             blocks.forEach { block ->
-                drawBlock(block, textMeasurer)
+                drawBlock(block, textMeasurer, density)
 
                 if (block == selectedBlock) {
                     drawRect(
