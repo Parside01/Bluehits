@@ -99,7 +99,7 @@ class ArrayBlock internal constructor(
 
     override fun execute(): ExecutionState {
         if (!::varState.isInitialized) {
-            throw IllegalStateException("BoolBlock '${name}' (ID: ${id.string()}) not initialized.")
+            throw IllegalStateException("ArrayBlock '${name}' (ID: ${id.string()}) not initialized.")
         }
 
         val inputValue = setPin.getValue() as List<Any>
