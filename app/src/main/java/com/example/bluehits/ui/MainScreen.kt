@@ -1,5 +1,7 @@
 package com.example.bluehits.ui
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -25,19 +27,25 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester.Companion.createRefs
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.example.interpreter.models.BlockManager
+import com.example.interpreter.models.ConnectionManager
 import com.example.interpreter.models.Program
 import kotlin.math.min
 
 
 @Composable
 fun MainScreen() {
+    val context = LocalContext.current
     val textMeasurer = rememberTextMeasurer()
     val blocksManager = remember { BlocksManager() }
     var isPanelVisible by remember { mutableStateOf(false) }
@@ -123,7 +131,9 @@ fun MainScreen() {
 
         StyledButton(
             text = "Run",
-            onClick = { Program.run() },
+            onClick = { Program.run()
+                val printValue = blocksManager.getPrintBlockValue(blocksManager.uiBlocks)
+                showToast(context, "Вывод: ${printValue ?: "не определено"}")},
             modifier = Modifier.constrainAs(runButton) {
                 end.linkTo(debugButton.start, margin = baseDimension * 0.02f)
                 top.linkTo(parent.top, margin = baseDimension * 0.05f)
@@ -159,13 +169,14 @@ fun ControlPanel(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         val buttons = listOf(
-            "Main" to "Main",
+            "Array" to "Array",
             "Int" to "Int",
             "Add" to "Add",
             "Sub" to "Sub",
             "Print" to "Print",
             "Bool" to "Bool",
-            "IfElse" to "IfElse"
+            "IfElse" to "IfElse",
+            "For" to "For"
         )
 
         buttons.forEach { (blockType, label) ->
@@ -176,4 +187,8 @@ fun ControlPanel(
             )
         }
     }
+}
+
+fun showToast(context: Context, message: String) {
+    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
 }

@@ -1,5 +1,6 @@
 package com.example.interpreter.models
 
+import com.example.interpreter.blocks.ArrayBlock
 import com.example.interpreter.blocks.BinaryOperatorBlock
 import com.example.interpreter.blocks.BoolBlock
 import com.example.interpreter.blocks.ForBlock
@@ -37,15 +38,13 @@ object BlockManager {
     }
 
     fun createIfElseBlock(): Block {
-        return createBlock {
-            id ->
+        return createBlock { id ->
             IfElseBlock(id)
         }
     }
 
     fun createForBlock(): Block {
-        return createBlock {
-            id ->
+        return createBlock { id ->
             ForBlock(id)
         }
     }
@@ -97,6 +96,19 @@ object BlockManager {
 
         blockState.addObserver(block)
         block.setPin.setValue(blockState.getValue() as Any)
+
+        return block
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun createArrayBlock(varName: String = "Array", value: List<Any> = emptyList()): Block {
+        val block = createBlock { id -> ArrayBlock(id, value, varName) }
+
+        val blockState = VariableManager.getOrCreateVarState(varName, value, List::class)
+        block.setVarState(blockState as VarState<List<Any>>)
+
+        blockState.addObserver(block)
+        block.setPin.setValue(blockState.getValue())
 
         return block
     }
