@@ -1,10 +1,12 @@
 package com.example.interpreter.models
 
+import com.example.interpreter.blocks.AppendBlock
 import com.example.interpreter.blocks.ArrayBlock
 import com.example.interpreter.blocks.BinaryOperatorBlock
 import com.example.interpreter.blocks.BoolBlock
 import com.example.interpreter.blocks.ForBlock
 import com.example.interpreter.blocks.IfElseBlock
+import com.example.interpreter.blocks.IndexBlock
 import com.example.interpreter.blocks.IntBlock
 import com.example.interpreter.blocks.MainBlock
 import com.example.interpreter.blocks.PrintBlock
@@ -113,7 +115,15 @@ object BlockManager {
         return block
     }
 
+    fun createAppendBlock() : Block {
+        return createBlock { id -> AppendBlock(id) }
+    }
+
     fun createPrintBlock(writer: Writer = OutputStreamWriter(System.out)): Block {
         return createBlock { id -> PrintBlock(id, writer) }
+    }
+
+    fun createIndexBlock() :Block {
+        return createBlock { id -> IndexBlock(id) }
     }
 }

@@ -55,7 +55,7 @@ class TPin<T>(
             is Int -> value.toString()
             is Double -> value.toString()
             is Boolean -> value.toString()
-            is Array<*> -> "[${value.joinToString(", ")}]"
+            is List<*> -> "[${value.joinToString(", ")}]"
             else -> "Unsupported type: ${value::class.simpleName}"
         }
         return output
