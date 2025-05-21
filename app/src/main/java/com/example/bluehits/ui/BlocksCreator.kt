@@ -23,6 +23,7 @@ class BlocksManager {
 
     fun addNewBlock(type: String) {
         val logicBlock = when (type) {
+            "Array" -> BlockManager.createArrayBlock()
             "For" -> BlockManager.createForBlock()
             "Int" -> BlockManager.createIntBlock()
             "Add" -> BlockManager.createAddBlock()

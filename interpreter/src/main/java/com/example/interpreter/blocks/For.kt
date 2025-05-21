@@ -29,6 +29,7 @@ class ForBlock(
         // Вроде как можем утверждать что оно точно не null.
         if (currentIndex!! < last) {
             currentIndex = (currentIndex ?: first) + step
+            pinByName("index")?.setValue(currentIndex)
             return ExecutionState.RUNNING
         }
 

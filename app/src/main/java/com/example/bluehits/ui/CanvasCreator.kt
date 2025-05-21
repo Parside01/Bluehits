@@ -70,15 +70,14 @@ fun CreateCanvas(
             .pointerInput(Unit) {
                 detectTapGestures { offset ->
                     val adjustedOffset = offset - canvasOffset
-                    val clickedBlock = blocks.firstOrNull { block ->
-                        adjustedOffset.x in block.x..(block.x + block.width) &&
-                                adjustedOffset.y in block.y..(block.y + block.height)
-                    }
-                    if (clickedBlock != null) {
-                        onBlockClick(clickedBlock.id)
-                    } else {
-                        UIPinManager.findPinAt(adjustedOffset)?.let { pin ->
-                            connectionManager.handlePinClick(pin)
+                    UIPinManager.findPinAt(adjustedOffset)?.let { pin ->
+                        connectionManager.handlePinClick(pin)
+                    } ?: run {
+                        blocks.firstOrNull { block ->
+                            adjustedOffset.x in block.x..(block.x + block.width) &&
+                                    adjustedOffset.y in block.y..(block.y + block.height)
+                        }?.let { clickedBlock ->
+                            onBlockClick(clickedBlock.id) // Передаем Id
                         }
                     }
                 }

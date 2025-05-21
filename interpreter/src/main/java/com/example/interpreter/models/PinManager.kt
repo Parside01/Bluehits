@@ -32,7 +32,7 @@ object PinManager {
     }
 
     fun createPinAny(name: String, value: Any = Any(), ownId: Id = Id("null")): TPin<Any> {
-        return createPin { id -> TPin(id, ownId, name, "null", value) }
+        return createPin { id -> TPin(id, ownId, name, Any(), value) }
     }
 
     fun createPinArray(name: String, value: List<Any> = emptyList(), ownId: Id = Id("null")): TPin<List<Any>> {

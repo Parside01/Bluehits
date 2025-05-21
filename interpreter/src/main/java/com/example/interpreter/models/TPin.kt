@@ -41,10 +41,24 @@ class TPin<T>(
     initValue: T? = null
 ) {
     private var value: T? = initValue
+    private var type: KClass<*> = zeroValue!!::class
     var isSet: Boolean = initValue != null
 
     fun getValue(): Any {
         return value ?: zeroValue as Any
+    }
+
+    fun getStringValue(): String {
+        val value = getValue()
+        val output = when (value) {
+            is String -> value
+            is Int -> value.toString()
+            is Double -> value.toString()
+            is Boolean -> value.toString()
+            is Array<*> -> "[${value.joinToString(", ")}]"
+            else -> "Unsupported type: ${value::class.simpleName}"
+        }
+        return output
     }
 
     fun setValue(value: Any?) {
@@ -54,7 +68,7 @@ class TPin<T>(
 
     // Молимся чтобы ничего не крашнулось.
     fun getType(): KClass<*> {
-        return (value ?: zeroValue)!!::class
+        return type
     }
 
     fun isPinSet() = isSet
