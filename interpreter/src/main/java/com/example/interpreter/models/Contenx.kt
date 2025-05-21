@@ -47,6 +47,12 @@ class Context internal constructor(
         }
     }
 
+    fun rollback() {
+        blockIds.forEach { id ->
+            BlockManager.getBlock(id)?.rollback()
+        }
+    }
+
     private fun travelContextBlocks(currBlock: Id) {
         if (blockIds.contains(currBlock)) {
             return
@@ -99,15 +105,20 @@ class Context internal constructor(
     }
 
     fun getBlockOutConnections(block: Block): List<Connection> {
-        return block.outputs.flatMap { pin -> ConnectionManager.getPinConnections(pin) }
+        return block.outputs
+            .filter { !it.isDisabled() }
+            .flatMap { pin -> ConnectionManager.getPinConnections(pin) }
     }
 
     fun getBlockInConnections(block: Block): List<Connection> {
         val connections = mutableListOf<Connection>()
-        connections.addAll(block.inputs.flatMap { pin ->
-            ConnectionManager.getPinConnections(pin)
-        })
-        connections.addAll(ConnectionManager.getPinConnections(block.blockPin))
+        connections.addAll(block.inputs
+            .filter { !it.isDisabled() }
+            .flatMap { pin -> ConnectionManager.getPinConnections(pin) })
+
+        if (!block.blockPin.isDisabled()) {
+            connections.addAll(ConnectionManager.getPinConnections(block.blockPin))
+        }
         return connections
     }
 
@@ -180,6 +191,7 @@ class Context internal constructor(
             }
         }
 
+        rollback() // Уф
         return isCompleted
     }
 

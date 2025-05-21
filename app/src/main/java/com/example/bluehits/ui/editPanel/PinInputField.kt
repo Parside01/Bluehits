@@ -1,4 +1,4 @@
-package com.example.bluehits.ui.blockEditPanel
+package com.example.bluehits.ui.editPanel
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth

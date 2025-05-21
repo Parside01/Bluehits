@@ -14,6 +14,8 @@ abstract class Block internal constructor(
     fun pinByName(name: String): Pin? {
         return inputs.find { it.name == name } ?: outputs.find { it.name == name }
     }
+
+    open fun rollback() {}
 }
 
 abstract class ScopeBlock internal constructor(

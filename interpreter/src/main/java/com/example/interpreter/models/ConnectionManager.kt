@@ -13,7 +13,10 @@ object ConnectionManager {
 
     // TODO: Надо как-то оптимизированее это делать, явно.
     fun getPinConnections(pin: Pin): List<Connection> {
-        return connectionRegistry.values.filter { it.getFrom().id == pin.id || it.getTo().id == pin.id }
+        return connectionRegistry.values.filter {
+            (!it.getFrom().isDisabled() && !it.getTo().isDisabled())
+                    && ((it.getFrom().id == pin.id) || (it.getTo().id == pin.id))
+        }
     }
 
     fun getConnection(id: String) = connectionRegistry[id]
