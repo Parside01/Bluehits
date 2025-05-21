@@ -4,6 +4,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -15,7 +16,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextMeasurer
@@ -30,6 +31,7 @@ fun CreateCanvas(
     onBlockClick: (blockId: Id) -> Unit
 ) {
     var canvasOffset by remember { mutableStateOf(Offset.Zero) }
+    var scale by remember { mutableStateOf(1f) }
     var selectedBlock by remember { mutableStateOf<BlueBlock?>(null) }
     val connectionManager = remember { UIConnectionManager() }
     val lineCreator = remember { LineCreator() }
@@ -40,9 +42,16 @@ fun CreateCanvas(
             .fillMaxSize()
             .background(Color(0xFF212121))
             .pointerInput(Unit) {
+                detectTransformGestures { _, pan, zoom, _ ->
+                    scale = (scale * zoom).coerceIn(0.5f, 3f)
+                    canvasOffset += pan
+                }
+            }
+
+            .pointerInput(Unit) {
                 detectDragGestures(
                     onDragStart = { offset ->
-                        val adjusted = offset - canvasOffset
+                        val adjusted = (offset - canvasOffset) / scale
                         selectedBlock = blocks.firstOrNull { block ->
                             adjusted.x in block.x..(block.x + block.width) &&
                                     adjusted.y in block.y..(block.y + block.height)
@@ -53,7 +62,7 @@ fun CreateCanvas(
                     },
                     onDrag = { _, dragAmount ->
                         selectedBlock?.let {
-                            onBlockDrag(it, dragAmount, true)
+                            onBlockDrag(it, dragAmount / scale, true)
                         } ?: run {
                             canvasOffset += dragAmount
                             onDrag(dragAmount)
@@ -69,7 +78,7 @@ fun CreateCanvas(
             }
             .pointerInput(Unit) {
                 detectTapGestures { offset ->
-                    val adjustedOffset = offset - canvasOffset
+                    val adjustedOffset = (offset - canvasOffset) / scale
                     UIPinManager.findPinAt(adjustedOffset)?.let { pin ->
                         connectionManager.handlePinClick(pin)
                     } ?: run {
@@ -77,13 +86,16 @@ fun CreateCanvas(
                             adjustedOffset.x in block.x..(block.x + block.width) &&
                                     adjustedOffset.y in block.y..(block.y + block.height)
                         }?.let { clickedBlock ->
-                            onBlockClick(clickedBlock.id) // Передаем Id
+                            onBlockClick(clickedBlock.id)
                         }
                     }
                 }
             }
     ) {
-        translate(left = canvasOffset.x, top = canvasOffset.y) {
+        withTransform({
+            translate(canvasOffset.x, canvasOffset.y)
+            scale(scaleX = scale, scaleY = scale)
+        }) {
             blocks.forEach { block ->
                 drawBlock(block, textMeasurer, density)
 
@@ -92,7 +104,7 @@ fun CreateCanvas(
                         color = Color.White,
                         topLeft = Offset(block.x - 4, block.y - 4),
                         size = Size(block.width + 8, block.height + 8),
-                        style = Stroke(width = 4f)
+                        style = Stroke(width = 4f / scale)
                     )
                 }
             }
@@ -102,3 +114,4 @@ fun CreateCanvas(
         }
     }
 }
+

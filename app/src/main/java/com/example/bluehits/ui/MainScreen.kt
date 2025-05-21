@@ -121,10 +121,11 @@ fun MainScreen() {
             blocksManager = blocksManager,
             modifier = Modifier
                 .constrainAs(editPanel) {
-                    bottom.linkTo(parent.bottom, margin = 16.dp)
+                    bottom.linkTo(parent.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                    width = Dimension.fillToConstraints
+                    width = Dimension.preferredWrapContent
+                    height = Dimension.wrapContent
                 }
                 .zIndex(1f)
         )
