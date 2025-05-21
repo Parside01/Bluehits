@@ -14,7 +14,7 @@ object UIPinManager {
                 pin.parentBlock.x + pin.ownOffset.x,
                 pin.parentBlock.y + pin.ownOffset.y
             )
-            position.minus(center).getDistance() <= PIN_RADIUS
+            position.minus(center).getDistance() <= PIN_RADIUS * 2
         }
     }
     fun clear() = pins.clear()
