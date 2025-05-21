@@ -16,31 +16,32 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun PinInputField(
     filedPin: PinEditField,
-    onValueChange: (Any) -> Unit
+    onValueChange: (Any) -> Unit,
+    value: Any,
 ) {
     when {
         filedPin.pin.getType() == Int::class -> {
             NumberInputField(
-                value = filedPin.pin.getValue(),
+                value = value,
                 onValueChange = onValueChange,
                 isInt = true
             )
         }
         filedPin.pin.getType() == Boolean::class -> {
             BooleanInputField(
-                value = filedPin.pin.getValue(),
+                value = value,
                 onValueChange = onValueChange
             )
         }
         filedPin.pin.getType() == String::class -> {
             TextInputField(
-                value = filedPin.pin.getValue(),
+                value = value,
                 onValueChange = onValueChange
             )
         }
         else -> {
             TextInputField(
-                value = filedPin.pin.getStringValue(),
+                value = value,
                 onValueChange = onValueChange,
                 placeholder = "Enter ${filedPin.pin.getType().simpleName} value"
             )

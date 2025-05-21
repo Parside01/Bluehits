@@ -34,8 +34,15 @@ import com.example.interpreter.models.Pin
 @Immutable
 data class PinEditField(
     val pin: Pin,
+    val value: Any,
     val isInput: Boolean,
-)
+) {
+    fun withNewValue(newValue: Any): PinEditField {
+        return this.copy(
+            value = newValue,
+        )
+    }
+}
 
 data class BlockEditState(
     val blockId: Id,

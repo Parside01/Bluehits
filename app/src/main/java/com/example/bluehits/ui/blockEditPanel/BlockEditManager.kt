@@ -24,6 +24,7 @@ object BlockEditManager {
                 PinEditField(
                     pin = pin,
                     isInput = true,
+                    value = pin.getStringValue()
                 )
             })
         }
@@ -37,9 +38,15 @@ object BlockEditManager {
 
     fun updatePinValue(pin: Pin, newValue: Any) {
         pin.setValue(newValue)
-        println("${ pin.name }, ${ newValue }")
-        println(pin.getValue())
-        editState = editState?.copy()
+        editState = editState?.copy(
+            pinFields = editState!!.pinFields.map { field ->
+                if (field.pin == pin) {
+                    field.withNewValue(newValue)
+                } else {
+                    field
+                }
+            }
+        )
     }
 
     fun hideEditPanel() {

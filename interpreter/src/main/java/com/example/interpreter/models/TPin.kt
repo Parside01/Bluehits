@@ -41,6 +41,7 @@ class TPin<T>(
     initValue: T? = null
 ) {
     private var value: T? = initValue
+    private var type: KClass<*> = zeroValue!!::class
     var isSet: Boolean = initValue != null
 
     fun getValue(): Any {
@@ -67,7 +68,7 @@ class TPin<T>(
 
     // Молимся чтобы ничего не крашнулось.
     fun getType(): KClass<*> {
-        return (value ?: zeroValue)!!::class
+        return type
     }
 
     fun isPinSet() = isSet
