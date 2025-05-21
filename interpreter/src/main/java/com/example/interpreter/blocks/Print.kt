@@ -17,8 +17,7 @@ class PrintBlock internal constructor(
 ) {
     override fun execute(): ExecutionState {
         inputs.forEach { input ->
-            writer.write(input.getValue().toString())
-            writer.write("\n")
+            writer.write("${input.getStringValue()}\n")
             writer.flush()
         }
         return ExecutionState.COMPLETED

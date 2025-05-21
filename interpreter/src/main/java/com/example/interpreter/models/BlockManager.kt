@@ -1,9 +1,12 @@
 package com.example.interpreter.models
 
+import com.example.interpreter.blocks.AppendBlock
+import com.example.interpreter.blocks.ArrayBlock
 import com.example.interpreter.blocks.BinaryOperatorBlock
 import com.example.interpreter.blocks.BoolBlock
 import com.example.interpreter.blocks.ForBlock
 import com.example.interpreter.blocks.IfElseBlock
+import com.example.interpreter.blocks.IndexBlock
 import com.example.interpreter.blocks.IntBlock
 import com.example.interpreter.blocks.MainBlock
 import com.example.interpreter.blocks.PrintBlock
@@ -30,22 +33,20 @@ object BlockManager {
         return block
     }
 
-    fun createMainBlock(): MainBlock {
+    internal fun createMainBlock(): MainBlock {
         val main = MainBlock()
         blockRegistry[main.id.string()] = main
         return main
     }
 
     fun createIfElseBlock(): Block {
-        return createBlock {
-            id ->
+        return createBlock { id ->
             IfElseBlock(id)
         }
     }
 
     fun createForBlock(): Block {
-        return createBlock {
-            id ->
+        return createBlock { id ->
             ForBlock(id)
         }
     }
@@ -101,7 +102,28 @@ object BlockManager {
         return block
     }
 
+    @Suppress("UNCHECKED_CAST")
+    fun createArrayBlock(varName: String = "Array", value: List<Any> = emptyList()): Block {
+        val block = createBlock { id -> ArrayBlock(id, value, varName) }
+
+        val blockState = VariableManager.getOrCreateVarState(varName, value, List::class)
+        block.setVarState(blockState as VarState<List<Any>>)
+
+        blockState.addObserver(block)
+        block.setPin.setValue(blockState.getValue())
+
+        return block
+    }
+
+    fun createAppendBlock() : Block {
+        return createBlock { id -> AppendBlock(id) }
+    }
+
     fun createPrintBlock(writer: Writer = OutputStreamWriter(System.out)): Block {
         return createBlock { id -> PrintBlock(id, writer) }
+    }
+
+    fun createIndexBlock() :Block {
+        return createBlock { id -> IndexBlock(id) }
     }
 }

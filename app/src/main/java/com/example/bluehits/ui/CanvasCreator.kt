@@ -19,18 +19,23 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import com.example.interpreter.models.BlockManager
 
 @Composable
 fun createCanvas(blocks: List<BlueBlock>,
                  textMeasurer: TextMeasurer,
                  onDrag: (dragAmount: Offset) -> Unit,
                  onBlockDrag: (block: BlueBlock,
-                               dragAmount: Offset) -> Unit) {
+                               dragAmount: Offset) -> Unit,
+                 onBlockClick: (BlueBlock) -> Unit)
+{
     var canvasOffset by remember { mutableStateOf(Offset.Zero) }
     var selectedBlock by remember { mutableStateOf<BlueBlock?>(null) }
     val context = LocalContext.current
     val connectionManager = remember { UIConnectionManager() }
     val lineCreator = remember { LineCreator() }
+    val density = LocalDensity.current
 
     Canvas(
         modifier = Modifier
@@ -57,17 +62,24 @@ fun createCanvas(blocks: List<BlueBlock>,
                 )
             }
             .pointerInput(Unit) {
-                detectTapGestures {  offset ->
+                detectTapGestures { offset ->
                     val adjustedOffset = offset - canvasOffset
                     UIPinManager.findPinAt(adjustedOffset)?.let { pin ->
                         connectionManager.handlePinClick(pin)
+                    } ?: run {
+                        blocks.firstOrNull { block ->
+                            adjustedOffset.x in block.x..(block.x + block.width) &&
+                                    adjustedOffset.y in block.y..(block.y + block.height)
+                        }?.let { clickedBlock ->
+                            onBlockClick(clickedBlock)
+                        }
                     }
                 }
             }
     ) {
         translate(left = canvasOffset.x, top = canvasOffset.y) {
             blocks.forEach { block ->
-                drawBlock(block, textMeasurer)
+                drawBlock(block, textMeasurer, density)
 
                 if (block == selectedBlock) {
                     drawRect(

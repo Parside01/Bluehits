@@ -1,5 +1,7 @@
 package com.example.bluehits.ui
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -27,16 +29,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import com.example.bluehits.ui.blockEditPanel.BlockEditManager
+import com.example.bluehits.ui.blockEditPanel.BlockEditPanel
+import com.example.interpreter.models.Program
 import kotlin.math.min
 
 
 @Composable
 fun MainScreen() {
+    val context = LocalContext.current
     val textMeasurer = rememberTextMeasurer()
     val blocksManager = remember { BlocksManager() }
     var isPanelVisible by remember { mutableStateOf(false) }
@@ -49,6 +56,16 @@ fun MainScreen() {
             .systemBarsPadding()
     ) {
         val (canvas, panel, addButton, debugButton, runButton, trashButton) = createRefs()
+
+        BlockEditPanel(
+            blocksManager,
+            modifier = Modifier.constrainAs(createRef()) {
+                bottom.linkTo(parent.bottom, margin = 16.dp)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                width = Dimension.fillToConstraints
+            }
+        )
 
 
         Column(
@@ -69,6 +86,9 @@ fun MainScreen() {
                 onDrag = { },
                 onBlockDrag = { block, delta ->
                     blocksManager.moveBlock(block, delta)
+                },
+                onBlockClick = { block ->
+                    BlockEditManager.showEditPanel(block)
                 }
             )
         }
@@ -122,7 +142,9 @@ fun MainScreen() {
 
         StyledButton(
             text = "Run",
-            onClick = {},
+            onClick = { Program.run()
+                val printValue = blocksManager.getPrintBlockValue(blocksManager.uiBlocks)
+                showToast(context, "Вывод: ${printValue ?: "не определено"}")},
             modifier = Modifier.constrainAs(runButton) {
                 end.linkTo(debugButton.start, margin = baseDimension * 0.02f)
                 top.linkTo(parent.top, margin = baseDimension * 0.05f)
@@ -158,13 +180,16 @@ fun ControlPanel(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         val buttons = listOf(
-            "Main" to "Main",
+            "Index" to "Index",
+            "Append" to "Append",
+            "Array" to "Array",
             "Int" to "Int",
             "Add" to "Add",
             "Sub" to "Sub",
             "Print" to "Print",
             "Bool" to "Bool",
-            "IfElse" to "IfElse"
+            "IfElse" to "IfElse",
+            "For" to "For"
         )
 
         buttons.forEach { (blockType, label) ->
@@ -175,4 +200,8 @@ fun ControlPanel(
             )
         }
     }
+}
+
+fun showToast(context: Context, message: String) {
+    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
 }

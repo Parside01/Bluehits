@@ -76,7 +76,7 @@ object pinCreator {
         val halfSize = size / 2
 
         drawRect(
-            color = Color.Green,
+            color = Color.White,
             topLeft = Offset(
                 pin.ownOffset.x + pin.parentBlock.x - halfSize,
                 pin.ownOffset.y + pin.parentBlock.y - halfSize

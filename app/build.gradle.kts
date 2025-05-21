@@ -1,26 +1,3 @@
-android {
-    compileSdk = 34 // Целевая версия SDK
-    defaultConfig {
-        applicationId = "com.example.figmatocompose"
-        minSdk = 24 // Минимальная версия SDK
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
-    }
-    buildFeatures {
-        compose = true // Включение поддержки Compose
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14" // Версия компилятора Compose
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-}
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -29,12 +6,12 @@ plugins {
 
 android {
     namespace = "com.example.bluehits"
-    compileSdk = 35
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.bluehits"
-        minSdk = 31
-        targetSdk = 35
+        minSdk = 26
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -53,13 +30,26 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.14"
+    }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+
     kotlinOptions {
         jvmTarget = "11"
     }
     buildFeatures {
         compose = true
     }
+
+    task("testClasses")
 }
 
 dependencies {
@@ -72,6 +62,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling:1.7.0") // Для отладки Compose
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6") // Для работы с жизненным циклом
     implementation("androidx.compose.runtime:runtime:1.7.0") // Runtime для Compose
+    implementation("androidx.compose.material3:material3:1.2.1")
 
     implementation ("androidx.constraintlayout:constraintlayout-compose:1.0.1")
     implementation(libs.androidx.core.ktx)
@@ -91,4 +82,5 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }
