@@ -43,7 +43,7 @@ class Context internal constructor(
     fun prebuild() {
         val ids = getLinkOutBlocks(ownBlock)
         ids.forEach { id ->
-            travelContextBlocks(id)
+            findContextBlocks(id)
         }
     }
 
@@ -53,7 +53,7 @@ class Context internal constructor(
         }
     }
 
-    private fun travelContextBlocks(currBlock: Id) {
+    private fun findContextBlocks(currBlock: Id) {
         if (blockIds.contains(currBlock)) {
             return
         }
@@ -76,7 +76,7 @@ class Context internal constructor(
         allConnectedIds.forEach { id ->
             BlockManager.getBlock(id)?.let { block ->
                 if (block !is ScopeBlock) {
-                    travelContextBlocks(id)
+                    findContextBlocks(id)
                 }
             }
         }
