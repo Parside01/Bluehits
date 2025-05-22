@@ -127,25 +127,11 @@ class Context internal constructor(
     fun execute(): Boolean {
         var isCompleted = false
 
-//        val startBlocks = mutableListOf<Block>()
-//        blockIds.forEach { id ->
-//            val block = BlockManager.getBlock(id)
-//            block?.let { block ->
-//                if (getBlockInConnections(block).isEmpty()) {
-//                    startBlocks.add(block)
-//                }
-//            }
-//        }
 
         isCompleted = ownBlock.execute() == ExecutionState.COMPLETED
 
         getBlockOutConnections(ownBlock).forEach { connection -> connection.execute() }
 
-        // Вообще надо договоренность, что только ScopeBlockи могут возвращать RUNNING
-//        startBlocks.forEach { block ->
-//            block.execute()
-//            startOutConnections.addAll(getBlockOutConnections(block))
-//        }
 
         val executionQueue: MutableList<Block> = mutableListOf()
         val executeSet: MutableSet<Id> = mutableSetOf()

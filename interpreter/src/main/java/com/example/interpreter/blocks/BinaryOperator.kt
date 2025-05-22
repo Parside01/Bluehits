@@ -4,16 +4,21 @@ import com.example.interpreter.models.Block
 import com.example.interpreter.models.ExecutionState
 import com.example.interpreter.models.Id
 import com.example.interpreter.models.PinManager
+import kotlin.reflect.KClass
 
-class BinaryOperatorBlock (
+
+class BinaryOperatorBlock<T: Any>(
     id: Id,
     name: String,
-    private val operation: (Any, Any) -> Any
+    private val operation: (T, T) -> T,
+    private val type: KClass<T>,
 ) : Block(
     id,
     name,
-    mutableListOf(PinManager.createPinAny("a", ownId = id), PinManager.createPinAny("b", ownId = id)),
-    mutableListOf(PinManager.createPinAny("c", ownId = id)),
+    mutableListOf(
+        PinManager.createPin("a", ownId = id, type = type),
+        PinManager.createPin("b", ownId = id, type = type),),
+    mutableListOf(PinManager.createPin<T>("c", ownId = id, type = type)),
 ) {
     override fun execute(): ExecutionState {
         try {

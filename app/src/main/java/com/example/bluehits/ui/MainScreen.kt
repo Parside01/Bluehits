@@ -180,9 +180,13 @@ fun MainScreen() {
         StyledButton(
             text = "Run",
             onClick = {
-                Program.run()
-                val printValue = blocksManager.getPrintBlockValue(blocksManager.uiBlocks)
-                showToast(context, "Вывод: ${printValue ?: "не определено"}")
+                try {
+                    Program.run()
+                    val printValue = blocksManager.getPrintBlockValue(blocksManager.uiBlocks)
+                    showToast(context, "Вывод: ${printValue ?: "не определено"}")
+                } catch (e :Exception) {
+                    println(e)
+                }
             },
             modifier = Modifier
                 .constrainAs(runButton) {

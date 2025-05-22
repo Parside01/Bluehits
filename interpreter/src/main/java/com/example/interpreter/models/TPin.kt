@@ -60,16 +60,7 @@ class TPin<T>(
     }
 
     fun getStringValue(): String {
-        val value = getValue()
-        val output = when (value) {
-            is String -> value
-            is Int -> value.toString()
-            is Double -> value.toString()
-            is Boolean -> value.toString()
-            is List<*> -> "[${value.joinToString(", ")}]"
-            else -> "Unsupported type: ${value::class.simpleName}"
-        }
-        return output
+        return Utils.anyToString(getValue())
     }
 
     fun setValue(value: Any?) {

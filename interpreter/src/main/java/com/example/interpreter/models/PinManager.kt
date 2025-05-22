@@ -1,6 +1,7 @@
 package com.example.interpreter.models
 
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.reflect.KClass
 
 object PinManager {
     private val pinRegistry = mutableMapOf<String, Pin>()
@@ -12,7 +13,7 @@ object PinManager {
 
     fun getPin(id: Id) = pinRegistry[id.string()]
 
-    private fun <T : Pin> createPin(createPinFunc: (Id) -> T): T {
+    private fun <T : Pin> createPinInternal(createPinFunc: (Id) -> T): T {
         val id = generateId()
         val pin = createPinFunc(id)
         pinRegistry[id.string()] = pin
@@ -23,23 +24,34 @@ object PinManager {
         getPin(id)?.setValue(value)
     }
 
-    fun createPinBlock(name: String, ownId: Id = Id("null")): TPin<Id> {
-        return createPin { id -> TPin(id, ownId, name, Id("null"), id) }
+    internal fun <T : Any> createPin(
+        name: String,
+        type: KClass<T>,
+        value: T = Utils.getDefaultValue(type.java),
+        ownId: Id = Utils.getDefaultValue(Id::class.java)
+    ): TPin<T> {
+        return createPinInternal { id ->
+            TPin(id, ownId, name, Utils.getDefaultValue(type.java), value)
+        }
     }
 
-    fun createPinInt(name: String, value: Int = 0, ownId: Id = Id("null")): TPin<Int> {
-        return createPin { id -> TPin(id, ownId,  name, 0, value) }
+    fun createPinBlock(name: String, ownId: Id = Utils.getDefaultValue(Id::class.java)): TPin<Id> {
+        return createPinInternal { id -> TPin(id, ownId, name, Utils.getDefaultValue(Id::class.java), id) }
     }
 
-    fun createPinAny(name: String, value: Any = Any(), ownId: Id = Id("null")): TPin<Any> {
-        return createPin { id -> TPin(id, ownId, name, Any(), value) }
+    fun createPinInt(name: String, value: Int = Utils.getDefaultValue(Int::class.java), ownId: Id = Utils.getDefaultValue(Id::class.java)): TPin<Int> {
+        return createPinInternal { id -> TPin(id, ownId,  name, Utils.getDefaultValue(Int::class.java), value) }
     }
 
-    fun createPinArray(name: String, value: List<Any> = emptyList(), ownId: Id = Id("null")): TPin<List<Any>> {
-        return createPin { id -> TPin(id, ownId, name, emptyList(), value) }
+    fun createPinAny(name: String, value: Any = Any(), ownId: Id = Utils.getDefaultValue(Id::class.java)): TPin<Any> {
+        return createPinInternal { id -> TPin(id, ownId, name, Any(), value) }
     }
 
-    fun createPinBool(name: String, value: Boolean = false, ownId: Id = Id("null")): TPin<Boolean> {
-        return createPin { id -> TPin(id, ownId, name, false, value) }
+    fun createPinArray(name: String, value: List<Any> = emptyList(), ownId: Id = Utils.getDefaultValue(Id::class.java)): TPin<List<Any>> {
+        return createPinInternal { id -> TPin(id, ownId, name, emptyList(), value) }
+    }
+
+    fun createPinBool(name: String, value: Boolean = false, ownId: Id = Utils.getDefaultValue(Id::class.java)): TPin<Boolean> {
+        return createPinInternal { id -> TPin(id, ownId, name, false, value) }
     }
 }
