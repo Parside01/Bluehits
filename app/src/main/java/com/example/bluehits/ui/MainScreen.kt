@@ -40,8 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.example.bluehits.ui.blockEditPanel.BlockEditManager
-import com.example.bluehits.ui.blockEditPanel.BlockEditPanel
+import com.example.bluehits.ui.editPanel.BlockEditManager
+import com.example.bluehits.ui.editPanel.BlockEditPanel
 import com.example.interpreter.models.Id
 import com.example.interpreter.models.Program
 import kotlin.math.min
@@ -118,7 +118,6 @@ fun MainScreen() {
         }
 
         BlockEditPanel(
-            blocksManager = blocksManager,
             modifier = Modifier
                 .constrainAs(editPanel) {
                     bottom.linkTo(parent.bottom)

@@ -15,6 +15,10 @@ abstract class Block internal constructor(
         return inputs.find { it.name == name } ?: outputs.find { it.name == name }
     }
 
+    override fun toString(): String {
+        return "Block(id=$id, name=$name, inputs=$inputs, outputs=$outputs)"
+    }
+
     open fun rollback() {}
 }
 

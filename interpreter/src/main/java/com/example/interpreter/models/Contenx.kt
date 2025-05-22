@@ -51,6 +51,7 @@ class Context internal constructor(
         blockIds.forEach { id ->
             BlockManager.getBlock(id)?.rollback()
         }
+        ConnectionManager.rollback()
     }
 
     private fun findContextBlocks(currBlock: Id) {
@@ -112,9 +113,10 @@ class Context internal constructor(
 
     fun getBlockInConnections(block: Block): List<Connection> {
         val connections = mutableListOf<Connection>()
-        connections.addAll(block.inputs
-            .filter { !it.isDisabled() }
-            .flatMap { pin -> ConnectionManager.getPinConnections(pin) })
+        connections.addAll(
+            block.inputs
+                .filter { !it.isDisabled() }
+                .flatMap { pin -> ConnectionManager.getPinConnections(pin) })
 
         if (!block.blockPin.isDisabled()) {
             connections.addAll(ConnectionManager.getPinConnections(block.blockPin))
@@ -125,31 +127,30 @@ class Context internal constructor(
     fun execute(): Boolean {
         var isCompleted = false
 
-        val startBlocks = mutableListOf<Block>()
-        blockIds.forEach { id ->
-            val block = BlockManager.getBlock(id)
-            block?.let { block ->
-                if (getBlockInConnections(block).isEmpty()) {
-                    startBlocks.add(block)
-                }
-            }
-        }
+//        val startBlocks = mutableListOf<Block>()
+//        blockIds.forEach { id ->
+//            val block = BlockManager.getBlock(id)
+//            block?.let { block ->
+//                if (getBlockInConnections(block).isEmpty()) {
+//                    startBlocks.add(block)
+//                }
+//            }
+//        }
 
-        val startOutConnections = mutableListOf<Connection>()
-        startOutConnections.addAll(getBlockOutConnections(ownBlock))
-        startOutConnections.forEach { connection -> connection.execute() }
+        isCompleted = ownBlock.execute() == ExecutionState.COMPLETED
+
+        getBlockOutConnections(ownBlock).forEach { connection -> connection.execute() }
 
         // Вообще надо договоренность, что только ScopeBlockи могут возвращать RUNNING
-        isCompleted = ownBlock.execute() == ExecutionState.COMPLETED
-        startBlocks.forEach { block ->
-            block.execute()
-            startOutConnections.addAll(getBlockOutConnections(block))
-        }
+//        startBlocks.forEach { block ->
+//            block.execute()
+//            startOutConnections.addAll(getBlockOutConnections(block))
+//        }
 
         val executionQueue: MutableList<Block> = mutableListOf()
         val executeSet: MutableSet<Id> = mutableSetOf()
 
-        startOutConnections.forEach { conn ->
+        getBlockOutConnections(ownBlock).forEach { conn ->
             conn.execute()
             val nextId = conn.getTo().ownId
             if (executeSet.add(nextId)) {
@@ -161,11 +162,19 @@ class Context internal constructor(
             val currentBlock = executionQueue.removeAt(0)
 
             val inConnections = Program.getBlockInConnections(currentBlock)
-            var connIsExecuted = true
-            inConnections.forEach { conn ->
-                connIsExecuted = conn.executed()
-            }
+            val connIsExecuted = inConnections.all { it.executed() }
+
             if (!connIsExecuted) {
+                inConnections.forEach { conn ->
+                    if (!conn.executed()) {
+                        val fromId = conn.getFrom().ownId
+                        BlockManager.getBlock(fromId)?.let { block ->
+                            if (!executeSet.contains(block.id)) {
+                                executionQueue.add(0, block)
+                            }
+                        }
+                    }
+                }
                 executionQueue.add(currentBlock)
                 continue
             }
@@ -181,7 +190,9 @@ class Context internal constructor(
             }
 
             currentBlock.execute()
+
             val blockOutConn = Program.getBlockOutConnections(currentBlock)
+
             blockOutConn.forEach { conn ->
                 conn.execute()
                 val nextId = conn.getTo().ownId

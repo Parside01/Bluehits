@@ -48,4 +48,8 @@ object ConnectionManager {
         connectionRegistry[id.string()] = conn
         return conn
     }
+
+    internal fun rollback() {
+        connectionRegistry.values.forEach { it.rollback() }
+    }
 }
