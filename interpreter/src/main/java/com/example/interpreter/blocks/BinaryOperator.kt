@@ -18,11 +18,11 @@ class BinaryOperatorBlock<T: Any>(
     mutableListOf(
         PinManager.createPin("a", ownId = id, type = type),
         PinManager.createPin("b", ownId = id, type = type),),
-    mutableListOf(PinManager.createPin<T>("c", ownId = id, type = type)),
+    mutableListOf(PinManager.createPin("c", ownId = id, type = type)),
 ) {
     override fun execute(): ExecutionState {
         try {
-            val result = operation(inputs.first().getValue(), inputs.last().getValue())
+            val result = operation(inputs.first().getValue() as T, inputs.last().getValue() as T)
             outputs.single().setValue(result)
         } catch (e: Exception) {
             throw e

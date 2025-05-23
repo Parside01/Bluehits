@@ -16,6 +16,7 @@ object Utils {
             String::class.java -> "" as T
             Id::class.java -> Id("null") as T
             List::class.java -> emptyList<T>() as T
+            Number::class.java -> 0 as T
             else -> throw IllegalArgumentException("Unknown type $type for get default value")
         }
     }
@@ -26,6 +27,7 @@ object Utils {
             is Int -> value.toString()
             is Double -> value.toString()
             is Boolean -> value.toString()
+            is Float -> value.toString()
             is List<*> -> "[${value.joinToString(", ")}]"
             else -> "Unsupported type: ${value::class.simpleName}"
         }

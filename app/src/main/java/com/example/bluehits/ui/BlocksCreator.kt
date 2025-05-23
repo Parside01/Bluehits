@@ -28,10 +28,11 @@ class BlocksManager {
             "Array" -> BlockManager.createArrayBlock()
             "For" -> BlockManager.createForBlock()
             "Int" -> BlockManager.createIntBlock()
-            "Add" -> BlockManager.createAddBlock()
+            "Add" -> BlockManager.createAddBlock(type=Int::class)
             "Bool" -> BlockManager.createBoolBlock()
+            "Float" -> BlockManager.createFloatBlock()
             "Print" -> BlockManager.createPrintBlock()
-            "Sub" -> BlockManager.createSubBlock()
+            "Sub" -> BlockManager.createSubBlock(type=Int::class)
             "IfElse" -> BlockManager.createIfElseBlock()
             else -> throw IllegalArgumentException("Unsupported type")
         }

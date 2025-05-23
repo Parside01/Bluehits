@@ -54,4 +54,8 @@ object PinManager {
     fun createPinBool(name: String, value: Boolean = false, ownId: Id = Utils.getDefaultValue(Id::class.java)): TPin<Boolean> {
         return createPinInternal { id -> TPin(id, ownId, name, false, value) }
     }
+
+    fun createPinFloat(name: String, value: Float = Utils.getDefaultValue(Float::class.java),ownId: Id = Utils.getDefaultValue(Id::class.java)) :TPin<Float> {
+        return createPinInternal { id -> TPin(id, ownId, name, Utils.getDefaultValue(Float::class.java), value) }
+    }
 }

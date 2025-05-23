@@ -266,6 +266,7 @@ fun ControlPanel(
             "Sub" to "Sub",
             "Print" to "Print",
             "Bool" to "Bool",
+            "Float" to "Float",
             "IfElse" to "IfElse",
             "For" to "For"
         )

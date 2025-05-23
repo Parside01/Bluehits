@@ -27,6 +27,13 @@ fun PinInputField(
                 isInt = true
             )
         }
+        filedPin.pin.getType() == Float::class -> {
+            NumberInputField(
+                value = value,
+                onValueChange = onValueChange,
+                isInt = false
+            )
+        }
         filedPin.pin.getType() == Boolean::class -> {
             BooleanInputField(
                 value = value,

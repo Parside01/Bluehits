@@ -4,6 +4,7 @@ import com.example.interpreter.blocks.AppendBlock
 import com.example.interpreter.blocks.ArrayBlock
 import com.example.interpreter.blocks.BinaryOperatorBlock
 import com.example.interpreter.blocks.BoolBlock
+import com.example.interpreter.blocks.FloatBlock
 import com.example.interpreter.blocks.ForBlock
 import com.example.interpreter.blocks.IfElseBlock
 import com.example.interpreter.blocks.IndexBlock
@@ -13,6 +14,7 @@ import com.example.interpreter.blocks.PrintBlock
 import java.io.OutputStreamWriter
 import java.util.concurrent.atomic.AtomicInteger
 import java.io.Writer
+import kotlin.reflect.KClass
 
 object BlockManager {
     private val blockRegistry = mutableMapOf<String, Block>()
@@ -51,31 +53,49 @@ object BlockManager {
         }
     }
 
-    fun createAddBlock(): Block {
+    fun <T : Number> createAddBlock(type: KClass<T>): Block {
         return createBlock { id ->
             BinaryOperatorBlock(
                 id, "Add",
                 { a, b ->
                     when {
-                        a is Int && b is Int -> a + b
-                        a is Boolean && b is Boolean -> a || b
-                        else -> throw IllegalArgumentException("Unsupported types for add")
+                        a.javaClass == type.java && b.javaClass == type.java -> {
+                            when (type) {
+                                Int::class -> (a as Int) + (b as Int)
+                                Double::class -> (a as Double) + (b as Double)
+                                Float::class -> (a as Float) + (b as Float)
+                                Long::class -> (a as Long) + (b as Long)
+                                else -> throw IllegalArgumentException("Unsupported type for add: $type")
+                            } as T
+                        }
+                        else -> throw IllegalArgumentException("Unsupported types for add: ${a?.javaClass}, ${b?.javaClass}")
                     }
-                })
+                },
+                type = type
+            )
         }
     }
 
-    fun createSubBlock(): Block {
+    fun <T : Number> createSubBlock(type: KClass<T>): Block {
         return createBlock { id ->
             BinaryOperatorBlock(
-                id, "Sub",
+                id, "Add",
                 { a, b ->
                     when {
-                        a is Int && b is Int -> a - b
-                        a is Boolean && b is Boolean -> a && b
-                        else -> throw IllegalArgumentException("Unsupported types for sub")
+                        a.javaClass == type.java && b.javaClass == type.java -> {
+                            when (type) {
+                                Int::class -> (a as Int) - (b as Int)
+                                Double::class -> (a as Double) - (b as Double)
+                                Float::class -> (a as Float) - (b as Float)
+                                Long::class -> (a as Long) - (b as Long)
+                                else -> throw IllegalArgumentException("Unsupported type for sub: $type")
+                            } as T
+                        }
+                        else -> throw IllegalArgumentException("Unsupported types for sub: ${a.javaClass}, ${b.javaClass}")
                     }
-                })
+                },
+                type = type
+            )
         }
     }
 
@@ -102,6 +122,18 @@ object BlockManager {
         return block
     }
 
+    fun createFloatBlock(varName: String = "Float", value: Float = Utils.getDefaultValue(Float::class.java)): Block {
+        val block = createBlock { id -> FloatBlock(id, value, varName) }
+
+        val blockState = VariableManager.getOrCreateVarState(varName, value, Float::class)
+        block.setVarState(blockState)
+
+        blockState.addObserver(block)
+        block.setPin.setValue(blockState.getValue() as Any)
+
+        return block
+    }
+
     @Suppress("UNCHECKED_CAST")
     fun createArrayBlock(varName: String = "Array", value: List<Any> = emptyList()): Block {
         val block = createBlock { id -> ArrayBlock(id, value, varName) }
@@ -115,7 +147,7 @@ object BlockManager {
         return block
     }
 
-    fun createAppendBlock() : Block {
+    fun createAppendBlock(): Block {
         return createBlock { id -> AppendBlock(id) }
     }
 
@@ -123,7 +155,7 @@ object BlockManager {
         return createBlock { id -> PrintBlock(id, writer) }
     }
 
-    fun createIndexBlock() :Block {
+    fun createIndexBlock(): Block {
         return createBlock { id -> IndexBlock(id) }
     }
 }
