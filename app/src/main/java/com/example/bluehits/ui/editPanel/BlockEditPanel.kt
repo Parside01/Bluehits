@@ -1,4 +1,4 @@
-package com.example.bluehits.ui.blockEditPanel
+package com.example.bluehits.ui.editPanel
 
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
@@ -12,7 +12,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -27,7 +31,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import com.example.bluehits.ui.BlocksManager
 import com.example.interpreter.models.Id
 import com.example.interpreter.models.Pin
 
@@ -52,7 +55,6 @@ data class BlockEditState(
 
 @Composable
 fun BlockEditPanel(
-    blocksManager: BlocksManager,
     modifier: Modifier = Modifier
 ) {
     val state = BlockEditManager.editState ?: return
@@ -83,14 +85,15 @@ fun BlockEditPanel(
                 modifier = Modifier
                     .fillMaxSize()
                     .pointerInput(Unit) {
-                        detectTapGestures (onTap = {
+                        detectTapGestures(onTap = {
                             BlockEditManager.hideEditPanel()
                         })
                     }
             )
             Surface(
                 modifier = modifier
-                    .fillMaxWidth()
+                    .widthIn(max = 400.dp)
+                    .wrapContentHeight()
                     .offset(y = slideIn)
                     .alpha(alpha),
                 shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
@@ -101,7 +104,7 @@ fun BlockEditPanel(
                 Column(
                     modifier = Modifier
                         .padding(16.dp)
-                        .fillMaxWidth(),
+                        .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Text(

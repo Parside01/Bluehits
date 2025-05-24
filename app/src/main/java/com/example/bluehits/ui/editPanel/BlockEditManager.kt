@@ -1,11 +1,9 @@
-package com.example.bluehits.ui.blockEditPanel
+package com.example.bluehits.ui.editPanel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.example.bluehits.ui.BlocksManager
 import com.example.bluehits.ui.BlueBlock
-import com.example.interpreter.models.Id
 import com.example.interpreter.models.Pin
 
 object BlockEditManager {

@@ -43,22 +43,24 @@ class TPin<T>(
     private var value: T? = initValue
     private var type: KClass<*> = zeroValue!!::class
     var isSet: Boolean = initValue != null
+    private var isDisabled: Boolean = false
+
+    internal fun enable() {
+        isDisabled = false
+    }
+
+    internal fun disable() {
+        isDisabled = true
+    }
+
+    internal fun isDisabled(): Boolean = isDisabled
 
     fun getValue(): Any {
         return value ?: zeroValue as Any
     }
 
     fun getStringValue(): String {
-        val value = getValue()
-        val output = when (value) {
-            is String -> value
-            is Int -> value.toString()
-            is Double -> value.toString()
-            is Boolean -> value.toString()
-            is List<*> -> "[${value.joinToString(", ")}]"
-            else -> "Unsupported type: ${value::class.simpleName}"
-        }
-        return output
+        return Utils.anyToString(getValue())
     }
 
     fun setValue(value: Any?) {

@@ -5,6 +5,7 @@ import com.example.interpreter.models.ExecutionState
 import com.example.interpreter.models.Id
 import com.example.interpreter.models.TPin
 import com.example.interpreter.models.PinManager
+import com.example.interpreter.models.Utils
 import com.example.interpreter.models.VarObserver
 import com.example.interpreter.models.VarState
 
@@ -108,6 +109,42 @@ class ArrayBlock internal constructor(
     }
 
     override fun onValueChanged(newValue: List<Any>) {
+        getPin.setValue(newValue)
+        setPin.setValue(newValue)
+    }
+}
+
+@Suppress("UNCHECKED_CAST")
+class FloatBlock internal constructor(
+    id: Id,
+    default: Float = Utils.getDefaultValue(Float::class.java),
+    name: String = "Float"
+) : Block(
+    id,
+    name,
+    mutableListOf(PinManager.createPinFloat("set", default, ownId = id)),
+    mutableListOf(PinManager.createPinFloat("get", default, ownId = id))
+), VarObserver<Float> {
+    lateinit var varState: VarState<Float>
+
+    internal fun setVarState(varState: VarState<Float>) {
+        this.varState = varState
+    }
+
+    internal val setPin: TPin<Float> get() = inputs[0] as TPin<Float>
+    internal val getPin: TPin<Float> get() = outputs[0] as TPin<Float>
+
+    override fun execute(): ExecutionState {
+        if (!::varState.isInitialized) {
+            throw IllegalStateException("FloatBlock '${name}' (ID: ${id.string()}) not initialized.")
+        }
+
+        val inputValue = setPin.getValue() as Float
+        varState.setValue(inputValue)
+        return ExecutionState.COMPLETED
+    }
+
+    override fun onValueChanged(newValue: Float) {
         getPin.setValue(newValue)
         setPin.setValue(newValue)
     }
