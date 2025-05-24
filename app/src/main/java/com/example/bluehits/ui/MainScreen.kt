@@ -71,6 +71,7 @@ fun MainScreen() {
     val consoleBuffer = remember { ConsoleBuffer() }
     val isConsoleVisible = remember { mutableStateOf(false) }
     var consoleBounds by remember { mutableStateOf<Rect?>(null) }
+    var panelBounds by remember { mutableStateOf<Rect?>(null) }
 
     DisposableEffect(Unit) {
         val oldOut = System.out
@@ -91,12 +92,13 @@ fun MainScreen() {
             .fillMaxSize()
             .background(Color.Black)
             .systemBarsPadding()
-            .pointerInput(isConsoleVisible.value) {
+            .pointerInput(isConsoleVisible.value || isPanelVisible) {
                 detectTapGestures { tapOffset ->
-                    if (isConsoleVisible.value) {
-                        if (consoleBounds?.contains(tapOffset) == false) {
-                            isConsoleVisible.value = false
-                        }
+                    if (isConsoleVisible.value && consoleBounds?.contains(tapOffset) == false) {
+                        isConsoleVisible.value = false
+                    }
+                    if (isPanelVisible && panelBounds?.contains(tapOffset) == false) {
+                        isPanelVisible = false
                     }
                 }
             }
@@ -114,6 +116,7 @@ fun MainScreen() {
                     height = Dimension.fillToConstraints
                 }
                 .zIndex(0f)
+                .fillMaxSize()
         ) {
             CreateCanvas(
                 blocks = blocksManager.uiBlocks,
@@ -164,20 +167,24 @@ fun MainScreen() {
 
         AnimatedVisibility(
             visible = isPanelVisible,
-            enter = slideInHorizontally() + fadeIn(),
-            exit = slideOutHorizontally() + fadeOut(),
+            enter = slideInHorizontally(initialOffsetX = { -it }) + fadeIn(),
+            exit = slideOutHorizontally(targetOffsetX = { -it }) + fadeOut(),
             modifier = Modifier
                 .constrainAs(panel) {
-                    start.linkTo(parent.start)
+                    start.linkTo(parent.start) // Привязываем к левому краю
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
                     width = Dimension.value(180.dp)
                 }
                 .zIndex(2f)
+                .onGloballyPositioned { layoutCoordinates ->
+                    panelBounds = layoutCoordinates.boundsInRoot()
+                }
         ) {
             ControlPanel(
                 blocksManager = blocksManager,
                 modifier = Modifier
+                    .fillMaxSize()
                     .background(color = Color(0xFFF9F9FF), shape = RoundedCornerShape(16.dp))
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState())
@@ -191,10 +198,13 @@ fun MainScreen() {
                 .constrainAs(consoleUi) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
-                    end.linkTo(parent.end)
+                    start.linkTo(parent.start)
                     height = Dimension.fillToConstraints
                 }
-                .zIndex(4f),
+                .zIndex(4f)
+                .onGloballyPositioned { layoutCoordinates ->
+                    consoleBounds = layoutCoordinates.boundsInRoot()
+                },
             onConsoleBoundsChange = { newBounds ->
                 consoleBounds = newBounds
             }

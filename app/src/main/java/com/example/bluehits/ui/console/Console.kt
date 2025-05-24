@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Rect
@@ -26,36 +27,30 @@ class ConsoleBuffer {
     private val _lines = mutableStateListOf<String>()
     val lines: List<String> get() = _lines
     private val commandPrompt = "> "
-    private var currentLineBuffer = StringBuilder()
+    private var currentTextInPrompt = StringBuilder()
+
     init {
         _lines.add(commandPrompt)
     }
+
     fun append(text: String) {
-        val parts = text.split("\n", "\r\n")
-        if (parts.isNotEmpty()) {
-            currentLineBuffer.append(parts[0])
-            _lines[_lines.lastIndex] = currentLineBuffer.toString()
-            for (i in 1 until parts.size) {
-                if (currentLineBuffer.isNotEmpty()) {
-                    _lines.add(currentLineBuffer.toString())
-                }
-                currentLineBuffer = StringBuilder()
-                if (i < parts.size - 1) {
-                    _lines.add(commandPrompt)
-                } else {
-                    currentLineBuffer.append(parts[i])
-                    _lines.add(commandPrompt + currentLineBuffer.toString())
-                }
-            }
-            if (parts.last().isEmpty() && parts.size > 1) {
-                _lines.add(commandPrompt)
-                currentLineBuffer = StringBuilder()
-            }
+        if (text.isEmpty()) return
+
+        val textSegments = text.split("\n", "\r\n")
+
+        currentTextInPrompt.append(textSegments[0])
+        _lines[_lines.lastIndex] = commandPrompt + currentTextInPrompt.toString()
+
+        for (i in 1 until textSegments.size) {
+            currentTextInPrompt = StringBuilder()
+            currentTextInPrompt.append(textSegments[i])
+            _lines.add(commandPrompt + currentTextInPrompt.toString())
         }
     }
+
     fun clear() {
         _lines.clear()
-        currentLineBuffer = StringBuilder()
+        currentTextInPrompt = StringBuilder()
         _lines.add(commandPrompt)
     }
 }
@@ -77,7 +72,7 @@ fun ConsoleUI(
     onConsoleBoundsChange: (Rect?) -> Unit
 ) {
     val offsetX by animateDpAsState(
-        targetValue = if (isConsoleVisible.value) 0.dp else 400.dp,
+        targetValue = if (isConsoleVisible.value) 0.dp else (-400).dp,
         animationSpec = tween(durationMillis = 300)
     )
     val listState = rememberLazyListState()
@@ -87,14 +82,14 @@ fun ConsoleUI(
         }
     }
     val cornerRadius = 8.dp
-    val backgroundColor = Color(0xFFE0E0E0)
-    val textColor = Color(0xFFFFFFFF)
+    val backgroundColor = Color.Gray
+    val textColor = Color.White
     val shadowElevation = 4.dp
     val padding = 16.dp
     Surface(
         modifier = modifier
             .fillMaxHeight()
-            .width(400.dp)
+            .width(300.dp)
             .offset(x = offsetX)
             .shadow(elevation = shadowElevation, shape = RoundedCornerShape(cornerRadius))
             .onGloballyPositioned { layoutCoordinates ->
@@ -107,9 +102,9 @@ fun ConsoleUI(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
+                .padding(padding),
+            verticalArrangement = Arrangement.Top
         ) {
-            Spacer(modifier = Modifier.height(8.dp))
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
