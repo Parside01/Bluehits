@@ -17,12 +17,12 @@ class IfElseBlock(
 
     override fun execute(): ExecutionState {
         val condition = inputs.single().getValue() as Boolean
-        outputs[0].disable()
         if (condition) {
-            outputs[1].enable()
-        } else {
-            outputs[0].enable()
             outputs[1].disable()
+            outputs[0].enable()
+        } else {
+            outputs[1].enable()
+            outputs[0].disable()
         }
         return ExecutionState.COMPLETED
     }
