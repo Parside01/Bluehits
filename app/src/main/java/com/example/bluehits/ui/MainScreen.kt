@@ -1,7 +1,6 @@
 package com.example.bluehits.ui
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -28,7 +27,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,7 +40,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
@@ -59,7 +56,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-
 import com.example.bluehits.ui.editPanel.BlockEditManager
 import com.example.bluehits.ui.editPanel.BlockEditPanel
 import com.example.interpreter.models.Id
@@ -158,7 +154,6 @@ fun MainScreen() {
                 }
             )
         }
-
         BlockEditPanel(
             modifier = Modifier
                 .constrainAs(editPanel) {
@@ -325,6 +320,7 @@ fun ControlPanel(
         }
     }
 }
+
 @Composable
 fun SuccessNotification(
     message: String,
@@ -389,6 +385,7 @@ fun SuccessNotification(
         }
     }
 }
+
 @Composable
 fun ErrorNotification(
     message: String,
@@ -399,7 +396,7 @@ fun ErrorNotification(
     LaunchedEffect(Unit) {
         delay(5000)
         visible = false
-        delay(300) // Allow animation to complete
+        delay(300)
         onDismiss()
     }
 
