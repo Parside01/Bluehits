@@ -2,6 +2,7 @@ package com.example.bluehits.ui.editPanel
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,19 +14,23 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 
 @Composable
 fun PinInputField(
@@ -77,53 +82,52 @@ private fun NumberInputController(
     isInt: Boolean
 ) {
     val intValue = remember { mutableIntStateOf(initialValue.toInt()) }
-
-    val doubleValue = remember { mutableStateOf(initialValue.toDouble()) }
-
-    val step = remember { mutableIntStateOf(1) }
-
-    val isManualInput = remember { mutableStateOf(false) }
-
-    val textValue = remember { mutableStateOf(initialValue.toString()) }
-
-    val currentValue = if (isInt) intValue.intValue else doubleValue.value
+    val floatValue = remember { mutableStateOf(initialValue.toFloat()) }
+    val step = remember { mutableStateOf(if (isInt) 1f else 0.1f) }
+    val isManualValueInput = remember { mutableStateOf(false) }
+    val isManualStepInput = remember { mutableStateOf(false) }
+    val valueText = remember { mutableStateOf(initialValue.toString()) }
+    val stepText = remember { mutableStateOf(step.value.toString()) }
 
     fun applyValue(newValue: Number) {
         if (isInt) {
             intValue.intValue = newValue.toInt()
+            valueText.value = intValue.intValue.toString()
+            onValueChange(intValue.intValue)
         } else {
-            doubleValue.value = newValue.toDouble()
+            floatValue.value = newValue.toFloat()
+            valueText.value = floatValue.value.toString()
+            onValueChange(floatValue.value)
         }
-        textValue.value = newValue.toString()
-        onValueChange(newValue)
     }
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
             Button(
                 onClick = {
-                    val newVal = if (isInt) {
-                        intValue.intValue - step.intValue
-                    } else {
-                        doubleValue.value - step.intValue
-                    }
-                    applyValue(newVal)
+                    applyValue(
+                        if (isInt) intValue.intValue - step.value.toInt()
+                        else floatValue.value - step.value
+                    )
                 },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .height(48.dp)
+                    .padding(end = 4.dp),
+                shape = RoundedCornerShape(8.dp)
             ) {
-                Text("-")
+                Text("-", color = Color.White)
             }
 
-            if (isManualInput.value) {
+            if (isManualValueInput.value) {
                 OutlinedTextField(
-                    value = textValue.value,
+                    value = valueText.value,
                     onValueChange = { newText ->
                         if (newText.isEmpty() || newText.matches(Regex(if (isInt) "-?\\d*" else "-?\\d*\\.?\\d*"))) {
-                            textValue.value = newText
-                            val parsed = if (isInt) newText.toIntOrNull() else newText.toDoubleOrNull()
+                            valueText.value = newText
+                            val parsed = if (isInt) newText.toIntOrNull() else newText.toFloatOrNull()
                             parsed?.let { applyValue(it) }
                         }
                     },
@@ -132,67 +136,128 @@ private fun NumberInputController(
                         imeAction = ImeAction.Done
                     ),
                     keyboardActions = KeyboardActions(
-                        onDone = { isManualInput.value = false }
+                        onDone = { isManualValueInput.value = false }
                     ),
-                    modifier = Modifier.weight(2f),
-                    singleLine = true
+                    modifier = Modifier
+                        .height(48.dp)
+                        .weight(1f)
+                        .padding(horizontal = 4.dp),
+                    singleLine = true,
+                    textStyle = LocalTextStyle.current.copy(color = Color.White),
+                    shape = RoundedCornerShape(8.dp)
                 )
             } else {
                 Box(
                     modifier = Modifier
-                        .weight(2f)
                         .height(48.dp)
-                        .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
-                        .clickable { isManualInput.value = true },
+                        .weight(1f)
+                        .padding(horizontal = 4.dp)
+                        .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
+                        .clickable { isManualValueInput.value = true },
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = currentValue.toString())
+                    Text(
+                        text = if (isInt) intValue.intValue.toString()
+                        else "%.2f".format(floatValue.value),
+                        color = Color.White
+                    )
                 }
             }
 
             Button(
                 onClick = {
-                    val newVal = if (isInt) {
-                        intValue.intValue + step.intValue
-                    } else {
-                        doubleValue.value + step.intValue
-                    }
-                    applyValue(newVal)
+                    applyValue(
+                        if (isInt) intValue.intValue + step.value.toInt()
+                        else floatValue.value + step.value
+                    )
                 },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .height(48.dp)
+                    .padding(start = 4.dp),
+                shape = RoundedCornerShape(8.dp)
             ) {
-                Text("+")
+                Text("+", color = Color.White)
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text("Step size:", color = Color.White)
+        Spacer(modifier = Modifier.height(4.dp))
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
             Button(
-                onClick = { step.intValue = (step.intValue - 1).coerceAtLeast(1) },
-                modifier = Modifier.weight(1f),
+                onClick = {
+                    step.value = (step.value - (if (isInt) 1f else 0.01f)).coerceAtLeast(if (isInt) 1f else 0.01f)
+                    stepText.value = step.value.toString()
+                },
+                modifier = Modifier
+                    .height(48.dp)
+                    .padding(end = 4.dp),
+                shape = RoundedCornerShape(8.dp)
             ) {
-                Text("-")
+                Text("-", color = Color.White)
             }
 
-            Box(
-                modifier = Modifier
-                    .weight(2f)
-                    .height(48.dp)
-                    .border(1.dp, Color.Gray, RoundedCornerShape(4.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = step.intValue.toString())
+            if (isManualStepInput.value) {
+                OutlinedTextField(
+                    value = stepText.value,
+                    onValueChange = { newText ->
+                        if (newText.isEmpty() || newText.matches(Regex(if (isInt) "\\d*" else "\\d*\\.?\\d*"))) {
+                            stepText.value = newText
+                            val newStep = newText.toFloatOrNull()?.coerceAtLeast(
+                                if (isInt) 1f else 0.1f
+                            ) ?: (if (isInt) 1f else 0.1f)
+                            step.value = newStep
+                        }
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = { isManualStepInput.value = false }
+                    ),
+                    modifier = Modifier
+                        .height(48.dp)
+                        .weight(1f)
+                        .padding(horizontal = 4.dp),
+                    singleLine = true,
+                    textStyle = LocalTextStyle.current.copy(color = Color.White),
+                    shape = RoundedCornerShape(8.dp)
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .height(48.dp)
+                        .weight(1f)
+                        .padding(horizontal = 4.dp)
+                        .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
+                        .clickable { isManualStepInput.value = true },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = if (isInt) step.value.toInt().toString()
+                        else "%.1f".format(step.value),
+                        color = Color.White
+                    )
+                }
             }
 
             Button(
-                onClick = { step.intValue += 1 },
-                modifier = Modifier.weight(1f)
+                onClick = {
+                    step.value += if (isInt) 1f else 0.1f
+                    stepText.value = step.value.toString()
+                },
+                modifier = Modifier
+                    .height(48.dp)
+                    .padding(start = 4.dp),
+                shape = RoundedCornerShape(8.dp)
             ) {
-                Text("+")
+                Text("+", color = Color.White)
             }
         }
     }

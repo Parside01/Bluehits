@@ -58,18 +58,13 @@ object BlockManager {
             BinaryOperatorBlock(
                 id, "Add",
                 { a, b ->
-                    when {
-                        a.javaClass == type.java && b.javaClass == type.java -> {
-                            when (type) {
-                                Int::class -> (a as Int) + (b as Int)
-                                Double::class -> (a as Double) + (b as Double)
-                                Float::class -> (a as Float) + (b as Float)
-                                Long::class -> (a as Long) + (b as Long)
-                                else -> throw IllegalArgumentException("Unsupported type for add: $type")
-                            } as T
-                        }
-                        else -> throw IllegalArgumentException("Unsupported types for add: ${a?.javaClass}, ${b?.javaClass}")
-                    }
+                    when (type) {
+                        Int::class -> (a as Int) + (b as Int)
+                        Double::class -> (a as Double) + (b as Double)
+                        Float::class -> (a as Float) + (b as Float)
+                        Long::class -> (a as Long) + (b as Long)
+                        else -> throw IllegalArgumentException("Unsupported type for add: $type")
+                    } as T
                 },
                 type = type
             )
@@ -91,6 +86,7 @@ object BlockManager {
                                 else -> throw IllegalArgumentException("Unsupported type for sub: $type")
                             } as T
                         }
+
                         else -> throw IllegalArgumentException("Unsupported types for sub: ${a.javaClass}, ${b.javaClass}")
                     }
                 },
@@ -122,7 +118,10 @@ object BlockManager {
         return block
     }
 
-    fun createFloatBlock(varName: String = "Float", value: Float = Utils.getDefaultValue(Float::class.java)): Block {
+    fun createFloatBlock(
+        varName: String = "Float",
+        value: Float = Utils.getDefaultValue(Float::class.java)
+    ): Block {
         val block = createBlock { id -> FloatBlock(id, value, varName) }
 
         val blockState = VariableManager.getOrCreateVarState(varName, value, Float::class)
