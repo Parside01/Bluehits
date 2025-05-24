@@ -68,7 +68,6 @@ import com.example.interpreter.models.Id
 import com.example.interpreter.models.Program
 import kotlinx.coroutines.delay
 import kotlin.math.min
-
 import androidx.compose.ui.graphics.graphicsLayer
 
 @Composable
@@ -76,6 +75,7 @@ fun MainScreen() {
     val context = LocalContext.current
     val textMeasurer = rememberTextMeasurer()
     val blocksManager = remember { BlocksManager() }
+    val connectionManager = remember { UIConnectionManager() }
     var isPanelVisible by remember { mutableStateOf(false) }
     var draggedBlock by remember { mutableStateOf<BlueBlock?>(null) }
     var trashBounds by remember { mutableStateOf<Rect?>(null) }
@@ -118,6 +118,7 @@ fun MainScreen() {
             CreateCanvas(
                 blocks = blocksManager.uiBlocks,
                 textMeasurer = textMeasurer,
+                connectionManager = connectionManager,
                 onDrag = { dragAmount ->
                     canvasOffset += dragAmount
                 },
@@ -136,7 +137,7 @@ fun MainScreen() {
                         }
                     } else {
                         if (isBlockOverTrash) {
-                            draggedBlock?.let { blocksManager.removeBlock(it) }
+                            draggedBlock?.let { blocksManager.removeBlock(it, connectionManager) }
                         }
                         draggedBlock = null
                         isBlockOverTrash = false
@@ -259,7 +260,7 @@ fun MainScreen() {
 
         StyledButton(
             text = "Clear",
-            onClick = { blocksManager.clearAllBlocks() },
+            onClick = { blocksManager.clearAllBlocks(connectionManager) },
             style = ButtonStyles.baseButtonStyle().copy(
                 colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = Color.White,
@@ -309,6 +310,7 @@ fun ControlPanel(
         }
     }
 }
+
 @Composable
 fun ErrorNotification(
     message: String,
@@ -370,6 +372,7 @@ fun ErrorNotification(
         }
     }
 }
+
 fun runProgram(blocksManager: BlocksManager, context: Context, showError: (String) -> Unit) {
     if (blocksManager.uiBlocks.size <= 1) {
         showError("Программа пуста: добавьте блоки и соединения")

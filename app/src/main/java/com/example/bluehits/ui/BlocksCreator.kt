@@ -4,13 +4,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import com.example.interpreter.models.BlockManager
+import com.example.interpreter.models.ConnectionManager
+import com.example.interpreter.models.Id
+import com.example.interpreter.models.PinManager
 import com.example.interpreter.models.Program
 
 class BlocksManager {
     private val _uiBlocks = mutableStateListOf<BlueBlock>()
     val uiBlocks: List<BlueBlock> get() = _uiBlocks
 
-    public fun getPrintBlockValue(uiBlocks: List<BlueBlock>): Any? {
+    fun getPrintBlockValue(uiBlocks: List<BlueBlock>): Any? {
         uiBlocks.forEach { block ->
             if (block.title == "Print") {
                 val logicBlock = BlockManager.getBlock(block.id)
@@ -19,7 +22,6 @@ class BlocksManager {
         }
         return null
     }
-
 
     fun addNewBlock(type: String, onError: (String) -> Unit) {
         if (type == "Main" && _uiBlocks.any { it.title == "Main" }) {
@@ -68,10 +70,46 @@ class BlocksManager {
         }
     }
 
-    fun removeBlock(block: BlueBlock) {
+    fun removeBlock(block: BlueBlock, connectionManager: UIConnectionManager) {
+        val pinIds = mutableListOf<Id>()
+        pinIds.add(block.blockPin.id)
+        block.inputPins.forEach { pinIds.add(it.id) }
+        block.outputPins.forEach { pinIds.add(it.id) }
+        pinIds.forEach { pinId ->
+            PinManager.getPin(pinId)?.let { pin ->
+                ConnectionManager.getPinConnections(pin).forEach { connection ->
+                    ConnectionManager.disconnect(connection.id.string())
+                }
+            }
+        }
+        connectionManager.connections.removeAll { (pin1, pin2) ->
+            pinIds.contains(pin1.id) || pinIds.contains(pin2.id)
+        }
+        UIPinManager.clearPinsForBlock(block)
         _uiBlocks.remove(block)
+
     }
-    fun clearAllBlocks() {
+
+    fun clearAllBlocks(connectionManager: UIConnectionManager) {
+        _uiBlocks.toList().forEach { block ->
+            // Собираем ID всех пинов блока
+            val pinIds = mutableListOf<Id>()
+            pinIds.add(block.blockPin.id)
+            block.inputPins.forEach { pinIds.add(it.id) }
+            block.outputPins.forEach { pinIds.add(it.id) }
+            pinIds.forEach { pinId ->
+                PinManager.getPin(pinId)?.let { pin ->
+                    ConnectionManager.getPinConnections(pin).forEach { connection ->
+                        ConnectionManager.disconnect(connection.id.string())
+                    }
+                }
+            }
+            connectionManager.connections.removeAll { (pin1, pin2) ->
+                pinIds.contains(pin1.id) || pinIds.contains(pin2.id)
+            }
+            UIPinManager.clearPinsForBlock(block)
+        }
+
         _uiBlocks.clear()
     }
 }

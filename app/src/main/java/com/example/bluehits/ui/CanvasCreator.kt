@@ -19,7 +19,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.input.pointer.PointerEventPass
-
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.platform.LocalDensity
@@ -31,6 +30,7 @@ import kotlin.math.sqrt
 fun CreateCanvas(
     blocks: List<BlueBlock>,
     textMeasurer: TextMeasurer,
+    connectionManager: UIConnectionManager,
     onDrag: (dragAmount: Offset) -> Unit,
     onBlockDrag: (block: BlueBlock, dragAmount: Offset, isDragging: Boolean) -> Unit,
     onBlockClick: (blockId: Id) -> Unit,
@@ -39,7 +39,6 @@ fun CreateCanvas(
     var canvasOffset by remember { mutableStateOf(Offset.Zero) }
     var scale by remember { mutableStateOf(1f) }
     var selectedBlock by remember { mutableStateOf<BlueBlock?>(null) }
-    val connectionManager = remember { UIConnectionManager() }
     val lineCreator = remember { LineCreator() }
     val density = LocalDensity.current
 

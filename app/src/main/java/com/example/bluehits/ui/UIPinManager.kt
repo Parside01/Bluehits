@@ -17,5 +17,10 @@ object UIPinManager {
             position.minus(center).getDistance() <= PIN_RADIUS * 2
         }
     }
+
+    fun clearPinsForBlock(block: BlueBlock) {
+        pins.removeAll { it.parentBlock == block }
+    }
+
     fun clear() = pins.clear()
 }
