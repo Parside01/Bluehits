@@ -2,6 +2,7 @@ package com.example.interpreter.models
 
 import com.example.interpreter.blocks.AppendBlock
 import com.example.interpreter.blocks.ArrayBlock
+import com.example.interpreter.blocks.BinaryLogicOperatorBlock
 import com.example.interpreter.blocks.BinaryOperatorBlock
 import com.example.interpreter.blocks.BoolBlock
 import com.example.interpreter.blocks.FloatBlock
@@ -50,6 +51,29 @@ object BlockManager {
     fun createForBlock(): Block {
         return createBlock { id ->
             ForBlock(id)
+        }
+    }
+
+    fun <T : Number> createGreaterBlock(type: KClass<T>): Block {
+        return createBlock { id ->
+            BinaryLogicOperatorBlock(
+                id, ">",
+                { a, b ->
+                    when {
+                        a.javaClass == type.java && b.javaClass == type.java -> {
+                            when (type) {
+                                Int::class -> (a as Int) > (b as Int)
+                                Double::class -> (a as Double) > (b as Double)
+                                Float::class -> (a as Float) > (b as Float)
+                                Long::class -> (a as Long) > (b as Long)
+                                else -> throw IllegalArgumentException("Unsupported type for add: $type")
+                            }
+                        }
+                        else -> throw IllegalArgumentException("Unsupported types for add: ${a.javaClass}, ${b.javaClass}")
+                    }
+                },
+                type = type
+            )
         }
     }
 
