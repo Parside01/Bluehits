@@ -84,11 +84,21 @@ fun MainScreen() {
     val baseDimension = min(config.screenWidthDp, config.screenHeightDp).dp
     val density = LocalDensity.current
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var successMessage by remember { mutableStateOf<String?>(null) } // Новое состояние для успешного вывода
 
+    // Отображение ошибки
     errorMessage?.let { message ->
         ErrorNotification(
             message = message,
             onDismiss = { errorMessage = null }
+        )
+    }
+
+    // Отображение успешного результата
+    successMessage?.let { message ->
+        SuccessNotification(
+            message = message,
+            onDismiss = { successMessage = null }
         )
     }
 
@@ -100,6 +110,7 @@ fun MainScreen() {
     ) {
         val (canvas, panel, addButton, debugButton, runButton, trashButton, clearButton, editPanel) = createRefs()
 
+        // Остальной код ConstraintLayout остается без изменений
         Column(
             modifier = Modifier
                 .constrainAs(canvas) {
@@ -150,7 +161,6 @@ fun MainScreen() {
                 }
             )
         }
-
         BlockEditPanel(
             modifier = Modifier
                 .constrainAs(editPanel) {
@@ -214,7 +224,14 @@ fun MainScreen() {
 
         StyledButton(
             text = "Run",
-            onClick = { runProgram(blocksManager, context) { message -> errorMessage = message } },
+            onClick = {
+                runProgram(
+                    blocksManager,
+                    context,
+                    showError = { message -> errorMessage = message },
+                    showSuccess = { message -> successMessage = message }
+                )
+            },
             modifier = Modifier
                 .constrainAs(runButton) {
                     end.linkTo(debugButton.start, margin = baseDimension * 0.02f)
@@ -310,7 +327,70 @@ fun ControlPanel(
         }
     }
 }
+@Composable
+fun SuccessNotification(
+    message: String,
+    onDismiss: () -> Unit
+) {
+    var visible by remember { mutableStateOf(true) }
 
+    LaunchedEffect(Unit) {
+        delay(5000)
+        visible = false
+        delay(300)
+        onDismiss()
+    }
+
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(animationSpec = tween(300)) + scaleIn(animationSpec = tween(300)),
+        exit = fadeOut(animationSpec = tween(300)) + scaleOut(animationSpec = tween(300))
+    ) {
+        Dialog(onDismissRequest = { onDismiss() }) {
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .shadow(8.dp, RoundedCornerShape(16.dp))
+                    .background(Color(0xFF6C6C6C))
+                    .padding(24.dp)
+                    .wrapContentSize()
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = message,
+                        style = TextStyle(
+                            color = Color.White,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.Center
+                        ),
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .size(32.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(Color.White.copy(alpha = 0.2f))
+                            .clickable { onDismiss() }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Close",
+                            tint = Color.White,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .align(Alignment.Center)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
 @Composable
 fun ErrorNotification(
     message: String,
@@ -376,7 +456,12 @@ fun ErrorNotification(
     }
 }
 
-fun runProgram(blocksManager: BlocksManager, context: Context, showError: (String) -> Unit) {
+fun runProgram(
+    blocksManager: BlocksManager,
+    context: Context,
+    showError: (String) -> Unit,
+    showSuccess: (String) -> Unit
+) {
     if (blocksManager.uiBlocks.size <= 1) {
         showError("Программа пуста: добавьте блоки и соединения")
         return
@@ -388,7 +473,7 @@ fun runProgram(blocksManager: BlocksManager, context: Context, showError: (Strin
     try {
         Program.run()
         val printValue = blocksManager.getPrintBlockValue(blocksManager.uiBlocks)
-        showError("Вывод: ${printValue ?: "не определено"}")
+        showSuccess("Вывод: ${printValue ?: "не определено"}") // Используем showSuccess
     } catch (e: Exception) {
         showError("Ошибка при выполнении программы: ${e.message}")
     }
