@@ -3,40 +3,62 @@ package com.example.bluehits.ui
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -44,7 +66,10 @@ import com.example.bluehits.ui.blockEditPanel.BlockEditManager
 import com.example.bluehits.ui.blockEditPanel.BlockEditPanel
 import com.example.interpreter.models.Id
 import com.example.interpreter.models.Program
+import kotlinx.coroutines.delay
 import kotlin.math.min
+
+import androidx.compose.ui.graphics.graphicsLayer
 
 @Composable
 fun MainScreen() {
@@ -61,6 +86,14 @@ fun MainScreen() {
     val config = LocalConfiguration.current
     val baseDimension = min(config.screenWidthDp, config.screenHeightDp).dp
     val density = LocalDensity.current
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    errorMessage?.let { message ->
+        ErrorNotification(
+            message = message,
+            onDismiss = { errorMessage = null }
+        )
+    }
 
     ConstraintLayout(
         modifier = Modifier
@@ -113,6 +146,9 @@ fun MainScreen() {
                     selectedBlockId = blockId
                     showSettingsDialog = true
                     BlockEditManager.showEditPanel(blocksManager.uiBlocks.find { it.id == blockId }!!)
+                },
+                onConnectionError = { message ->
+                    errorMessage = message
                 }
             )
         }
@@ -148,7 +184,8 @@ fun MainScreen() {
                 modifier = Modifier
                     .background(color = Color(0xFFF9F9FF), shape = RoundedCornerShape(16.dp))
                     .padding(16.dp)
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(rememberScrollState()),
+                onError = { message -> errorMessage = message }
             )
         }
 
@@ -180,11 +217,7 @@ fun MainScreen() {
 
         StyledButton(
             text = "Run",
-            onClick = {
-                Program.run()
-                val printValue = blocksManager.getPrintBlockValue(blocksManager.uiBlocks)
-                showToast(context, "Вывод: ${printValue ?: "не определено"}")
-            },
+            onClick = { runProgram(blocksManager, context) { message -> errorMessage = message } },
             modifier = Modifier
                 .constrainAs(runButton) {
                     end.linkTo(debugButton.start, margin = baseDimension * 0.02f)
@@ -194,7 +227,6 @@ fun MainScreen() {
                 }
                 .zIndex(3f)
         )
-
         StyledButton(
             text = "Trash",
             onClick = {},
@@ -249,7 +281,8 @@ fun MainScreen() {
 @Composable
 fun ControlPanel(
     blocksManager: BlocksManager,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onError: (String) -> Unit
 ) {
     Column(
         modifier = modifier,
@@ -270,13 +303,87 @@ fun ControlPanel(
         buttons.forEach { (blockType, label) ->
             StyledButton(
                 text = label,
-                onClick = { blocksManager.addNewBlock(blockType) },
+                onClick = { blocksManager.addNewBlock(blockType, onError) },
                 style = ButtonStyles.controlPanelButtonStyle()
             )
         }
     }
 }
+@Composable
+fun ErrorNotification(
+    message: String,
+    onDismiss: () -> Unit
+) {
+    var visible by remember { mutableStateOf(true) }
 
-fun showToast(context: Context, message: String) {
-    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+    LaunchedEffect(Unit) {
+        delay(5000)
+        onDismiss()
+    }
+
+    Dialog(onDismissRequest = { onDismiss() }) {
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .shadow(8.dp, RoundedCornerShape(16.dp))
+                .background(Color(0xFFC04D4D))
+                .padding(24.dp)
+                .wrapContentSize()
+                .graphicsLayer(
+                    alpha = if (visible) 1f else 0f,
+                    scaleX = if (visible) 1f else 0.8f,
+                    scaleY = if (visible) 1f else 0.8f
+                )
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = message,
+                    style = TextStyle(
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.Center
+                    ),
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .size(32.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Color.White.copy(alpha = 0.2f))
+                        .clickable { onDismiss() }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Close",
+                        tint = Color.White,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .align(Alignment.Center)
+                    )
+                }
+            }
+        }
+    }
+}
+fun runProgram(blocksManager: BlocksManager, context: Context, showError: (String) -> Unit) {
+    if (blocksManager.uiBlocks.size <= 1) {
+        showError("Программа пуста: добавьте блоки и соединения")
+        return
+    }
+    if (blocksManager.uiBlocks.none { it.title == "Main" }) {
+        showError("Ошибка: блок Main не найден")
+        return
+    }
+    try {
+        Program.run()
+        val printValue = blocksManager.getPrintBlockValue(blocksManager.uiBlocks)
+        showError("Вывод: ${printValue ?: "не определено"}")
+    } catch (e: Exception) {
+        showError("Ошибка при выполнении программы: ${e.message}")
+    }
 }

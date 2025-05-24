@@ -21,8 +21,13 @@ class BlocksManager {
     }
 
 
-    fun addNewBlock(type: String) {
+    fun addNewBlock(type: String, onError: (String) -> Unit) {
+        if (type == "Main" && _uiBlocks.any { it.title == "Main" }) {
+            onError("Блок Main уже существует и не может быть добавлен повторно")
+            return
+        }
         val logicBlock = when (type) {
+            "Main" -> Program.getMainBlock()
             "Array" -> BlockManager.createArrayBlock()
             "For" -> BlockManager.createForBlock()
             "Int" -> BlockManager.createIntBlock()

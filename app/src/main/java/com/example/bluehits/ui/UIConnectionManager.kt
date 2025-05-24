@@ -11,7 +11,7 @@ class UIConnectionManager {
     private var tempPin: PinUi? = null
     val connections = mutableStateListOf<Pair<PinUi, PinUi>>()
 
-    fun handlePinClick(pin: PinUi) {
+    fun handlePinClick(pin: PinUi, onError: (String) -> Unit) {
         if (pin == tempPin) {
             tempPin = null
             return
@@ -22,35 +22,47 @@ class UIConnectionManager {
             return
         }
 
-        // TODO: Спросить как сделать лучше.
-        if (pin.type == InOutPinType.INPUT && tempPin!!.type == InOutPinType.INPUT) {
-            tempPin = pin
-        }
-        else if (pin.type == InOutPinType.INPUT && tempPin!!.type == InOutPinType.OUTPUT) {
-            val connectionId = connect(tempPin!!.id, pin.id)
-            connections.add(Pair(pin, tempPin!!))
+        if (pin.type == tempPin!!.type) {
+            onError("Нельзя соединить пины одного типа: оба ${pin.type}")
             tempPin = null
+            return
         }
-        else if (pin.type == InOutPinType.OUTPUT && tempPin!!.type == InOutPinType.INPUT) {
-            val connectionId = connect(pin.id, tempPin!!.id)
-            connections.add(Pair(tempPin!!, pin))
+
+        try {
+            if (pin.type == InOutPinType.INPUT && tempPin!!.type == InOutPinType.OUTPUT) {
+                val connectionId = connect(tempPin!!.id, pin.id)
+                if (connectionId != null) {
+                    connections.add(Pair(pin, tempPin!!))
+                } else {
+                    onError("Не удалось создать соединение между пинами")
+                }
+                tempPin = null
+            } else if (pin.type == InOutPinType.OUTPUT && tempPin!!.type == InOutPinType.INPUT) {
+                val connectionId = connect(pin.id, tempPin!!.id)
+                if (connectionId != null) {
+                    connections.add(Pair(tempPin!!, pin))
+                } else {
+                    onError("Не удалось создать соединение между пинами")
+                }
+                tempPin = null
+            } else {
+                tempPin = pin
+            }
+        } catch (e: Exception) {
+            onError("Ошибка при соединении пинов: ${e.message}")
             tempPin = null
-        }
-        else {
-            tempPin = pin
         }
     }
 
-    private fun connect(fromId: Id, toId: Id) : Id? {
+    private fun connect(fromId: Id, toId: Id): Id? {
         val fromPin = PinManager.getPin(fromId)
         val toPin = PinManager.getPin(toId)
 
-        var connectionId: Id? = null
-        fromPin?.let { from ->
-            toPin?.let { to ->
-                connectionId = ConnectionManager.connect(from, to).id
-            }
+        if (fromPin == null || toPin == null) {
+            return null
         }
-        return connectionId
+
+        val connection = ConnectionManager.connect(fromPin, toPin)
+        return connection?.id
     }
 }

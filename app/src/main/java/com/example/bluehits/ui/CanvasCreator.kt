@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.input.pointer.pointerInput
+
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextMeasurer
 import com.example.interpreter.models.Id
@@ -28,7 +29,8 @@ fun CreateCanvas(
     textMeasurer: TextMeasurer,
     onDrag: (dragAmount: Offset) -> Unit,
     onBlockDrag: (block: BlueBlock, dragAmount: Offset, isDragging: Boolean) -> Unit,
-    onBlockClick: (blockId: Id) -> Unit
+    onBlockClick: (blockId: Id) -> Unit,
+    onConnectionError: (String) -> Unit
 ) {
     var canvasOffset by remember { mutableStateOf(Offset.Zero) }
     var scale by remember { mutableStateOf(1f) }
@@ -47,7 +49,6 @@ fun CreateCanvas(
                     canvasOffset += pan
                 }
             }
-
             .pointerInput(Unit) {
                 detectDragGestures(
                     onDragStart = { offset ->
@@ -80,7 +81,9 @@ fun CreateCanvas(
                 detectTapGestures { offset ->
                     val adjustedOffset = (offset - canvasOffset) / scale
                     UIPinManager.findPinAt(adjustedOffset)?.let { pin ->
-                        connectionManager.handlePinClick(pin)
+                        connectionManager.handlePinClick(pin) { errorMessage ->
+                            onConnectionError(errorMessage)
+                        }
                     } ?: run {
                         blocks.firstOrNull { block ->
                             adjustedOffset.x in block.x..(block.x + block.width) &&
