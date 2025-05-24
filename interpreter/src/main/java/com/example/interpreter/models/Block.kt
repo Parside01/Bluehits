@@ -1,7 +1,7 @@
 package com.example.interpreter.models
 
 abstract class Block internal constructor(
-    val id: Id,
+    val id: Id, // TODO: Для реализации функций надо сделать open метод getId()
     val name: String?,
     val inputs: MutableList<Pin> = mutableListOf(),
     val outputs: MutableList<Pin> = mutableListOf()
@@ -14,6 +14,12 @@ abstract class Block internal constructor(
     fun pinByName(name: String): Pin? {
         return inputs.find { it.name == name } ?: outputs.find { it.name == name }
     }
+
+    override fun toString(): String {
+        return "Block(id=$id, name=$name, inputs=$inputs, outputs=$outputs)"
+    }
+
+    open fun rollback() {}
 }
 
 abstract class ScopeBlock internal constructor(

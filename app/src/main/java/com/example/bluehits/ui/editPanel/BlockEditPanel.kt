@@ -1,4 +1,4 @@
-package com.example.bluehits.ui.blockEditPanel
+package com.example.bluehits.ui.editPanel
 
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
@@ -31,7 +31,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import com.example.bluehits.ui.BlocksManager
 import com.example.interpreter.models.Id
 import com.example.interpreter.models.Pin
 
@@ -56,7 +55,6 @@ data class BlockEditState(
 
 @Composable
 fun BlockEditPanel(
-    blocksManager: BlocksManager,
     modifier: Modifier = Modifier
 ) {
     val state = BlockEditManager.editState ?: return

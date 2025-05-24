@@ -66,4 +66,12 @@ class Connection internal constructor(
         this.to.setValue(this.from.getValue())
         isExecuted = true
     }
+
+    fun rollback() {
+        isExecuted = false
+    }
+
+    override fun toString(): String {
+        return "Connection(from=$from, to=$to, id=$id)"
+    }
 }

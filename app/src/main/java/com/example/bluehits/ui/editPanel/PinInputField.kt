@@ -1,4 +1,4 @@
-package com.example.bluehits.ui.blockEditPanel
+package com.example.bluehits.ui.editPanel
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,6 +25,13 @@ fun PinInputField(
                 value = value,
                 onValueChange = onValueChange,
                 isInt = true
+            )
+        }
+        filedPin.pin.getType() == Float::class -> {
+            NumberInputField(
+                value = value,
+                onValueChange = onValueChange,
+                isInt = false
             )
         }
         filedPin.pin.getType() == Boolean::class -> {

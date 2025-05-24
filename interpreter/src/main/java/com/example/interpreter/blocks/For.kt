@@ -15,7 +15,10 @@ class ForBlock(
         PinManager.createPinInt("last", ownId = id),
         PinManager.createPinInt("step", ownId = id)
     ),
-    mutableListOf(PinManager.createPinBlock("body", ownId = id), PinManager.createPinInt("index", ownId = id))
+    mutableListOf(
+        PinManager.createPinBlock("body", ownId = id),
+        PinManager.createPinInt("index", ownId = id),
+        PinManager.createPinBlock("completed", ownId = id))
 ) {
     private var currentIndex: Int? = null
 
@@ -30,13 +33,21 @@ class ForBlock(
         if (currentIndex!! < last) {
             currentIndex = (currentIndex ?: first) + step
             pinByName("index")?.setValue(currentIndex)
+            pinByName("completed")?.disable()
             return ExecutionState.RUNNING
         }
 
         // Это чтобы можно было вызывать несколько раз выполнение этого блока.
         // Для двойных циклов, например.
         currentIndex = first
+        pinByName("completed")?.enable()
+        pinByName("index")?.disable()
+        pinByName("body")?.disable()
 
         return ExecutionState.COMPLETED
+    }
+
+    override fun rollback() {
+        outputs.forEach { pin -> pin.enable() }
     }
 }
