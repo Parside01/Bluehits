@@ -88,8 +88,7 @@ fun ConsoleUI(
     }
     val cornerRadius = 8.dp
     val backgroundColor = Color(0xFFE0E0E0)
-    val textColor = Color(0xFF333333)
-    val dividerColor = Color(0xFF888888)
+    val textColor = Color(0xFFFFFFFF)
     val shadowElevation = 4.dp
     val padding = 16.dp
     Surface(
@@ -110,18 +109,6 @@ fun ConsoleUI(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            Text(
-                text = "Консоль",
-                color = textColor,
-                fontSize = 20.sp
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(dividerColor)
-            )
             Spacer(modifier = Modifier.height(8.dp))
             LazyColumn(
                 modifier = Modifier
