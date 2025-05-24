@@ -59,17 +59,12 @@ object BlockManager {
             BinaryLogicOperatorBlock(
                 id, ">",
                 { a, b ->
-                    when {
-                        a.javaClass == type.java && b.javaClass == type.java -> {
-                            when (type) {
-                                Int::class -> (a as Int) > (b as Int)
-                                Double::class -> (a as Double) > (b as Double)
-                                Float::class -> (a as Float) > (b as Float)
-                                Long::class -> (a as Long) > (b as Long)
-                                else -> throw IllegalArgumentException("Unsupported type for add: $type")
-                            }
-                        }
-                        else -> throw IllegalArgumentException("Unsupported types for add: ${a.javaClass}, ${b.javaClass}")
+                    when (type) {
+                        Int::class -> (a as Int) > (b as Int)
+                        Double::class -> (a as Double) > (b as Double)
+                        Float::class -> (a as Float) > (b as Float)
+                        Long::class -> (a as Long) > (b as Long)
+                        else -> throw IllegalArgumentException("Unsupported type for add: $type")
                     }
                 },
                 type = type
@@ -82,18 +77,14 @@ object BlockManager {
             BinaryOperatorBlock(
                 id, "Add",
                 { a, b ->
-                    when {
-                        a.javaClass == type.java && b.javaClass == type.java -> {
-                            when (type) {
-                                Int::class -> (a as Int) + (b as Int)
-                                Double::class -> (a as Double) + (b as Double)
-                                Float::class -> (a as Float) + (b as Float)
-                                Long::class -> (a as Long) + (b as Long)
-                                else -> throw IllegalArgumentException("Unsupported type for add: $type")
-                            } as T
-                        }
-                        else -> throw IllegalArgumentException("Unsupported types for add: ${a?.javaClass}, ${b?.javaClass}")
-                    }
+                    when (type) {
+                        Int::class -> (a as Int) + (b as Int)
+                        Double::class -> (a as Double) + (b as Double)
+                        Float::class -> (a as Float) + (b as Float)
+                        Long::class -> (a as Long) + (b as Long)
+                        else -> throw IllegalArgumentException("Unsupported type for add: $type")
+                    } as T
+
                 },
                 type = type
             )
@@ -105,18 +96,13 @@ object BlockManager {
             BinaryOperatorBlock(
                 id, "Add",
                 { a, b ->
-                    when {
-                        a.javaClass == type.java && b.javaClass == type.java -> {
-                            when (type) {
-                                Int::class -> (a as Int) - (b as Int)
-                                Double::class -> (a as Double) - (b as Double)
-                                Float::class -> (a as Float) - (b as Float)
-                                Long::class -> (a as Long) - (b as Long)
-                                else -> throw IllegalArgumentException("Unsupported type for sub: $type")
-                            } as T
-                        }
-                        else -> throw IllegalArgumentException("Unsupported types for sub: ${a.javaClass}, ${b.javaClass}")
-                    }
+                    when (type) {
+                        Int::class -> (a as Int) - (b as Int)
+                        Double::class -> (a as Double) - (b as Double)
+                        Float::class -> (a as Float) - (b as Float)
+                        Long::class -> (a as Long) - (b as Long)
+                        else -> throw IllegalArgumentException("Unsupported type for sub: $type")
+                    } as T
                 },
                 type = type
             )
