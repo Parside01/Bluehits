@@ -47,7 +47,7 @@ object PinManager {
         return createPinInternal { id -> TPin(id, ownId, name, Any(), value) }
     }
 
-    fun createPinArray(name: String, value: List<Any> = emptyList(), ownId: Id = Utils.getDefaultValue(Id::class.java)): TPin<List<Any>> {
+    fun <T> createPinArray(name: String, value: List<T> = emptyList(), ownId: Id = Utils.getDefaultValue(Id::class.java)): TPin<List<T>> {
         return createPinInternal { id -> TPin(id, ownId, name, emptyList(), value) }
     }
 

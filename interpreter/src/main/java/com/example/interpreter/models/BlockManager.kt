@@ -30,7 +30,7 @@ object BlockManager {
 
     fun getBlock(id: Id) = blockRegistry[id.string()]
 
-    private fun <T : Block> createBlock(createBlockFunc: (Id) -> T): T {
+    fun <T : Block> createBlock(createBlockFunc: (Id) -> T): T {
         val id = generateId()
         val block = createBlockFunc(id)
         blockRegistry[id.string()] = block
@@ -92,8 +92,12 @@ object BlockManager {
         }
     }
 
-    fun createSwapBlock(): Block {
-        return createBlock { id -> SwapBlock(id) }
+    inline fun <reified T : Any> createSwapBlock(): Block {
+        return createBlock { id -> SwapBlock(id, T::class) }
+    }
+
+    inline fun <reified T : Any> createIndexBlock(): Block {
+        return createBlock { id -> IndexBlock(id, T::class) }
     }
 
     fun <T : Number> createSubBlock(type: KClass<T>): Block {
@@ -149,12 +153,14 @@ object BlockManager {
         return block
     }
 
-    @Suppress("UNCHECKED_CAST")
-    fun createArrayBlock(varName: String = "Array", value: List<Any> = emptyList()): Block {
-        val block = createBlock { id -> ArrayBlock(id, value, varName) }
+    fun <T> createArrayBlock(
+        varName: String = "Array",
+        value: List<T> = emptyList()
+    ): Block {
+        val block = createBlock { id -> ArrayBlock<T>(id, value, varName) }
 
         val blockState = VariableManager.getOrCreateVarState(varName, value, List::class)
-        block.setVarState(blockState as VarState<List<Any>>)
+        block.setVarState(blockState as VarState<List<T>>)
 
         blockState.addObserver(block)
         block.setPin.setValue(blockState.getValue())
@@ -162,15 +168,12 @@ object BlockManager {
         return block
     }
 
+
     fun createAppendBlock(): Block {
         return createBlock { id -> AppendBlock(id) }
     }
 
     fun createPrintBlock(writer: Writer = OutputStreamWriter(System.out)): Block {
         return createBlock { id -> PrintBlock(id, writer) }
-    }
-
-    fun createIndexBlock(): Block {
-        return createBlock { id -> IndexBlock(id) }
     }
 }
