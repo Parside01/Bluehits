@@ -8,6 +8,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,12 +17,10 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +29,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalConfiguration
@@ -40,10 +41,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import com.example.bluehits.ui.console.ConsoleBuffer
+import com.example.bluehits.ui.console.ConsoleUI
+import com.example.bluehits.ui.console.ConsoleWriteAdapter
+import com.example.bluehits.ui.console.ConsoleWriter
 import com.example.bluehits.ui.editPanel.BlockEditManager
 import com.example.bluehits.ui.editPanel.BlockEditPanel
 import com.example.interpreter.models.Id
 import com.example.interpreter.models.Program
+import java.io.PrintStream
 import kotlin.math.min
 
 @Composable
@@ -62,13 +68,40 @@ fun MainScreen() {
     val baseDimension = min(config.screenWidthDp, config.screenHeightDp).dp
     val density = LocalDensity.current
 
+    val consoleBuffer = remember { ConsoleBuffer() }
+    val isConsoleVisible = remember { mutableStateOf(false) }
+    var consoleBounds by remember { mutableStateOf<Rect?>(null) }
+
+    DisposableEffect(Unit) {
+        val oldOut = System.out
+        val oldErr = System.err
+        val consoleWriter = ConsoleWriter(consoleBuffer)
+        val outputStream = ConsoleWriteAdapter(consoleWriter)
+        System.setOut(PrintStream(outputStream, true))
+        System.setErr(PrintStream(outputStream, true))
+
+        onDispose {
+            System.setOut(oldOut)
+            System.setErr(oldErr)
+        }
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black)
             .systemBarsPadding()
+            .pointerInput(isConsoleVisible.value) {
+                detectTapGestures { tapOffset ->
+                    if (isConsoleVisible.value) {
+                        if (consoleBounds?.contains(tapOffset) == false) {
+                            isConsoleVisible.value = false
+                        }
+                    }
+                }
+            }
     ) {
-        val (canvas, panel, addButton, debugButton, runButton, trashButton, clearButton, editPanel) = createRefs()
+        val (canvas, panel, addButton, debugButton, runButton, trashButton, clearButton, editPanel, consoleUi, consoleButton) = createRefs()
 
         Column(
             modifier = Modifier
@@ -151,6 +184,22 @@ fun MainScreen() {
             )
         }
 
+        ConsoleUI(
+            consoleBuffer = consoleBuffer,
+            isConsoleVisible = isConsoleVisible,
+            modifier = Modifier
+                .constrainAs(consoleUi) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    end.linkTo(parent.end)
+                    height = Dimension.fillToConstraints
+                }
+                .zIndex(4f),
+            onConsoleBoundsChange = { newBounds ->
+                consoleBounds = newBounds
+            }
+        )
+
         StyledButton(
             text = "Add",
             onClick = { isPanelVisible = !isPanelVisible },
@@ -163,6 +212,20 @@ fun MainScreen() {
                 }
                 .zIndex(3f)
         )
+
+        StyledButton(
+            text = "Console",
+            onClick = { isConsoleVisible.value = !isConsoleVisible.value },
+            modifier = Modifier
+                .constrainAs(consoleButton) {
+                    end.linkTo(addButton.start, margin = baseDimension * 0.02f)
+                    bottom.linkTo(addButton.bottom)
+                    width = Dimension.wrapContent
+                    height = Dimension.wrapContent
+                }
+                .zIndex(3f)
+        )
+
 
         StyledButton(
             text = "Debug",
@@ -259,7 +322,6 @@ fun ControlPanel(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         val buttons = listOf(
-            "Main" to "Main",
             "Array" to "Array",
             "Int" to "Int",
             "Add" to "Add",
