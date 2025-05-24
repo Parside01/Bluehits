@@ -12,6 +12,7 @@ import com.example.interpreter.blocks.IndexBlock
 import com.example.interpreter.blocks.IntBlock
 import com.example.interpreter.blocks.MainBlock
 import com.example.interpreter.blocks.PrintBlock
+import com.example.interpreter.blocks.SwapBlock
 import java.io.OutputStreamWriter
 import java.util.concurrent.atomic.AtomicInteger
 import java.io.Writer
@@ -98,6 +99,10 @@ object BlockManager {
                 type = type
             )
         }
+    }
+
+    fun createSwapBlock(): Block {
+        return createBlock { id -> SwapBlock(id) }
     }
 
     fun <T : Number> createSubBlock(type: KClass<T>): Block {
