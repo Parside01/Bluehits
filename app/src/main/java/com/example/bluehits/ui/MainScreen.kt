@@ -84,7 +84,7 @@ fun MainScreen() {
     val baseDimension = min(config.screenWidthDp, config.screenHeightDp).dp
     val density = LocalDensity.current
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    var successMessage by remember { mutableStateOf<String?>(null) } // Новое состояние для успешного вывода
+    var successMessage by remember { mutableStateOf<String?>(null) }
 
     errorMessage?.let { message ->
         ErrorNotification(
@@ -158,6 +158,7 @@ fun MainScreen() {
                 }
             )
         }
+
         BlockEditPanel(
             modifier = Modifier
                 .constrainAs(editPanel) {
@@ -398,7 +399,7 @@ fun ErrorNotification(
     LaunchedEffect(Unit) {
         delay(5000)
         visible = false
-        delay(300)
+        delay(300) // Allow animation to complete
         onDismiss()
     }
 
@@ -470,7 +471,7 @@ fun runProgram(
     try {
         Program.run()
         val printValue = blocksManager.getPrintBlockValue(blocksManager.uiBlocks)
-        showSuccess("Вывод: ${printValue ?: "не определено"}") // Используем showSuccess
+        showSuccess("Вывод: ${printValue ?: "не определено"}")
     } catch (e: Exception) {
         showError("Ошибка при выполнении программы: ${e.message}")
     }
