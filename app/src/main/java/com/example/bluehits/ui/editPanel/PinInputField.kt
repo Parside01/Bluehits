@@ -1,15 +1,29 @@
 package com.example.bluehits.ui.editPanel
 
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
@@ -21,15 +35,15 @@ fun PinInputField(
 ) {
     when {
         filedPin.pin.getType() == Int::class -> {
-            NumberInputField(
-                value = value,
+            NumberInputController(
+                initialValue = value.toString().toIntOrNull() ?: 0,
                 onValueChange = onValueChange,
                 isInt = true
             )
         }
         filedPin.pin.getType() == Float::class -> {
-            NumberInputField(
-                value = value,
+            NumberInputController(
+                initialValue = value.toString().toIntOrNull() ?: 0,
                 onValueChange = onValueChange,
                 isInt = false
             )
@@ -57,32 +71,131 @@ fun PinInputField(
 }
 
 @Composable
-private fun NumberInputField(
-    value: Any,
-    onValueChange: (Any) -> Unit,
+private fun NumberInputController(
+    initialValue: Number,
+    onValueChange: (Number) -> Unit,
     isInt: Boolean
 ) {
-    OutlinedTextField(
-        value = value.toString(),
-        onValueChange = { newValue ->
-            if (newValue.isEmpty() || newValue.matches(Regex(if (isInt) "-?\\d+" else "-?\\d*\\.?\\d*"))) {
-                val number = if (isInt) {
-                    newValue.toIntOrNull()
-                } else {
-                    newValue.toDoubleOrNull()
-                }
-                if (number != null) {
-                    onValueChange(number)
+    val intValue = remember { mutableIntStateOf(initialValue.toInt()) }
+
+    val doubleValue = remember { mutableStateOf(initialValue.toDouble()) }
+
+    val step = remember { mutableIntStateOf(1) }
+
+    val isManualInput = remember { mutableStateOf(false) }
+
+    val textValue = remember { mutableStateOf(initialValue.toString()) }
+
+    val currentValue = if (isInt) intValue.intValue else doubleValue.value
+
+    fun applyValue(newValue: Number) {
+        if (isInt) {
+            intValue.intValue = newValue.toInt()
+        } else {
+            doubleValue.value = newValue.toDouble()
+        }
+        textValue.value = newValue.toString()
+        onValueChange(newValue)
+    }
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Button(
+                onClick = {
+                    val newVal = if (isInt) {
+                        intValue.intValue - step.intValue
+                    } else {
+                        doubleValue.value - step.intValue
+                    }
+                    applyValue(newVal)
+                },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("-")
+            }
+
+            if (isManualInput.value) {
+                OutlinedTextField(
+                    value = textValue.value,
+                    onValueChange = { newText ->
+                        if (newText.isEmpty() || newText.matches(Regex(if (isInt) "-?\\d*" else "-?\\d*\\.?\\d*"))) {
+                            textValue.value = newText
+                            val parsed = if (isInt) newText.toIntOrNull() else newText.toDoubleOrNull()
+                            parsed?.let { applyValue(it) }
+                        }
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = { isManualInput.value = false }
+                    ),
+                    modifier = Modifier.weight(2f),
+                    singleLine = true
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .weight(2f)
+                        .height(48.dp)
+                        .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
+                        .clickable { isManualInput.value = true },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = currentValue.toString())
                 }
             }
-        },
-        keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = if (isInt) KeyboardType.Number else KeyboardType.NumberPassword
-        ),
-        modifier = Modifier.fillMaxWidth(),
-        singleLine = true,
-        placeholder = { Text(if (isInt) "Enter integer" else "Enter number") }
-    )
+
+            Button(
+                onClick = {
+                    val newVal = if (isInt) {
+                        intValue.intValue + step.intValue
+                    } else {
+                        doubleValue.value + step.intValue
+                    }
+                    applyValue(newVal)
+                },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("+")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Button(
+                onClick = { step.intValue = (step.intValue - 1).coerceAtLeast(1) },
+                modifier = Modifier.weight(1f),
+            ) {
+                Text("-")
+            }
+
+            Box(
+                modifier = Modifier
+                    .weight(2f)
+                    .height(48.dp)
+                    .border(1.dp, Color.Gray, RoundedCornerShape(4.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = step.intValue.toString())
+            }
+
+            Button(
+                onClick = { step.intValue += 1 },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("+")
+            }
+        }
+    }
 }
 
 @Composable
