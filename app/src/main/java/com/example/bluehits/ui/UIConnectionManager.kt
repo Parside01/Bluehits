@@ -11,7 +11,7 @@ class UIConnectionManager {
     private var tempPin: PinUi? = null
     val connections = mutableStateListOf<Pair<PinUi, PinUi>>()
 
-    fun handlePinClick(pin: PinUi, onError: (String) -> Unit) {
+    fun handlePinClick(pin: PinUi, onError: (String) -> Unit = {}) {
         if (pin == tempPin) {
             tempPin = null
             return
@@ -24,7 +24,7 @@ class UIConnectionManager {
 
         if (pin.type == tempPin!!.type) {
             onError("Нельзя соединить пины одного типа: оба ${pin.type}")
-            tempPin = null
+            tempPin = pin
             return
         }
 

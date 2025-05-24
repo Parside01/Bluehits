@@ -23,20 +23,23 @@ class BlocksManager {
         return null
     }
 
-    fun addNewBlock(type: String, onError: (String) -> Unit) {
+    fun addNewBlock(type: String, onError: (String) -> Unit = {}) {
         if (type == "Main" && _uiBlocks.any { it.title == "Main" }) {
             onError("Блок Main уже существует и не может быть добавлен повторно")
             return
         }
         val logicBlock = when (type) {
             "Main" -> Program.getMainBlock()
+            "Index" -> BlockManager.createIndexBlock()
+            "Append" -> BlockManager.createAppendBlock()
             "Array" -> BlockManager.createArrayBlock()
             "For" -> BlockManager.createForBlock()
             "Int" -> BlockManager.createIntBlock()
-            "Add" -> BlockManager.createAddBlock()
+            "Add" -> BlockManager.createAddBlock(type = Int::class)
             "Bool" -> BlockManager.createBoolBlock()
+            "Float" -> BlockManager.createFloatBlock()
             "Print" -> BlockManager.createPrintBlock()
-            "Sub" -> BlockManager.createSubBlock()
+            "Sub" -> BlockManager.createSubBlock(type = Int::class)
             "IfElse" -> BlockManager.createIfElseBlock()
             else -> throw IllegalArgumentException("Unsupported type")
         }
@@ -87,12 +90,10 @@ class BlocksManager {
         }
         UIPinManager.clearPinsForBlock(block)
         _uiBlocks.remove(block)
-
     }
 
     fun clearAllBlocks(connectionManager: UIConnectionManager) {
         _uiBlocks.toList().forEach { block ->
-            // Собираем ID всех пинов блока
             val pinIds = mutableListOf<Id>()
             pinIds.add(block.blockPin.id)
             block.inputPins.forEach { pinIds.add(it.id) }
@@ -109,7 +110,6 @@ class BlocksManager {
             }
             UIPinManager.clearPinsForBlock(block)
         }
-
         _uiBlocks.clear()
     }
 }

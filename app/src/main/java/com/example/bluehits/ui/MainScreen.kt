@@ -26,13 +26,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -62,13 +59,13 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.example.bluehits.ui.blockEditPanel.BlockEditManager
-import com.example.bluehits.ui.blockEditPanel.BlockEditPanel
+
+import com.example.bluehits.ui.editPanel.BlockEditManager
+import com.example.bluehits.ui.editPanel.BlockEditPanel
 import com.example.interpreter.models.Id
 import com.example.interpreter.models.Program
 import kotlinx.coroutines.delay
 import kotlin.math.min
-import androidx.compose.ui.graphics.graphicsLayer
 
 @Composable
 fun MainScreen() {
@@ -155,7 +152,6 @@ fun MainScreen() {
         }
 
         BlockEditPanel(
-            blocksManager = blocksManager,
             modifier = Modifier
                 .constrainAs(editPanel) {
                     bottom.linkTo(parent.bottom)
@@ -228,6 +224,7 @@ fun MainScreen() {
                 }
                 .zIndex(3f)
         )
+
         StyledButton(
             text = "Trash",
             onClick = {},
@@ -283,7 +280,7 @@ fun MainScreen() {
 fun ControlPanel(
     blocksManager: BlocksManager,
     modifier: Modifier = Modifier,
-    onError: (String) -> Unit
+    onError: (String) -> Unit = {}
 ) {
     Column(
         modifier = modifier,
@@ -297,8 +294,11 @@ fun ControlPanel(
             "Sub" to "Sub",
             "Print" to "Print",
             "Bool" to "Bool",
+            "Float" to "Float",
             "IfElse" to "IfElse",
-            "For" to "For"
+            "For" to "For",
+            "Index" to "Index",
+            "Append" to "Append"
         )
 
         buttons.forEach { (blockType, label) ->
@@ -320,53 +320,56 @@ fun ErrorNotification(
 
     LaunchedEffect(Unit) {
         delay(5000)
+        visible = false
+        delay(300) // Allow animation to complete
         onDismiss()
     }
 
-    Dialog(onDismissRequest = { onDismiss() }) {
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(16.dp))
-                .shadow(8.dp, RoundedCornerShape(16.dp))
-                .background(Color(0xFFC04D4D))
-                .padding(24.dp)
-                .wrapContentSize()
-                .graphicsLayer(
-                    alpha = if (visible) 1f else 0f,
-                    scaleX = if (visible) 1f else 0.8f,
-                    scaleY = if (visible) 1f else 0.8f
-                )
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(animationSpec = tween(300)) + scaleIn(animationSpec = tween(300)),
+        exit = fadeOut(animationSpec = tween(300)) + scaleOut(animationSpec = tween(300))
+    ) {
+        Dialog(onDismissRequest = { onDismiss() }) {
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .shadow(8.dp, RoundedCornerShape(16.dp))
+                    .background(Color(0xFFC04D4D))
+                    .padding(24.dp)
+                    .wrapContentSize()
             ) {
-                Text(
-                    text = message,
-                    style = TextStyle(
-                        color = Color.White,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium,
-                        textAlign = TextAlign.Center
-                    ),
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .size(32.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(Color.White.copy(alpha = 0.2f))
-                        .clickable { onDismiss() }
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Close",
-                        tint = Color.White,
-                        modifier = Modifier
-                            .size(24.dp)
-                            .align(Alignment.Center)
+                    Text(
+                        text = message,
+                        style = TextStyle(
+                            color = Color.White,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.Center
+                        ),
+                        modifier = Modifier.padding(bottom = 16.dp)
                     )
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .size(32.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(Color.White.copy(alpha = 0.2f))
+                            .clickable { onDismiss() }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Close",
+                            tint = Color.White,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .align(Alignment.Center)
+                        )
+                    }
                 }
             }
         }
