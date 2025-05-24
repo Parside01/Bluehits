@@ -81,34 +81,34 @@ class BoolBlock internal constructor(
 @Suppress("UNCHECKED_CAST")
 class ArrayBlock internal constructor(
     id: Id,
-    default: List<Any> = mutableListOf(),
+    default: List<Int> = mutableListOf(),
     name: String = "Array"
 ) : Block(
     id,
     name,
     mutableListOf(PinManager.createPinArray("set", default, ownId = id)),
     mutableListOf(PinManager.createPinArray("get", default, ownId = id))
-), VarObserver<List<Any>> {
-    lateinit var varState: VarState<List<Any>>
+), VarObserver<List<Int>> {
+    lateinit var varState: VarState<List<Int>>
 
-    internal fun setVarState(varState: VarState<List<Any>>) {
+    internal fun setVarState(varState: VarState<List<Int>>) {
         this.varState = varState
     }
 
-    internal val setPin: TPin<List<Any>> get() = inputs[0] as TPin<List<Any>>
-    internal val getPin: TPin<List<Any>> get() = outputs[0] as TPin<List<Any>>
+    internal val setPin: TPin<List<Int>> get() = inputs[0] as TPin<List<Int>>
+    internal val getPin: TPin<List<Int>> get() = outputs[0] as TPin<List<Int>>
 
     override fun execute(): ExecutionState {
         if (!::varState.isInitialized) {
             throw IllegalStateException("ArrayBlock '${name}' (ID: ${id.string()}) not initialized.")
         }
 
-        val inputValue = setPin.getValue() as List<Any>
+        val inputValue = setPin.getValue() as List<Int>
         varState.setValue(inputValue)
         return ExecutionState.COMPLETED
     }
 
-    override fun onValueChanged(newValue: List<Any>) {
+    override fun onValueChanged(newValue: List<Int>) {
         getPin.setValue(newValue)
         setPin.setValue(newValue)
     }
