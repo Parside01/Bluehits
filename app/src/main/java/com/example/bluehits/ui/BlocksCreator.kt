@@ -1,14 +1,31 @@
 package com.example.bluehits.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.example.interpreter.models.BlockManager
 import com.example.interpreter.models.Program
 
 class BlocksManager {
     private val _uiBlocks = mutableStateListOf<BlueBlock>()
     val uiBlocks: List<BlueBlock> get() = _uiBlocks
+    private var _showTypeDialog = mutableStateOf(false)
+    val showTypeDialog: State<Boolean> get() = _showTypeDialog
+
+    private var currentBlockType: String? = null
+    private var onTypeSelected: ((DataType) -> Unit)? = null
 
     public fun getPrintBlockValue(uiBlocks: List<BlueBlock>): Any? {
         uiBlocks.forEach { block ->
@@ -22,21 +39,82 @@ class BlocksManager {
 
 
     fun addNewBlock(type: String) {
+        when (type) {
+            "Index", "Append", "Swap", "Array", "Add", "Sub", "Greator" -> {
+                currentBlockType = type
+                _showTypeDialog.value = true
+            }
+            else -> createBlockWithoutType(type)
+        }
+    }
+
+    fun onTypeSelected(type: DataType) {
+        _showTypeDialog.value = false
+        currentBlockType?.let { blockType ->
+            val logicBlock = when (blockType) {
+                "Index" -> when (type) {
+                    DataType.INT -> BlockManager.createIndexBlock<Int>()
+                    DataType.FLOAT -> BlockManager.createIndexBlock<Float>()
+                    DataType.DOUBLE -> BlockManager.createIndexBlock<Double>()
+                    DataType.LONG -> BlockManager.createIndexBlock<Long>()
+                }
+                "Append" -> when (type) {
+                    DataType.INT -> BlockManager.createAppendBlock<Int>()
+                    DataType.FLOAT -> BlockManager.createAppendBlock<Float>()
+                    DataType.DOUBLE -> BlockManager.createAppendBlock<Double>()
+                    DataType.LONG -> BlockManager.createAppendBlock<Long>()
+                }
+                "Swap" -> when (type) {
+                    DataType.INT -> BlockManager.createSwapBlock<Int>()
+                    DataType.FLOAT -> BlockManager.createSwapBlock<Float>()
+                    DataType.DOUBLE -> BlockManager.createSwapBlock<Double>()
+                    DataType.LONG -> BlockManager.createSwapBlock<Long>()
+                }
+                "Array" -> when (type) {
+                    DataType.INT -> BlockManager.createArrayBlock<Int>()
+                    DataType.FLOAT -> BlockManager.createArrayBlock<Float>()
+                    DataType.DOUBLE -> BlockManager.createArrayBlock<Double>()
+                    DataType.LONG -> BlockManager.createArrayBlock<Long>()
+                }
+                "Add" ->  when (type) {
+                    DataType.INT -> BlockManager.createAddBlock(type = Int::class)
+                    DataType.FLOAT -> BlockManager.createAddBlock(type = Float::class)
+                    DataType.DOUBLE -> BlockManager.createAddBlock(type = Double::class)
+                    DataType.LONG -> BlockManager.createAddBlock(type = Long::class)
+                }
+                "Sub" ->  when (type) {
+                    DataType.INT -> BlockManager.createAddBlock(type = Int::class)
+                    DataType.FLOAT -> BlockManager.createAddBlock(type = Float::class)
+                    DataType.DOUBLE -> BlockManager.createAddBlock(type = Double::class)
+                    DataType.LONG -> BlockManager.createAddBlock(type = Long::class)
+                }
+                "Greator" ->  when (type) {
+                    DataType.INT -> BlockManager.createAddBlock(type = Int::class)
+                    DataType.FLOAT -> BlockManager.createAddBlock(type = Float::class)
+                    DataType.DOUBLE -> BlockManager.createAddBlock(type = Double::class)
+                    DataType.LONG -> BlockManager.createAddBlock(type = Long::class)
+                }
+                else -> throw IllegalArgumentException("Unsupported type")
+            }
+            _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock))
+        }
+    }
+
+    private fun createBlockWithoutType(type: String) {
         val logicBlock = when (type) {
-            "Index" -> BlockManager.createIndexBlock()
-            "Append" -> BlockManager.createAppendBlock()
-            "Array" -> BlockManager.createArrayBlock()
             "For" -> BlockManager.createForBlock()
             "Int" -> BlockManager.createIntBlock()
-            "Add" -> BlockManager.createAddBlock(type=Int::class)
             "Bool" -> BlockManager.createBoolBlock()
             "Float" -> BlockManager.createFloatBlock()
             "Print" -> BlockManager.createPrintBlock()
-            "Sub" -> BlockManager.createSubBlock(type=Int::class)
             "IfElse" -> BlockManager.createIfElseBlock()
             else -> throw IllegalArgumentException("Unsupported type")
         }
         _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock))
+    }
+
+    fun dismissTypeDialog() {
+        _showTypeDialog.value = false
     }
 
     init {
@@ -72,4 +150,46 @@ class BlocksManager {
     fun clearAllBlocks() {
         _uiBlocks.clear()
     }
+}
+
+@Composable
+fun TypeSelectionDialog(
+    onTypeSelected: (DataType) -> Unit,
+    onDismiss: () -> Unit
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .background(Color.White, RoundedCornerShape(12.dp))
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Select data type",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            DataType.values().forEach { type ->
+                Button(
+                    onClick = { onTypeSelected(type) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.LightGray,
+                        contentColor = Color.Black
+                    )
+                ) {
+                    Text(text = type.title)
+                }
+            }
+        }
+    }
+}
+
+enum class DataType(val title: String) {
+    INT("Int"),
+    FLOAT("Float"),
+    DOUBLE("Double"),
+    LONG("Long")
 }

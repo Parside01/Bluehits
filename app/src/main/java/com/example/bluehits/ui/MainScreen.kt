@@ -87,6 +87,17 @@ fun MainScreen() {
         }
     }
 
+    if (blocksManager.showTypeDialog.value) {
+        TypeSelectionDialog(
+            onTypeSelected = { type ->
+                blocksManager.onTypeSelected(type)
+            },
+            onDismiss = {
+                blocksManager.dismissTypeDialog()
+            }
+        )
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -171,7 +182,7 @@ fun MainScreen() {
             exit = slideOutHorizontally(targetOffsetX = { -it }) + fadeOut(),
             modifier = Modifier
                 .constrainAs(panel) {
-                    start.linkTo(parent.start) // Привязываем к левому краю
+                    start.linkTo(parent.start)
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
                     width = Dimension.value(180.dp)
@@ -212,7 +223,8 @@ fun MainScreen() {
 
         StyledButton(
             text = "Add",
-            onClick = { isPanelVisible = !isPanelVisible },
+            onClick = { isPanelVisible = !isPanelVisible
+                      isConsoleVisible.value = false},
             modifier = Modifier
                 .constrainAs(addButton) {
                     end.linkTo(parent.end, margin = baseDimension * 0.05f)
@@ -225,7 +237,8 @@ fun MainScreen() {
 
         StyledButton(
             text = "Console",
-            onClick = { isConsoleVisible.value = !isConsoleVisible.value },
+            onClick = { isConsoleVisible.value = !isConsoleVisible.value
+                      isPanelVisible = false },
             modifier = Modifier
                 .constrainAs(consoleButton) {
                     end.linkTo(addButton.start, margin = baseDimension * 0.02f)
@@ -332,16 +345,20 @@ fun ControlPanel(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         val buttons = listOf(
-            "Array" to "Array",
             "Int" to "Int",
+            "Float" to "Float",
+            "Bool" to "Bool",
             "Add" to "Add",
             "Sub" to "Sub",
-            "Print" to "Print",
-            "Bool" to "Bool",
-            "Float" to "Float",
+            "Greator" to "Greator",
             "IfElse" to "IfElse",
-            "For" to "For"
-        )
+            "For" to "For",
+            "Array" to "Array",
+            "Index" to "Index",
+            "Append" to "Append",
+            "Swap" to "Swap",
+            "Print" to "Print"
+            )
 
         buttons.forEach { (blockType, label) ->
             StyledButton(
