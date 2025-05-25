@@ -142,14 +142,14 @@ fun CreateCanvas(
             blocks.forEach { block ->
                 drawBlock(block, textMeasurer, density)
 
-                if (block == selectedBlock) {
-                    drawRect(
-                        color = Color.White,
-                        topLeft = Offset(block.x - 4, block.y - 4),
-                        size = Size(block.width + 8, block.height + 8),
-                        style = Stroke(width = 4f / scale)
-                    )
-                }
+//                if (block == selectedBlock) {
+//                    drawRect(
+//                        color = Color.White,
+//                        topLeft = Offset(block.x - 4, block.y - 4),
+//                        size = Size(block.width + 8, block.height + 8),
+//                        style = Stroke(width = 4f / scale)
+//                    )
+//                }
             }
             connectionManager.connections.forEach { (pin1, pin2) ->
                 lineCreator.run { drawBezierCurve(pin1, pin2) }
