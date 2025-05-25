@@ -12,7 +12,7 @@ class IndexBlock<T: Any> (
     type: KClass<T>,
 ) : Block(id,
     "Index",
-    mutableListOf(PinManager.createPinArray<Any>("arr", ownId = id), PinManager.createPinInt("index", ownId = id, value = 0)),
+    mutableListOf(PinManager.createPinArray<T>("arr", ownId = id), PinManager.createPinInt("index", ownId = id, value = 0)),
     mutableListOf(PinManager.createPin("value", ownId = id, type = type))
 ) {
     override fun execute(): ExecutionState {

@@ -100,6 +100,10 @@ object BlockManager {
         return createBlock { id -> IndexBlock(id, T::class) }
     }
 
+    inline fun <reified T : Any> createAppendBlock(): Block {
+        return createBlock { id -> AppendBlock(id, T::class) }
+    }
+
     fun <T : Number> createSubBlock(type: KClass<T>): Block {
         return createBlock { id ->
             BinaryOperatorBlock(
@@ -166,11 +170,6 @@ object BlockManager {
         block.setPin.setValue(blockState.getValue())
 
         return block
-    }
-
-
-    fun createAppendBlock(): Block {
-        return createBlock { id -> AppendBlock(id) }
     }
 
     fun createPrintBlock(writer: Writer = OutputStreamWriter(System.out)): Block {
