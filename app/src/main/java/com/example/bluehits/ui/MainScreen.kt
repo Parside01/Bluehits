@@ -27,7 +27,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -42,7 +41,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.boundsInRoot
@@ -65,7 +63,6 @@ import com.example.bluehits.ui.console.ConsoleBuffer
 import com.example.bluehits.ui.console.ConsoleUI
 import com.example.bluehits.ui.console.ConsoleWriteAdapter
 import com.example.bluehits.ui.console.ConsoleWriter
-
 import com.example.bluehits.ui.editPanel.BlockEditManager
 import com.example.bluehits.ui.editPanel.BlockEditPanel
 import com.example.interpreter.models.Id
@@ -189,7 +186,14 @@ fun MainScreen() {
                         }
                     } else {
                         if (isBlockOverTrash) {
-                            draggedBlock?.let { blocksManager.removeBlock(it, connectionManager) }
+                            if (block.title != "Main") {
+                                draggedBlock?.let {
+                                    blocksManager.removeBlock(
+                                        it,
+                                        connectionManager
+                                    )
+                                }
+                            }
                         }
                         draggedBlock = null
                         isBlockOverTrash = false
