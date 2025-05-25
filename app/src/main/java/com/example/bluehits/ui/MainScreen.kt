@@ -93,13 +93,6 @@ fun MainScreen() {
         )
     }
 
-    successMessage?.let { message ->
-        SuccessNotification(
-            message = message,
-            onDismiss = { successMessage = null }
-        )
-    }
-
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -325,70 +318,7 @@ fun ControlPanel(
         }
     }
 }
-@Composable
-fun SuccessNotification(
-    message: String,
-    onDismiss: () -> Unit
-) {
-    var visible by remember { mutableStateOf(true) }
 
-    LaunchedEffect(Unit) {
-        delay(5000)
-        visible = false
-        delay(300)
-        onDismiss()
-    }
-
-    AnimatedVisibility(
-        visible = visible,
-        enter = fadeIn(animationSpec = tween(300)) + scaleIn(animationSpec = tween(300)),
-        exit = fadeOut(animationSpec = tween(300)) + scaleOut(animationSpec = tween(300))
-    ) {
-        Dialog(onDismissRequest = { onDismiss() }) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(16.dp))
-                    .shadow(8.dp, RoundedCornerShape(16.dp))
-                    .background(Color(0xFF6C6C6C))
-                    .padding(24.dp)
-                    .wrapContentSize()
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = message,
-                        style = TextStyle(
-                            color = Color.White,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Medium,
-                            textAlign = TextAlign.Center
-                        ),
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.End)
-                            .size(32.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(Color.White.copy(alpha = 0.2f))
-                            .clickable { onDismiss() }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Close",
-                            tint = Color.White,
-                            modifier = Modifier
-                                .size(24.dp)
-                                .align(Alignment.Center)
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
 @Composable
 fun ErrorNotification(
     message: String,
