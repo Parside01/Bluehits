@@ -16,6 +16,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.interpreter.models.BlockManager
+import com.example.interpreter.models.ConnectionManager
+import com.example.interpreter.models.Id
+import com.example.interpreter.models.PinManager
 import com.example.interpreter.models.Program
 
 class BlocksManager {
@@ -144,10 +147,43 @@ class BlocksManager {
         }
     }
 
-    fun removeBlock(block: BlueBlock) {
+    fun removeBlock(block: BlueBlock, connectionManager: UIConnectionManager) {
+        val pinIds = mutableListOf<Id>()
+        pinIds.add(block.blockPin.id)
+        block.inputPins.forEach { pinIds.add(it.id) }
+        block.outputPins.forEach { pinIds.add(it.id) }
+        pinIds.forEach { pinId ->
+            PinManager.getPin(pinId)?.let { pin ->
+                ConnectionManager.getPinConnections(pin).forEach { connection ->
+                    ConnectionManager.disconnect(connection.id.string())
+                }
+            }
+        }
+        connectionManager.connections.removeAll { (pin1, pin2) ->
+            pinIds.contains(pin1.id) || pinIds.contains(pin2.id)
+        }
+        UIPinManager.clearPinsForBlock(block)
         _uiBlocks.remove(block)
     }
-    fun clearAllBlocks() {
+
+    fun clearAllBlocks(connectionManager: UIConnectionManager) {
+        _uiBlocks.toList().forEach { block ->
+            val pinIds = mutableListOf<Id>()
+            pinIds.add(block.blockPin.id)
+            block.inputPins.forEach { pinIds.add(it.id) }
+            block.outputPins.forEach { pinIds.add(it.id) }
+            pinIds.forEach { pinId ->
+                PinManager.getPin(pinId)?.let { pin ->
+                    ConnectionManager.getPinConnections(pin).forEach { connection ->
+                        ConnectionManager.disconnect(connection.id.string())
+                    }
+                }
+            }
+            connectionManager.connections.removeAll { (pin1, pin2) ->
+                pinIds.contains(pin1.id) || pinIds.contains(pin2.id)
+            }
+            UIPinManager.clearPinsForBlock(block)
+        }
         _uiBlocks.clear()
     }
 }
