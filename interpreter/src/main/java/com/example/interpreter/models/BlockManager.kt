@@ -7,6 +7,9 @@ import com.example.interpreter.blocks.BinaryOperatorBlock
 import com.example.interpreter.blocks.BoolBlock
 import com.example.interpreter.blocks.FloatBlock
 import com.example.interpreter.blocks.ForBlock
+import com.example.interpreter.blocks.FunctionCallBlock
+import com.example.interpreter.blocks.FunctionDefinitionBlock
+import com.example.interpreter.blocks.FunctionReturnBlock
 import com.example.interpreter.blocks.IfElseBlock
 import com.example.interpreter.blocks.IndexBlock
 import com.example.interpreter.blocks.IntBlock
@@ -60,17 +63,12 @@ object BlockManager {
             BinaryLogicOperatorBlock(
                 id, ">",
                 { a, b ->
-                    when {
-                        a.javaClass == type.java && b.javaClass == type.java -> {
-                            when (type) {
-                                Int::class -> (a as Int) > (b as Int)
-                                Double::class -> (a as Double) > (b as Double)
-                                Float::class -> (a as Float) > (b as Float)
-                                Long::class -> (a as Long) > (b as Long)
-                                else -> throw IllegalArgumentException("Unsupported type for add: $type")
-                            }
-                        }
-                        else -> throw IllegalArgumentException("Unsupported types for add: ${a.javaClass}, ${b.javaClass}")
+                    when (type) {
+                        Int::class -> (a as Int) > (b as Int)
+                        Double::class -> (a as Double) > (b as Double)
+                        Float::class -> (a as Float) > (b as Float)
+                        Long::class -> (a as Long) > (b as Long)
+                        else -> throw IllegalArgumentException("Unsupported type for add: $type")
                     }
                 },
                 type = type
@@ -113,19 +111,13 @@ object BlockManager {
             BinaryOperatorBlock(
                 id, "Add",
                 { a, b ->
-                    when {
-                        a.javaClass == type.java && b.javaClass == type.java -> {
-                            when (type) {
-                                Int::class -> (a as Int) - (b as Int)
-                                Double::class -> (a as Double) - (b as Double)
-                                Float::class -> (a as Float) - (b as Float)
-                                Long::class -> (a as Long) - (b as Long)
-                                else -> throw IllegalArgumentException("Unsupported type for sub: $type")
-                            } as T
-                        }
-
-                        else -> throw IllegalArgumentException("Unsupported types for sub: ${a.javaClass}, ${b.javaClass}")
-                    }
+                    when (type) {
+                        Int::class -> (a as Int) - (b as Int)
+                        Double::class -> (a as Double) - (b as Double)
+                        Float::class -> (a as Float) - (b as Float)
+                        Long::class -> (a as Long) - (b as Long)
+                        else -> throw IllegalArgumentException("Unsupported type for sub: $type")
+                    } as T
                 },
                 type = type
             )
@@ -187,5 +179,23 @@ object BlockManager {
 
     fun createPrintBlock(writer: Writer = OutputStreamWriter(System.out)): Block {
         return createBlock { id -> PrintBlock(id, writer) }
+    }
+
+    fun createFunctionDefinitionBlock(funcName: String) : Block {
+        val block = createBlock { id -> FunctionDefinitionBlock(funcName = funcName, id = id) }
+        FunctionManager.addFunctionDefinitionBlock(block)
+        return block
+    }
+
+    fun createFunctionCalledBlock(funcName: String) : Block {
+        val block = createBlock { id -> FunctionCallBlock(id, funcName) }
+        FunctionManager.addFunctionCallBlock(block)
+        return block
+    }
+
+    fun createFunctionReturnBlock(funcName: String) : Block {
+        val block = createBlock { id -> FunctionReturnBlock(id, funcName) }
+        FunctionManager.addFunctionReturnBlock(block)
+        return block
     }
 }
