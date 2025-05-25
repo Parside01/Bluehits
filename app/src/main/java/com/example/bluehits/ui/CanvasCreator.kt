@@ -2,9 +2,10 @@ package com.example.bluehits.ui
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.foundation.gestures.drag
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,15 +18,19 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextMeasurer
 import com.example.interpreter.models.Id
+import kotlin.math.sqrt
 
 @Composable
 fun CreateCanvas(
     blocks: List<BlueBlock>,
     textMeasurer: TextMeasurer,
+    connectionManager: UIConnectionManager,
     onDrag: (dragAmount: Offset) -> Unit,
     onBlockDrag: (block: BlueBlock, dragAmount: Offset, isDragging: Boolean) -> Unit,
     onBlockClick: (blockId: Id) -> Unit
@@ -33,7 +38,6 @@ fun CreateCanvas(
     var canvasOffset by remember { mutableStateOf(Offset.Zero) }
     var scale by remember { mutableStateOf(1f) }
     var selectedBlock by remember { mutableStateOf<BlueBlock?>(null) }
-    val connectionManager = remember { UIConnectionManager() }
     val lineCreator = remember { LineCreator() }
     val density = LocalDensity.current
 
@@ -41,46 +45,85 @@ fun CreateCanvas(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF212121))
-            .pointerInput(Unit) {
-                detectTransformGestures { _, pan, zoom, _ ->
-                    scale = (scale * zoom).coerceIn(0.5f, 3f)
-                    canvasOffset += pan
-                }
-            }
+            .pointerInput(blocks) {
+                awaitEachGesture {
+                    val down = awaitFirstDown(requireUnconsumed = false)
+                    val startPosition = down.position
+                    val adjusted = (startPosition - canvasOffset) / scale
 
-            .pointerInput(Unit) {
-                detectDragGestures(
-                    onDragStart = { offset ->
-                        val adjusted = (offset - canvasOffset) / scale
-                        selectedBlock = blocks.firstOrNull { block ->
-                            adjusted.x in block.x..(block.x + block.width) &&
-                                    adjusted.y in block.y..(block.y + block.height)
-                        }
-                        selectedBlock?.let { block ->
-                            onBlockDrag(block, Offset.Zero, true)
-                        }
-                    },
-                    onDrag = { _, dragAmount ->
-                        selectedBlock?.let {
-                            onBlockDrag(it, dragAmount / scale, true)
-                        } ?: run {
-                            canvasOffset += dragAmount
-                            onDrag(dragAmount)
-                        }
-                    },
-                    onDragEnd = {
-                        selectedBlock?.let { block ->
-                            onBlockDrag(block, Offset.Zero, false)
-                        }
-                        selectedBlock = null
+                    selectedBlock = blocks.firstOrNull { block ->
+                        adjusted.x in block.x..(block.x + block.width) &&
+                                adjusted.y in block.y..(block.y + block.height)
                     }
-                )
+
+                    if (selectedBlock != null) {
+                        onBlockDrag(selectedBlock!!, Offset.Zero, true)
+                    }
+
+                    var pointerCount = 1
+                    var pastTouchSlop = false
+                    var previousCentroid = down.position
+                    var previousDistance = 0f
+
+                    while (true) {
+                        val event = awaitPointerEvent(pass = PointerEventPass.Main)
+                        val pointers = event.changes.filter { it.pressed }
+                        if (pointers.isEmpty()) break
+
+                        pointerCount = pointers.size
+
+                        if (pointerCount == 1) {
+                            val change = pointers[0]
+                            val dragAmount = change.positionChange()
+
+                            selectedBlock?.let {
+                                onBlockDrag(it, dragAmount / scale, true)
+                            } ?: run {
+                                canvasOffset += dragAmount
+                                onDrag(dragAmount)
+                            }
+                            change.consume()
+                        } else if (pointerCount == 2) {
+                            val pos1 = pointers[0].position
+                            val pos2 = pointers[1].position
+                            val newCentroid = (pos1 + pos2) / 2f
+                            val newDistance = (pos1 - pos2).getDistance()
+
+                            if (!pastTouchSlop) {
+                                pastTouchSlop = true
+                                previousCentroid = newCentroid
+                                previousDistance = newDistance
+                            }
+
+                            val zoom = newDistance / previousDistance
+                            val newScale = (scale * zoom).coerceIn(0.5f, 1f)
+
+                            if (newScale != scale) {
+                                val adjustedCentroid = (newCentroid - canvasOffset) / scale
+                                scale = newScale
+                                canvasOffset = newCentroid - (adjustedCentroid * scale)
+                            }
+
+                            val pan = newCentroid - previousCentroid
+                            canvasOffset += pan
+                            onDrag(pan)
+
+                            previousCentroid = newCentroid
+                            previousDistance = newDistance
+
+                            pointers.forEach { it.consume() }
+                        }
+                    }
+
+                    selectedBlock?.let { onBlockDrag(it, Offset.Zero, false) }
+                    selectedBlock = null
+                }
             }
             .pointerInput(Unit) {
                 detectTapGestures { offset ->
                     val adjustedOffset = (offset - canvasOffset) / scale
                     UIPinManager.findPinAt(adjustedOffset)?.let { pin ->
-                        connectionManager.handlePinClick(pin)
+                        connectionManager.handlePinClick(pin) { }
                     } ?: run {
                         blocks.firstOrNull { block ->
                             adjustedOffset.x in block.x..(block.x + block.width) &&
@@ -115,3 +158,4 @@ fun CreateCanvas(
     }
 }
 
+private fun Offset.getDistance(): Float = sqrt(x * x + y * y)

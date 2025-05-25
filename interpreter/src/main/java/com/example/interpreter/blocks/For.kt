@@ -30,11 +30,20 @@ class ForBlock(
         currentIndex = (currentIndex ?: first)
 
         // Вроде как можем утверждать что оно точно не null.
-        if (currentIndex!! < last) {
-            currentIndex = (currentIndex ?: first) + step
-            pinByName("index")?.setValue(currentIndex)
-            pinByName("completed")?.disable()
-            return ExecutionState.RUNNING
+        if (step > 0) {
+            if (currentIndex!! < last) {
+                currentIndex = (currentIndex ?: first) + step
+                pinByName("index")?.setValue(currentIndex)
+                pinByName("completed")?.disable()
+                return ExecutionState.RUNNING
+            }
+        } else {
+            if (currentIndex!! > last) {
+                currentIndex = (currentIndex ?: first) + step
+                pinByName("index")?.setValue(currentIndex)
+                pinByName("completed")?.disable()
+                return ExecutionState.RUNNING
+            }
         }
 
         // Это чтобы можно было вызывать несколько раз выполнение этого блока.

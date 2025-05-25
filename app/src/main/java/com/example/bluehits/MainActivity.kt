@@ -7,6 +7,7 @@ import com.example.bluehits.ui.MainScreen
 
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
