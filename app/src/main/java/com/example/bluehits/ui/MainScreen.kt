@@ -199,7 +199,8 @@ fun MainScreen() {
                     selectedBlockId = blockId
                     showSettingsDialog = true
                     BlockEditManager.showEditPanel(blocksManager.uiBlocks.find { it.id == blockId }!!)
-                }
+                },
+                connectionManager = connectionManager
             )
         }
 
@@ -398,7 +399,7 @@ fun ControlPanel(
             "Append" to "Append",
             "Swap" to "Swap",
             "Print" to "Print"
-            )
+        )
 
         buttons.forEach { (blockType, label) ->
             StyledButton(
