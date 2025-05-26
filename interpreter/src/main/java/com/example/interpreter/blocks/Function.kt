@@ -18,6 +18,14 @@ abstract class FunctionPartBlock(
     open fun setFunctionName(newName : String) {
         name = newName
     }
+
+    open fun addInputArg(pin : Pin) {
+        inputs.add(pin)
+    }
+
+    open fun addOutputArg(pin : Pin) {
+        outputs.add(pin)
+    }
 }
 
 class FunctionCallBlock(
