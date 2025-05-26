@@ -146,7 +146,9 @@ fun MainScreen() {
                 else -> "Enter Function Name"
             },
             label = when (blocksManager.currentFunctionDialogType) {
-                "Int", "Float", "Bool" -> "Value name"
+                "Int" -> "Int name"
+                "Float" -> "Float name"
+                "Bool" -> "Bool name"
                 else -> "Function name"
             },
             onNameEntered = { name ->
