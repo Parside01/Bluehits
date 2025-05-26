@@ -1,9 +1,14 @@
 package com.example.bluehits.ui
 
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import com.example.interpreter.blocks.ArrayBlock
+import com.example.interpreter.blocks.BoolBlock
+import com.example.interpreter.blocks.FloatBlock
+import com.example.interpreter.blocks.FunctionCallBlock
+import com.example.interpreter.blocks.FunctionDefinitionBlock
+import com.example.interpreter.blocks.FunctionReturnBlock
+import com.example.interpreter.blocks.IntBlock
 import com.example.interpreter.models.Block
-import com.example.interpreter.models.Program
 
 object BlockAdapter {
     private val colorMapping = mapOf(
@@ -17,17 +22,32 @@ object BlockAdapter {
     )
 
     fun wrapLogicBlock(logicBlock: Block): BlueBlock {
+        val title = when (logicBlock) {
+            is FunctionDefinitionBlock -> "def ${logicBlock.getFunctionName()}" ?: "definition"
+            is FunctionCallBlock -> "call ${logicBlock.getFunctionName()}" ?: "call"
+            is FunctionReturnBlock -> "return ${logicBlock.getFunctionName()}" ?: "return"
+            is IntBlock -> "Int ${logicBlock.name}" ?: "int"
+            is FloatBlock -> "Float ${logicBlock.name}" ?: "float"
+            is BoolBlock -> "Bool ${logicBlock.name}" ?: "bool"
+            else -> logicBlock.name ?: "Block"
+        }
+
         return BlueBlock(
             id = logicBlock.id,
             initialX = 0f,
             initialY = 0f,
-            color = Color.Gray,
-            title = logicBlock.name ?: "Block",
+            color = BlockBodyColor,
+            title = title,
             inputPins = logicBlock.inputs,
             outputPins = logicBlock.outputs,
-            blockPin = logicBlock.blockPin,
-        ).apply {
-            this.logicBlock = logicBlock
-        }
+            inBlockPin = logicBlock.blockPin,
+            outBlockPin = logicBlock.outBlockPin,
+            functionName = when (logicBlock) {
+                is FunctionDefinitionBlock -> logicBlock.getFunctionName()
+                is FunctionCallBlock -> logicBlock.getFunctionName()
+                is FunctionReturnBlock -> logicBlock.getFunctionName()
+                else -> logicBlock.name
+            }
+        )
     }
 }

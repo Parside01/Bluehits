@@ -88,7 +88,6 @@ object BlockManager {
                         Long::class -> (a as Long) + (b as Long)
                         else -> throw IllegalArgumentException("Unsupported type for add: $type")
                     } as T
-
                 },
                 type = type
             )
@@ -148,7 +147,10 @@ object BlockManager {
         return block
     }
 
-    fun createFloatBlock(varName: String = "Float", value: Float = Utils.getDefaultValue(Float::class.java)): Block {
+    fun createFloatBlock(
+        varName: String = "Float",
+        value: Float = Utils.getDefaultValue(Float::class.java)
+    ): Block {
         val block = createBlock { id -> FloatBlock(id, value, varName) }
 
         val blockState = VariableManager.getOrCreateVarState(varName, value, Float::class)
