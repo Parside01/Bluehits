@@ -423,7 +423,13 @@ fun ControlPanel(
         buttons.forEach { (blockType, label) ->
             StyledButton(
                 text = label,
-                onClick = { blocksManager.addNewBlock(blockType) },
+                {
+                    when (blockType) {
+                        "Function def", "Function call", "Function return" ->
+                            blocksManager.addNewBlock(blockType)
+                        else -> blocksManager.addNewBlock(blockType)
+                    }
+                },
                 style = ButtonStyles.controlPanelButtonStyle()
             )
         }

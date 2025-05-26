@@ -88,7 +88,8 @@ class BlueBlock(
     var title: String = "Block",
     val inputPins: List<Pin> = emptyList(),
     val outputPins: List<Pin> = emptyList(),
-    val blockPin: Pin
+    val blockPin: Pin,
+    val functionName: String? = null
 ) {
     var width by mutableStateOf(0f)
     var height by mutableStateOf(0f)

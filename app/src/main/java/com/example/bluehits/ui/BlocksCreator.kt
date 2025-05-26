@@ -48,9 +48,9 @@ class BlocksManager {
                 currentBlockType = type
                 _showTypeDialog.value = true
             }
-            "FunctionDefinition" -> showFunctionNameDialog("Define Function")
-            "FunctionCall" -> showFunctionNameDialog("Call Function")
-            "FunctionReturn" -> showFunctionNameDialog("Return From Function")
+            "Function def" -> showFunctionNameDialog("Function def")
+            "Function call" -> showFunctionNameDialog("Function call")
+            "Function return" -> showFunctionNameDialog("Function return")
             else -> createBlockWithoutType(type)
         }
     }
@@ -68,9 +68,9 @@ class BlocksManager {
         _showFunctionNameDialog.value = false
         currentFunctionDialogType?.let { dialogType ->
             val logicBlock = when (dialogType) {
-                "Define Function" -> BlockManager.createFunctionDefinitionBlock(name)
-                "Call Function" -> BlockManager.createFunctionCalledBlock(name)
-                "Return From Function" -> BlockManager.createFunctionReturnBlock(name)
+                "Function def" -> BlockManager.createFunctionDefinitionBlock(name)
+                "Function call" -> BlockManager.createFunctionCalledBlock(name)
+                "Function return" -> BlockManager.createFunctionReturnBlock(name)
                 else -> throw IllegalArgumentException("Unknown function dialog type")
             }
             _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock))
