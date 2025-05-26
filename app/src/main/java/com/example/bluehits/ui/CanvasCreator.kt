@@ -33,8 +33,7 @@ fun CreateCanvas(
     connectionManager: UIConnectionManager,
     onDrag: (dragAmount: Offset) -> Unit,
     onBlockDrag: (block: BlueBlock, dragAmount: Offset, isDragging: Boolean) -> Unit,
-    onBlockClick: (blockId: Id) -> Unit,
-    onConnectionError: (String) -> Unit
+    onBlockClick: (blockId: Id) -> Unit
 ) {
     var canvasOffset by remember { mutableStateOf(Offset.Zero) }
     var scale by remember { mutableStateOf(1f) }
@@ -124,9 +123,7 @@ fun CreateCanvas(
                 detectTapGestures { offset ->
                     val adjustedOffset = (offset - canvasOffset) / scale
                     UIPinManager.findPinAt(adjustedOffset)?.let { pin ->
-                        connectionManager.handlePinClick(pin) { errorMessage ->
-                            onConnectionError(errorMessage)
-                        }
+                        connectionManager.handlePinClick(pin) { }
                     } ?: run {
                         blocks.firstOrNull { block ->
                             adjustedOffset.x in block.x..(block.x + block.width) &&
@@ -145,14 +142,14 @@ fun CreateCanvas(
             blocks.forEach { block ->
                 drawBlock(block, textMeasurer, density)
 
-                if (block == selectedBlock) {
-                    drawRect(
-                        color = Color.White,
-                        topLeft = Offset(block.x - 4, block.y - 4),
-                        size = Size(block.width + 8, block.height + 8),
-                        style = Stroke(width = 4f / scale)
-                    )
-                }
+//                if (block == selectedBlock) {
+//                    drawRect(
+//                        color = Color.White,
+//                        topLeft = Offset(block.x - 4, block.y - 4),
+//                        size = Size(block.width + 8, block.height + 8),
+//                        style = Stroke(width = 4f / scale)
+//                    )
+//                }
             }
             connectionManager.connections.forEach { (pin1, pin2) ->
                 lineCreator.run { drawBezierCurve(pin1, pin2) }

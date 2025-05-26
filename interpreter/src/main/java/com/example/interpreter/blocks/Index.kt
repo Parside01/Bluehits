@@ -5,13 +5,15 @@ import com.example.interpreter.models.ExecutionState
 import com.example.interpreter.models.Id
 import com.example.interpreter.models.PinManager
 import java.util.Arrays
+import kotlin.reflect.KClass
 
-class IndexBlock (
-    id: Id
+class IndexBlock<T: Any> (
+    id: Id,
+    type: KClass<T>,
 ) : Block(id,
     "Index",
-    mutableListOf(PinManager.createPinArray("arr", ownId = id), PinManager.createPinInt("index", ownId = id, value = 0)),
-    mutableListOf(PinManager.createPinAny("value", ownId = id))
+    mutableListOf(PinManager.createPinArray<T>("arr", ownId = id), PinManager.createPinInt("index", ownId = id, value = 0)),
+    mutableListOf(PinManager.createPin("value", ownId = id, type = type))
 ) {
     override fun execute(): ExecutionState {
         val arrPin = pinByName("arr")?.getValue()
@@ -32,12 +34,16 @@ class IndexBlock (
     }
 }
 
-class SwapBlock (
-    id: Id
+class SwapBlock<T:Any> (
+    id: Id,
+    type: KClass<T>
 ) : Block(id,
     "Swap",
-    mutableListOf(PinManager.createPinArray("arr", ownId = id), PinManager.createPinInt("i", ownId = id, value = 0), PinManager.createPinInt("i", ownId = id, value = 0)),
-    mutableListOf(PinManager.createPinArray("new", ownId = id))
+    mutableListOf(
+        PinManager.createPinArray<T>("arr", ownId = id),
+        PinManager.createPinInt("i", ownId = id, value = 0),
+        PinManager.createPinInt("i", ownId = id, value = 0)),
+    mutableListOf(PinManager.createPinArray<T>("new", ownId = id))
 ) {
     override fun execute(): ExecutionState {
         val array = inputs.first().getValue() as List<*>

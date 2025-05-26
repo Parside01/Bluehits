@@ -11,6 +11,7 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,6 +32,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,8 +44,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalConfiguration
@@ -59,11 +62,15 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-
+import com.example.bluehits.ui.console.ConsoleBuffer
+import com.example.bluehits.ui.console.ConsoleUI
+import com.example.bluehits.ui.console.ConsoleWriteAdapter
+import com.example.bluehits.ui.console.ConsoleWriter
 import com.example.bluehits.ui.editPanel.BlockEditManager
 import com.example.bluehits.ui.editPanel.BlockEditPanel
 import com.example.interpreter.models.Id
 import com.example.interpreter.models.Program
+import java.io.PrintStream
 import kotlinx.coroutines.delay
 import kotlin.math.min
 
@@ -93,13 +100,77 @@ fun MainScreen() {
         )
     }
 
+    successMessage?.let { message ->
+        SuccessNotification(
+            message = message,
+            onDismiss = { successMessage = null }
+        )
+    }
+
+    val consoleBuffer = remember { ConsoleBuffer() }
+    val isConsoleVisible = remember { mutableStateOf(false) }
+    var consoleBounds by remember { mutableStateOf<Rect?>(null) }
+    var panelBounds by remember { mutableStateOf<Rect?>(null) }
+
+    DisposableEffect(Unit) {
+        val oldOut = System.out
+        val oldErr = System.err
+        val consoleWriter = ConsoleWriter(consoleBuffer)
+        val outputStream = ConsoleWriteAdapter(consoleWriter)
+        System.setOut(PrintStream(outputStream, true))
+        System.setErr(PrintStream(outputStream, true))
+
+        onDispose {
+            System.setOut(oldOut)
+            System.setErr(oldErr)
+        }
+    }
+
+    if (blocksManager.showTypeDialog.value) {
+        TypeSelectionDialog(
+            onTypeSelected = { type ->
+                blocksManager.onTypeSelected(type)
+            },
+            onDismiss = {
+                blocksManager.dismissTypeDialog()
+            }
+        )
+    }
+
+    if (blocksManager.showFunctionNameDialog.value) {
+        FunctionNameDialog(
+            title = when (blocksManager.currentFunctionDialogType) {
+                "Function def" -> "Define Function"
+                "Function call" -> "Call Function"
+                "Function return" -> "Return From Function"
+                else -> "Enter Function Name"
+            },
+            onNameEntered = { name ->
+                blocksManager.onFunctionNameEntered(name)
+            },
+            onDismiss = {
+                blocksManager.dismissFunctionNameDialog()
+            }
+        )
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black)
             .systemBarsPadding()
+            .pointerInput(isConsoleVisible.value || isPanelVisible) {
+                detectTapGestures { tapOffset ->
+                    if (isConsoleVisible.value && consoleBounds?.contains(tapOffset) == false) {
+                        isConsoleVisible.value = false
+                    }
+                    if (isPanelVisible && panelBounds?.contains(tapOffset) == false) {
+                        isPanelVisible = false
+                    }
+                }
+            }
     ) {
-        val (canvas, panel, addButton, debugButton, runButton, trashButton, clearButton, editPanel) = createRefs()
+        val (canvas, panel, addButton, debugButton, runButton, trashButton, clearButton, editPanel, consoleUi, consoleButton) = createRefs()
 
         Column(
             modifier = Modifier
@@ -112,11 +183,11 @@ fun MainScreen() {
                     height = Dimension.fillToConstraints
                 }
                 .zIndex(0f)
+                .fillMaxSize()
         ) {
             CreateCanvas(
                 blocks = blocksManager.uiBlocks,
                 textMeasurer = textMeasurer,
-                connectionManager = connectionManager,
                 onDrag = { dragAmount ->
                     canvasOffset += dragAmount
                 },
@@ -135,8 +206,10 @@ fun MainScreen() {
                         }
                     } else {
                         if (isBlockOverTrash) {
+                            if (block.title != "Main") {
                             draggedBlock?.let { blocksManager.removeBlock(it, connectionManager) }
                         }
+                            }
                         draggedBlock = null
                         isBlockOverTrash = false
                     }
@@ -146,9 +219,7 @@ fun MainScreen() {
                     showSettingsDialog = true
                     BlockEditManager.showEditPanel(blocksManager.uiBlocks.find { it.id == blockId }!!)
                 },
-                onConnectionError = { message ->
-                    errorMessage = message
-                }
+                connectionManager = connectionManager
             )
         }
 
@@ -166,8 +237,8 @@ fun MainScreen() {
 
         AnimatedVisibility(
             visible = isPanelVisible,
-            enter = slideInHorizontally() + fadeIn(),
-            exit = slideOutHorizontally() + fadeOut(),
+            enter = slideInHorizontally(initialOffsetX = { -it }) + fadeIn(),
+            exit = slideOutHorizontally(targetOffsetX = { -it }) + fadeOut(),
             modifier = Modifier
                 .constrainAs(panel) {
                     start.linkTo(parent.start)
@@ -176,10 +247,14 @@ fun MainScreen() {
                     width = Dimension.value(180.dp)
                 }
                 .zIndex(2f)
+                .onGloballyPositioned { layoutCoordinates ->
+                    panelBounds = layoutCoordinates.boundsInRoot()
+                }
         ) {
             ControlPanel(
                 blocksManager = blocksManager,
                 modifier = Modifier
+                    .fillMaxSize()
                     .background(color = Color(0xFFF9F9FF), shape = RoundedCornerShape(16.dp))
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState()),
@@ -187,9 +262,29 @@ fun MainScreen() {
             )
         }
 
+        ConsoleUI(
+            consoleBuffer = consoleBuffer,
+            isConsoleVisible = isConsoleVisible,
+            modifier = Modifier
+                .constrainAs(consoleUi) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    height = Dimension.fillToConstraints
+                }
+                .zIndex(4f)
+                .onGloballyPositioned { layoutCoordinates ->
+                    consoleBounds = layoutCoordinates.boundsInRoot()
+                },
+            onConsoleBoundsChange = { newBounds ->
+                consoleBounds = newBounds
+            }
+        )
+
         StyledButton(
             text = "Add",
-            onClick = { isPanelVisible = !isPanelVisible },
+            onClick = { isPanelVisible = !isPanelVisible
+                      isConsoleVisible.value = false},
             modifier = Modifier
                 .constrainAs(addButton) {
                     end.linkTo(parent.end, margin = baseDimension * 0.05f)
@@ -199,6 +294,21 @@ fun MainScreen() {
                 }
                 .zIndex(3f)
         )
+
+        StyledButton(
+            text = "Console",
+            onClick = { isConsoleVisible.value = !isConsoleVisible.value
+                      isPanelVisible = false },
+            modifier = Modifier
+                .constrainAs(consoleButton) {
+                    end.linkTo(addButton.start, margin = baseDimension * 0.02f)
+                    bottom.linkTo(addButton.bottom)
+                    width = Dimension.wrapContent
+                    height = Dimension.wrapContent
+                }
+                .zIndex(3f)
+        )
+
 
         StyledButton(
             text = "Debug",
@@ -295,24 +405,34 @@ fun ControlPanel(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         val buttons = listOf(
-            "Main" to "Main",
-            "Array" to "Array",
             "Int" to "Int",
+            "Float" to "Float",
+            "Bool" to "Bool",
             "Add" to "Add",
             "Sub" to "Sub",
-            "Print" to "Print",
-            "Bool" to "Bool",
-            "Float" to "Float",
+            "Greator" to "Greator",
             "IfElse" to "IfElse",
             "For" to "For",
+            "Array" to "Array",
             "Index" to "Index",
-            "Append" to "Append"
+            "Append" to "Append",
+            "Swap" to "Swap",
+            "Print" to "Print",
+            "Function def" to "Function def",
+            "Function call" to "Function call",
+            "Function return" to "Function return"
         )
 
         buttons.forEach { (blockType, label) ->
             StyledButton(
                 text = label,
-                onClick = { blocksManager.addNewBlock(blockType, onError) },
+                {
+                    when (blockType) {
+                        "Function def", "Function call", "Function return" ->
+                            blocksManager.addNewBlock(blockType)
+                        else -> blocksManager.addNewBlock(blockType)
+                    }
+                },
                 style = ButtonStyles.controlPanelButtonStyle()
             )
         }
