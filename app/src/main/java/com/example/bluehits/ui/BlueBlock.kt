@@ -26,7 +26,7 @@ import com.example.interpreter.models.Block
 import com.example.interpreter.models.Id
 import kotlin.math.max
 
-val BlockBodyColor = Color(0xFF333333)
+val BlockBodyColor = Color.Gray
 val BlockTitleColor = Color(0xFF1E5F8B)
 val BlockBorderColor = Color(0xFF1A1A1A)
 val BlockShadowColor = Color(0x40000000)
