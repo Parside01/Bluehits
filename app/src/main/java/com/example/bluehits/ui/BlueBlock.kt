@@ -15,7 +15,6 @@ import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -88,7 +87,8 @@ class BlueBlock(
     var title: String = "Block",
     val inputPins: List<Pin> = emptyList(),
     val outputPins: List<Pin> = emptyList(),
-    val blockPin: Pin,
+    val inBlockPin: Pin,
+    val outBlockPin: Pin,
     val functionName: String? = null
 ) {
     var width by mutableStateOf(0f)
@@ -116,7 +116,7 @@ class BlueBlock(
 
         var maxInputPinTextWidth = 0f
         maxInputPinTextWidth =
-            max(maxInputPinTextWidth, textMeasurer.measure(blockPin.name!!, pinTextStyle).size.width.toFloat())
+            max(maxInputPinTextWidth, textMeasurer.measure(inBlockPin.name!!, pinTextStyle).size.width.toFloat())
         inputPins.forEach { pin ->
             maxInputPinTextWidth =
                 max(maxInputPinTextWidth, textMeasurer.measure(pin.name!!, pinTextStyle).size.width.toFloat())
@@ -252,8 +252,8 @@ fun DrawScope.drawBlock(
         style = Fill
     )
 
-    drawPins(block, block.leftPins, block.inputPins, InOutPinType.INPUT, textMeasurer, density)
-    drawPins(block, block.rightPins, block.outputPins, InOutPinType.OUTPUT, textMeasurer, density)
+    drawPins(block, block.inBlockPin, block.leftPins, block.inputPins, InOutPinType.INPUT, textMeasurer, density)
+    drawPins(block, block.outBlockPin, block.rightPins, block.outputPins, InOutPinType.OUTPUT, textMeasurer, density)
 
     val textLayout = textMeasurer.measure(
         text = block.title,
@@ -283,6 +283,7 @@ fun DrawScope.drawBlock(
 
 fun DrawScope.drawPins(
     block: BlueBlock,
+    blockPin: Pin,
     pinsCoordinates: List<Offset>,
     logicPins: List<Pin>,
     type: InOutPinType,
@@ -297,11 +298,11 @@ fun DrawScope.drawPins(
             pinsCoordinates[0],
             block,
             type,
-            block.blockPin
+            blockPin
         )
         drawBlockPin(firstPin)
 
-        val pinName = block.blockPin.name
+        val pinName = block.inBlockPin.name
         if (pinName.isNotEmpty()) {
             val textStyle = TextStyle(
                 color = PinTextColor,

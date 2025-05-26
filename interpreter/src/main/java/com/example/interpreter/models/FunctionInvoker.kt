@@ -25,10 +25,10 @@ internal object FunctionInvoker {
             throw IllegalStateException("Only one return can execute in $funcName")
         }
 
-        val returnBlock = functionInfo.returnBlocks.first { block ->
+        val returnBlock = functionInfo.returnBlocks.firstOrNull { block ->
             block.getExecutionState() == ExecutionState.COMPLETED
         }
-        returnBlock.inputs.forEach { returnPin ->
+        returnBlock?.inputs?.forEach { returnPin ->
             returnValues[returnPin.name] = returnPin.getValue()
         }
         return returnValues

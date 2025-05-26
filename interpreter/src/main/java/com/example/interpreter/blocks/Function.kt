@@ -1,6 +1,7 @@
 package com.example.interpreter.blocks
 
 import com.example.interpreter.models.ExecutionState
+import com.example.interpreter.models.FunctionInvoker
 import com.example.interpreter.models.Id
 import com.example.interpreter.models.Pin
 import com.example.interpreter.models.ScopeBlock
@@ -26,7 +27,15 @@ class FunctionCallBlock(
     mutableListOf(),
 ) {
     override fun execute(): ExecutionState {
-        TODO("Not yet implemented")
+        val inputArgs = mutableMapOf<String, Any>()
+        inputs.forEach { input ->
+            inputArgs[input.name] = input.getValue()
+        }
+        val resultArgs = FunctionInvoker.invoke(funcName = name, inputArgs)
+        resultArgs.forEach { (name, value) ->
+            pinByName(name)?.setValue(value)
+        }
+        return ExecutionState.COMPLETED
     }
 }
 
@@ -40,7 +49,7 @@ class FunctionDefinitionBlock(
     mutableListOf(),
 ) {
     override fun execute(): ExecutionState {
-        TODO("Not yet implemented")
+        return ExecutionState.COMPLETED
     }
 }
 

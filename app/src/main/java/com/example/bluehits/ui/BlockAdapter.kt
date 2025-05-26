@@ -1,12 +1,10 @@
 package com.example.bluehits.ui
 
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import com.example.interpreter.blocks.FunctionCallBlock
 import com.example.interpreter.blocks.FunctionDefinitionBlock
 import com.example.interpreter.blocks.FunctionReturnBlock
 import com.example.interpreter.models.Block
-import com.example.interpreter.models.Program
 
 object BlockAdapter {
     private val colorMapping = mapOf(
@@ -35,7 +33,8 @@ object BlockAdapter {
             title = title,
             inputPins = logicBlock.inputs,
             outputPins = logicBlock.outputs,
-            blockPin = logicBlock.blockPin,
+            inBlockPin = logicBlock.blockPin,
+            outBlockPin = logicBlock.outBlockPin,
             functionName = when (logicBlock) {
                 is FunctionDefinitionBlock -> logicBlock.getFunctionName()
                 is FunctionCallBlock -> logicBlock.getFunctionName()
