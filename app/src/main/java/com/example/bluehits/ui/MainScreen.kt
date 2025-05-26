@@ -140,7 +140,16 @@ fun MainScreen() {
                 "Function def" -> "Define Function"
                 "Function call" -> "Call Function"
                 "Function return" -> "Return From Function"
+                "Int" -> "Enter Int name"
+                "Float" -> "Enter Float name"
+                "Bool" -> "Enter Bool name"
                 else -> "Enter Function Name"
+            },
+            label = when (blocksManager.currentFunctionDialogType) {
+                "Int" -> "Int name"
+                "Float" -> "Float name"
+                "Bool" -> "Bool name"
+                else -> "Function name"
             },
             onNameEntered = { name ->
                 blocksManager.onFunctionNameEntered(name)

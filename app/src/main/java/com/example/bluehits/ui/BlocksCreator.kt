@@ -27,6 +27,9 @@ class BlocksManager {
     val uiBlocks: List<BlueBlock> get() = _uiBlocks
     private var _showTypeDialog = mutableStateOf(false)
     val showTypeDialog: State<Boolean> get() = _showTypeDialog
+    private var _showValueNameDialog = mutableStateOf(false)
+    val showValueNameDialog: State<Boolean> get() = _showValueNameDialog
+    private var currentValueBlockType: String? = null
 
     private var currentBlockType: String? = null
     private var onTypeSelected: ((DataType) -> Unit)? = null
@@ -51,6 +54,10 @@ class BlocksManager {
             "Function def" -> showFunctionNameDialog("Function def")
             "Function call" -> showFunctionNameDialog("Function call")
             "Function return" -> showFunctionNameDialog("Function return")
+            "Int" -> showFunctionNameDialog("Int")
+            "Float" -> showFunctionNameDialog("Float")
+            "Bool" -> showFunctionNameDialog("Bool")
+
             else -> createBlockWithoutType(type)
         }
     }
@@ -71,6 +78,10 @@ class BlocksManager {
                 "Function def" -> BlockManager.createFunctionDefinitionBlock(name)
                 "Function call" -> BlockManager.createFunctionCalledBlock(name)
                 "Function return" -> BlockManager.createFunctionReturnBlock(name)
+                "Int" -> BlockManager.createIntBlock(name)
+                "Float" -> BlockManager.createFloatBlock(name)
+                "Bool" -> BlockManager.createBoolBlock(name)
+
                 else -> throw IllegalArgumentException("Unknown function dialog type")
             }
             _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock))
@@ -135,9 +146,9 @@ class BlocksManager {
 
     private fun createBlockWithoutType(type: String) {
         val logicBlock = when (type) {
-            "For" -> BlockManager.createForBlock()
-            "Int" -> BlockManager.createIntBlock()
-            "Bool" -> BlockManager.createBoolBlock()
+//            "For" -> BlockManager.createForBlock()
+//            "Int" -> BlockManager.createIntBlock()
+//            "Bool" -> BlockManager.createBoolBlock()
             "Float" -> BlockManager.createFloatBlock()
             "Print" -> BlockManager.createPrintBlock()
             "IfElse" -> BlockManager.createIfElseBlock()
@@ -260,6 +271,7 @@ fun TypeSelectionDialog(
 @Composable
 fun FunctionNameDialog(
     title: String,
+    label: String = "Function name",
     onNameEntered: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -280,7 +292,7 @@ fun FunctionNameDialog(
             OutlinedTextField(
                 value = functionName,
                 onValueChange = { functionName = it },
-                label = { Text("Function name") },
+                label = { Text(label) },
                 modifier = Modifier.fillMaxWidth()
             )
 
