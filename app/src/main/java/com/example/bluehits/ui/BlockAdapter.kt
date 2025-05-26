@@ -19,9 +19,9 @@ object BlockAdapter {
 
     fun wrapLogicBlock(logicBlock: Block): BlueBlock {
         val title = when (logicBlock) {
-            is FunctionDefinitionBlock -> "definition"
-            is FunctionCallBlock -> "call"
-            is FunctionReturnBlock -> "return"
+            is FunctionDefinitionBlock -> "def ${logicBlock.getFunctionName()}" ?: "definition"
+            is FunctionCallBlock -> "call ${logicBlock.getFunctionName()}" ?: "call"
+            is FunctionReturnBlock -> "return ${logicBlock.getFunctionName()}" ?: "return"
             else -> logicBlock.name ?: "Block"
         }
 
