@@ -1,9 +1,13 @@
 package com.example.bluehits.ui
 
 import androidx.compose.ui.graphics.Color
+import com.example.interpreter.blocks.ArrayBlock
+import com.example.interpreter.blocks.BoolBlock
+import com.example.interpreter.blocks.FloatBlock
 import com.example.interpreter.blocks.FunctionCallBlock
 import com.example.interpreter.blocks.FunctionDefinitionBlock
 import com.example.interpreter.blocks.FunctionReturnBlock
+import com.example.interpreter.blocks.IntBlock
 import com.example.interpreter.models.Block
 
 object BlockAdapter {
@@ -22,6 +26,9 @@ object BlockAdapter {
             is FunctionDefinitionBlock -> "def ${logicBlock.getFunctionName()}" ?: "definition"
             is FunctionCallBlock -> "call ${logicBlock.getFunctionName()}" ?: "call"
             is FunctionReturnBlock -> "return ${logicBlock.getFunctionName()}" ?: "return"
+            is IntBlock -> "Int ${logicBlock.name}" ?: "int"
+            is FloatBlock -> "Float ${logicBlock.name}" ?: "float"
+            is BoolBlock -> "Bool ${logicBlock.name}" ?: "bool"
             else -> logicBlock.name ?: "Block"
         }
 
@@ -39,7 +46,7 @@ object BlockAdapter {
                 is FunctionDefinitionBlock -> logicBlock.getFunctionName()
                 is FunctionCallBlock -> logicBlock.getFunctionName()
                 is FunctionReturnBlock -> logicBlock.getFunctionName()
-                else -> null
+                else -> logicBlock.name
             }
         )
     }
