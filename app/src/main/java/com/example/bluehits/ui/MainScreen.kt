@@ -27,7 +27,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -42,7 +41,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.boundsInRoot
@@ -65,7 +63,6 @@ import com.example.bluehits.ui.console.ConsoleBuffer
 import com.example.bluehits.ui.console.ConsoleUI
 import com.example.bluehits.ui.console.ConsoleWriteAdapter
 import com.example.bluehits.ui.console.ConsoleWriter
-
 import com.example.bluehits.ui.editPanel.BlockEditManager
 import com.example.bluehits.ui.editPanel.BlockEditPanel
 import com.example.interpreter.models.Id
@@ -137,6 +134,23 @@ fun MainScreen() {
         )
     }
 
+    if (blocksManager.showFunctionNameDialog.value) {
+        FunctionNameDialog(
+            title = when (blocksManager.currentFunctionDialogType) {
+                "Function def" -> "Define Function"
+                "Function call" -> "Call Function"
+                "Function return" -> "Return From Function"
+                else -> "Enter Function Name"
+            },
+            onNameEntered = { name ->
+                blocksManager.onFunctionNameEntered(name)
+            },
+            onDismiss = {
+                blocksManager.dismissFunctionNameDialog()
+            }
+        )
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -189,8 +203,10 @@ fun MainScreen() {
                         }
                     } else {
                         if (isBlockOverTrash) {
+                            if (block.title != "Main") {
                             draggedBlock?.let { blocksManager.removeBlock(it, connectionManager) }
                         }
+                            }
                         draggedBlock = null
                         isBlockOverTrash = false
                     }
@@ -398,13 +414,22 @@ fun ControlPanel(
             "Index" to "Index",
             "Append" to "Append",
             "Swap" to "Swap",
-            "Print" to "Print"
+            "Print" to "Print",
+            "Function def" to "Function def",
+            "Function call" to "Function call",
+            "Function return" to "Function return"
         )
 
         buttons.forEach { (blockType, label) ->
             StyledButton(
                 text = label,
-                onClick = { blocksManager.addNewBlock(blockType) },
+                {
+                    when (blockType) {
+                        "Function def", "Function call", "Function return" ->
+                            blocksManager.addNewBlock(blockType)
+                        else -> blocksManager.addNewBlock(blockType)
+                    }
+                },
                 style = ButtonStyles.controlPanelButtonStyle()
             )
         }

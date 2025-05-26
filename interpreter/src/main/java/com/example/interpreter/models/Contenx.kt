@@ -111,9 +111,17 @@ class Context internal constructor(
     }
 
     fun getBlockOutConnections(block: Block): List<Connection> {
-        return block.outputs
+        val outputConnections = block.outputs
             .filter { !it.isDisabled() }
             .flatMap { pin -> ConnectionManager.getPinConnections(pin) }
+
+        val outBlockPinConnections = if (!block.outBlockPin.isDisabled()) {
+            ConnectionManager.getPinConnections(block.outBlockPin)
+        } else {
+            emptyList()
+        }
+
+        return outputConnections + outBlockPinConnections
     }
 
     fun getBlockInConnections(block: Block): List<Connection> {
@@ -182,7 +190,7 @@ class Context internal constructor(
 
             currentBlock.execute()
 
-            val blockOutConn = Program.getBlockOutConnections(currentBlock)
+            val blockOutConn = getBlockOutConnections(currentBlock)
 
             blockOutConn.forEach { conn ->
                 conn.execute()

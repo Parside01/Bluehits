@@ -1,7 +1,7 @@
 package com.example.interpreter.blocks
 
-import com.example.interpreter.models.Block
 import com.example.interpreter.models.ExecutionState
+import com.example.interpreter.models.FunctionInvoker
 import com.example.interpreter.models.Id
 import com.example.interpreter.models.Pin
 import com.example.interpreter.models.ScopeBlock
@@ -12,7 +12,7 @@ abstract class FunctionPartBlock(
     inputs: MutableList<Pin>,
     outputs: MutableList<Pin>,
 ) : ScopeBlock(id, funcName, inputs, outputs) {
-    open fun getFuncName(): String {
+    open fun getFunctionName(): String {
         return name
     }
 }
@@ -27,7 +27,15 @@ class FunctionCallBlock(
     mutableListOf(),
 ) {
     override fun execute(): ExecutionState {
-        TODO("Not yet implemented")
+        val inputArgs = mutableMapOf<String, Any>()
+        inputs.forEach { input ->
+            inputArgs[input.name] = input.getValue()
+        }
+        val resultArgs = FunctionInvoker.invoke(funcName = name, inputArgs)
+        resultArgs.forEach { (name, value) ->
+            pinByName(name)?.setValue(value)
+        }
+        return ExecutionState.COMPLETED
     }
 }
 
@@ -41,7 +49,7 @@ class FunctionDefinitionBlock(
     mutableListOf(),
 ) {
     override fun execute(): ExecutionState {
-        TODO("Not yet implemented")
+        return ExecutionState.COMPLETED
     }
 }
 
@@ -67,7 +75,7 @@ class FunctionReturnBlock(
         executionState = ExecutionState.WAITING
     }
 
-    override fun getFuncName(): String {
+    override fun getFunctionName(): String {
         return funcName
     }
 }
