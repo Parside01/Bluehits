@@ -146,10 +146,10 @@ class BlocksManager {
 
     private fun createBlockWithoutType(type: String) {
         val logicBlock = when (type) {
-//            "For" -> BlockManager.createForBlock()
 //            "Int" -> BlockManager.createIntBlock()
 //            "Bool" -> BlockManager.createBoolBlock()
-            "Float" -> BlockManager.createFloatBlock()
+//            "Float" -> BlockManager.createFloatBlock()
+            "For" -> BlockManager.createForBlock()
             "Print" -> BlockManager.createPrintBlock()
             "IfElse" -> BlockManager.createIfElseBlock()
             else -> throw IllegalArgumentException("Unsupported type")

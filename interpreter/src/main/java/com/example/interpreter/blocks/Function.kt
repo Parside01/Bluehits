@@ -67,7 +67,7 @@ class FunctionDefinitionBlock(
 
 class FunctionReturnBlock(
     id: Id,
-    val funcName: String,
+    var funcName: String,
 ) : FunctionPartBlock(
     id,
     "Return",
