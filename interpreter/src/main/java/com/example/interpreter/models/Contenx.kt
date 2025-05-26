@@ -49,9 +49,14 @@ class Context internal constructor(
 
     fun rollback() {
         blockIds.forEach { id ->
-            BlockManager.getBlock(id)?.rollback()
+            val block = BlockManager.getBlock(id)
+            block?.let { block ->
+                if (block.id != ownBlock.id) {
+                    getBlockInConnections(block).forEach { connection -> connection.rollback() }
+                    getBlockOutConnections(block).forEach { connection -> connection.rollback() }
+                }
+            }
         }
-        ConnectionManager.rollback()
     }
 
     private fun findContextBlocks(currBlock: Id) {

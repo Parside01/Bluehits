@@ -2,7 +2,7 @@ package com.example.interpreter.models
 
 abstract class Block internal constructor(
     val id: Id, // TODO: Для реализации функций надо сделать open метод getId()
-    val name: String?,
+    val name: String,
     val inputs: MutableList<Pin> = mutableListOf(),
     val outputs: MutableList<Pin> = mutableListOf()
 ) {
@@ -24,7 +24,7 @@ abstract class Block internal constructor(
 
 abstract class ScopeBlock internal constructor(
     id: Id,
-    name: String?,
+    name: String,
     inputs: MutableList<Pin> = mutableListOf(),
     outputs: MutableList<Pin> = mutableListOf()
 ) : Block(id, name, inputs, outputs) {}
@@ -33,4 +33,5 @@ abstract class ScopeBlock internal constructor(
 enum class ExecutionState {
     RUNNING, // Означает, что нужно запустить блок еще раз.
     COMPLETED,
+    WAITING,
 }
