@@ -134,6 +134,23 @@ fun MainScreen() {
         )
     }
 
+    if (blocksManager.showFunctionNameDialog.value) {
+        FunctionNameDialog(
+            title = when (blocksManager.currentFunctionDialogType) {
+                "Function def" -> "Define Function"
+                "Function call" -> "Call Function"
+                "Function return" -> "Return From Function"
+                else -> "Enter Function Name"
+            },
+            onNameEntered = { name ->
+                blocksManager.onFunctionNameEntered(name)
+            },
+            onDismiss = {
+                blocksManager.dismissFunctionNameDialog()
+            }
+        )
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -187,14 +204,9 @@ fun MainScreen() {
                     } else {
                         if (isBlockOverTrash) {
                             if (block.title != "Main") {
-                                draggedBlock?.let {
-                                    blocksManager.removeBlock(
-                                        it,
-                                        connectionManager
-                                    )
-                                }
-                            }
+                            draggedBlock?.let { blocksManager.removeBlock(it, connectionManager) }
                         }
+                            }
                         draggedBlock = null
                         isBlockOverTrash = false
                     }
@@ -402,7 +414,10 @@ fun ControlPanel(
             "Index" to "Index",
             "Append" to "Append",
             "Swap" to "Swap",
-            "Print" to "Print"
+            "Print" to "Print",
+            "Function def" to "Function def",
+            "Function call" to "Function call",
+            "Function return" to "Function return"
         )
 
         buttons.forEach { (blockType, label) ->

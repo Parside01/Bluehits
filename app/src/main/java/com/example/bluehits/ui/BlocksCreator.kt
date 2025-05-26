@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -47,8 +48,37 @@ class BlocksManager {
                 currentBlockType = type
                 _showTypeDialog.value = true
             }
+            "FunctionDefinition" -> showFunctionNameDialog("Define Function")
+            "FunctionCall" -> showFunctionNameDialog("Call Function")
+            "FunctionReturn" -> showFunctionNameDialog("Return From Function")
             else -> createBlockWithoutType(type)
         }
+    }
+
+    private var _showFunctionNameDialog = mutableStateOf(false)
+    val showFunctionNameDialog: State<Boolean> get() = _showFunctionNameDialog
+    var currentFunctionDialogType: String? = null
+
+    private fun showFunctionNameDialog(dialogType: String) {
+        currentFunctionDialogType = dialogType
+        _showFunctionNameDialog.value = true
+    }
+
+    fun onFunctionNameEntered(name: String) {
+        _showFunctionNameDialog.value = false
+        currentFunctionDialogType?.let { dialogType ->
+            val logicBlock = when (dialogType) {
+                "Define Function" -> BlockManager.createFunctionDefinitionBlock(name)
+                "Call Function" -> BlockManager.createFunctionCalledBlock(name)
+                "Return From Function" -> BlockManager.createFunctionReturnBlock(name)
+                else -> throw IllegalArgumentException("Unknown function dialog type")
+            }
+            _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock))
+        }
+    }
+
+    fun dismissFunctionNameDialog() {
+        _showFunctionNameDialog.value = false
     }
 
     fun onTypeSelected(type: DataType) {
@@ -221,6 +251,49 @@ fun TypeSelectionDialog(
                 ) {
                     Text(text = type.title)
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun FunctionNameDialog(
+    title: String,
+    onNameEntered: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var functionName by remember { mutableStateOf("") }
+
+    Dialog(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .background(Color.White, RoundedCornerShape(12.dp))
+                .padding(16.dp)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            OutlinedTextField(
+                value = functionName,
+                onValueChange = { functionName = it },
+                label = { Text("Function name") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Button(
+                onClick = {
+                    if (functionName.isNotBlank()) {
+                        onNameEntered(functionName)
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+            ) {
+                Text("Create")
             }
         }
     }

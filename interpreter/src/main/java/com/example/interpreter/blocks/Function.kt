@@ -1,6 +1,5 @@
 package com.example.interpreter.blocks
 
-import com.example.interpreter.models.Block
 import com.example.interpreter.models.ExecutionState
 import com.example.interpreter.models.Id
 import com.example.interpreter.models.Pin
@@ -12,7 +11,7 @@ abstract class FunctionPartBlock(
     inputs: MutableList<Pin>,
     outputs: MutableList<Pin>,
 ) : ScopeBlock(id, funcName, inputs, outputs) {
-    open fun getFuncName(): String {
+    open fun getFunctionName(): String {
         return name
     }
 }
@@ -67,7 +66,7 @@ class FunctionReturnBlock(
         executionState = ExecutionState.WAITING
     }
 
-    override fun getFuncName(): String {
+    override fun getFunctionName(): String {
         return funcName
     }
 }
