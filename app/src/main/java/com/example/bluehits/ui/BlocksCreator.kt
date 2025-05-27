@@ -234,10 +234,15 @@ class BlocksManager {
                 UIPinManager.clearPinsForBlock(block)
                 _uiBlocks.remove(block)
             }
-
         }
     }
+
+    fun clearErrorMessage() {
+        errorMessage = null
+    }
 }
+
+
 
 @Composable
 fun TypeSelectionDialog(
