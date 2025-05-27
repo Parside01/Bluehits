@@ -113,13 +113,22 @@ fun BlockEditPanel(
                         color = Color.White
                     )
 
-                    state.pinFields.forEach { field ->
-                        PinEditRow(
-                            fieldPin = field,
-                            onValueChange = { newValue ->
-                                BlockEditManager.updatePinValue(field.pin, newValue)
-                            }
+                    if (state.pinFields.isEmpty()) {
+                        Text(
+                            text = "Нет пинов для редактирования",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.White,
+                            modifier = Modifier.padding(16.dp)
                         )
+                    } else {
+                        state.pinFields.forEach { field ->
+                            PinEditRow(
+                                fieldPin = field,
+                                onValueChange = { newValue ->
+                                    BlockEditManager.updatePinValue(field.pin, newValue)
+                                }
+                            )
+                        }
                     }
                 }
             }

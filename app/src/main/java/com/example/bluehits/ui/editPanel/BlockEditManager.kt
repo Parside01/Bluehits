@@ -11,7 +11,8 @@ object BlockEditManager {
         private set
 
     fun shouldShowEditPanel(block: BlueBlock): Boolean {
-        return block.inputPins.isNotEmpty()
+        // Разрешаем показ панели для блока Function def или если есть входные пины
+        return block.title == "definition" || block.inputPins.isNotEmpty()
     }
 
     fun showEditPanel(block: BlueBlock) {
