@@ -37,4 +37,47 @@ internal object FunctionManager {
         if (!functions.containsKey(call.getFunctionName())) throw IllegalArgumentException("Function definition does not exist")
         functions[call.getFunctionName()]?.callBlocks?.add(call)
     }
+
+    fun renameFunction(funcName: String, newName: String) {
+        if (!functions.containsKey(funcName)) {
+            throw IllegalArgumentException("Function definition does not exist")
+        }
+        if (functions.containsKey(newName)) {
+            throw IllegalArgumentException("Function definition already exists")
+        }
+        val info = functions[funcName]
+        info?.let { info ->
+            info.name = newName
+            info.definitionBlock.setFunctionName(newName)
+            info.returnBlocks.forEach { returnBlock -> returnBlock.setFunctionName(newName) }
+            info.callBlocks.forEach { callBlock -> callBlock.setFunctionName(newName) }
+
+            functions.remove(funcName)
+            functions[newName] = info
+        }
+    }
+
+    fun addFunctionInArg(funcName :String, arg: Pin) {
+        if (!functions.containsKey(funcName)) {
+            throw IllegalArgumentException("Function definition does not exist")
+        }
+
+        val info = functions[funcName]
+        info?.let { info ->
+            info.definitionBlock.addOutputArg(arg)
+            info.callBlocks.forEach { callBlock -> callBlock.addInputArg(arg) }
+        }
+    }
+
+    fun addFunctionOutArg(funcName :String, arg: Pin) {
+        if (!functions.containsKey(funcName)) {
+            throw IllegalArgumentException("Function definition does not exist")
+        }
+
+        val info = functions[funcName]
+        info?.let { info ->
+            info.callBlocks.forEach { callBlock -> callBlock.addOutputArg(arg) }
+            info.returnBlocks.forEach { returnBlock -> returnBlock.addInputArg(arg) }
+        }
+    }
 }

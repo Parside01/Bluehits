@@ -15,6 +15,18 @@ abstract class FunctionPartBlock(
     open fun getFunctionName(): String {
         return name
     }
+
+    open fun setFunctionName(newName : String) {
+        name = newName
+    }
+
+    open fun addInputArg(pin : Pin) {
+        inputs.add(pin)
+    }
+
+    open fun addOutputArg(pin : Pin) {
+        outputs.add(pin)
+    }
 }
 
 class FunctionCallBlock(
@@ -55,7 +67,7 @@ class FunctionDefinitionBlock(
 
 class FunctionReturnBlock(
     id: Id,
-    val funcName: String,
+    var funcName: String,
 ) : FunctionPartBlock(
     id,
     "Return",
@@ -77,5 +89,9 @@ class FunctionReturnBlock(
 
     override fun getFunctionName(): String {
         return funcName
+    }
+
+    override fun setFunctionName(newName : String) {
+        funcName = newName
     }
 }

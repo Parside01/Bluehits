@@ -51,7 +51,7 @@ fun CreateCanvas(
                     val startPosition = down.position
                     val adjusted = (startPosition - canvasOffset) / scale
 
-                    selectedBlock = blocks.firstOrNull { block ->
+                    selectedBlock = blocks.lastOrNull() { block ->
                         adjusted.x in block.x..(block.x + block.width) &&
                                 adjusted.y in block.y..(block.y + block.height)
                     }

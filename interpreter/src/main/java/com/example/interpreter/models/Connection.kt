@@ -28,7 +28,6 @@ class Connection internal constructor(
         if (from == to) throw IllegalArgumentException("Cannot connect the same pin.")
         if (from.id == to.id) throw IllegalArgumentException("Cannot connect pins with the same ID.")
         if (isBlock(from.getType()) xor isBlock(to.getType())) throw IllegalArgumentException("Cannot connect pins of different types. (Blocks)")
-        println("to ${to.getType()} from ${from.getType()}")
         if (!isAny(to.getType()) && !isAny(from.getType()) && from.getType() != to.getType()) throw IllegalArgumentException("Cannot connect pins of different types. (Other types)")
         if (to.ownId == from.ownId) throw IllegalArgumentException("Cannot connect pins with the same ownId.")
 
