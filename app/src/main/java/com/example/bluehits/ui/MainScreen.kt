@@ -420,6 +420,8 @@ fun ControlPanel(
             "IfElse" to "IfElse",
             "For" to "For",
             "Array" to "Array",
+            "String" to "String",
+            "Math" to "Math",
             "Index" to "Index",
             "Append" to "Append",
             "Swap" to "Swap",

@@ -57,6 +57,7 @@ class BlocksManager {
             "Int" -> showFunctionNameDialog("Int")
             "Float" -> showFunctionNameDialog("Float")
             "Bool" -> showFunctionNameDialog("Bool")
+            "String" -> showFunctionNameDialog("String")
 
             else -> createBlockWithoutType(type)
         }
@@ -81,7 +82,7 @@ class BlocksManager {
                 "Int" -> BlockManager.createIntBlock(name)
                 "Float" -> BlockManager.createFloatBlock(name)
                 "Bool" -> BlockManager.createBoolBlock(name)
-
+                "String" -> BlockManager.createStringBlock(name)
                 else -> throw IllegalArgumentException("Unknown function dialog type")
             }
             _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock))
@@ -152,6 +153,7 @@ class BlocksManager {
             "For" -> BlockManager.createForBlock()
             "Print" -> BlockManager.createPrintBlock()
             "IfElse" -> BlockManager.createIfElseBlock()
+            "Math" -> BlockManager.createMathBlock()
             else -> throw IllegalArgumentException("Unsupported type")
         }
         _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock))
