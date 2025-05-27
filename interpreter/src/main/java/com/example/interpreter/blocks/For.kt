@@ -21,6 +21,7 @@ class ForBlock(
         PinManager.createPinBlock("completed", ownId = id))
 ) {
     private var currentIndex: Int? = null
+    private var isFirstExecution = true
 
     override fun execute(): ExecutionState {
         val first = pinByName("first")?.getValue() as? Int ?: throw Exception("First must be an int")
@@ -29,9 +30,17 @@ class ForBlock(
 
         currentIndex = (currentIndex ?: first)
 
+        if (isFirstExecution && first <= last) {
+            currentIndex = first
+            pinByName("index")?.setValue(currentIndex)
+            pinByName("completed")?.disable()
+            isFirstExecution = false
+            return ExecutionState.RUNNING
+        }
+
         // Вроде как можем утверждать что оно точно не null.
         if (step > 0) {
-            if (currentIndex!! < last) {
+            if (currentIndex!! + step <= last) {
                 currentIndex = (currentIndex ?: first) + step
                 pinByName("index")?.setValue(currentIndex)
                 pinByName("completed")?.disable()
@@ -52,6 +61,7 @@ class ForBlock(
         pinByName("completed")?.enable()
         pinByName("index")?.disable()
         pinByName("body")?.disable()
+        isFirstExecution = true
 
         return ExecutionState.COMPLETED
     }

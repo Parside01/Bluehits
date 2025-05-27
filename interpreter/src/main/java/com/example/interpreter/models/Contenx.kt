@@ -48,6 +48,7 @@ class Context internal constructor(
     }
 
     fun rollback() {
+        ownBlock.rollback()
         blockIds.forEach { id ->
             val block = BlockManager.getBlock(id)
             block?.let { block ->
