@@ -99,7 +99,12 @@ fun MainScreen() {
             onDismiss = { errorMessage = null }
         )
     }
-
+    blocksManager.errorMessage?.let { message ->
+        ErrorNotification(
+            message = message,
+            onDismiss = { blocksManager.clearErrorMessage() }
+        )
+    }
     successMessage?.let { message ->
         SuccessNotification(
             message = message,

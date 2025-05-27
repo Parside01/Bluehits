@@ -27,7 +27,8 @@ class BlocksManager {
     val uiBlocks: List<BlueBlock> get() = _uiBlocks
     private var _showTypeDialog = mutableStateOf(false)
     val showTypeDialog: State<Boolean> get() = _showTypeDialog
-
+    var errorMessage by mutableStateOf<String?>(null)
+        private set
     private var currentBlockType: String? = null
     private var onTypeSelected: ((DataType) -> Unit)? = null
 
@@ -67,13 +68,29 @@ class BlocksManager {
     fun onFunctionNameEntered(name: String) {
         _showFunctionNameDialog.value = false
         currentFunctionDialogType?.let { dialogType ->
-            val logicBlock = when (dialogType) {
-                "Function def" -> BlockManager.createFunctionDefinitionBlock(name)
-                "Function call" -> BlockManager.createFunctionCalledBlock(name)
-                "Function return" -> BlockManager.createFunctionReturnBlock(name)
-                else -> throw IllegalArgumentException("Unknown function dialog type")
+            try {
+                val logicBlock = when (dialogType) {
+                    "Function def" -> BlockManager.createFunctionDefinitionBlock(name)
+                    "Function call" -> {
+
+                        val defined = uiBlocks.any {
+                            it.title == "definition" && it.functionName == name
+                        }
+                        if (!defined) {
+                            throw IllegalArgumentException("Функция '$name' не определена")
+                        }
+                        BlockManager.createFunctionCalledBlock(name)
+                    }
+                    "Function return" -> BlockManager.createFunctionReturnBlock(name)
+                    else -> throw IllegalArgumentException("Unknown function dialog type")
+                }
+
+                val uiBlock = BlockAdapter.wrapLogicBlock(logicBlock)
+
+                _uiBlocks.add(uiBlock)
+            } catch (e: IllegalArgumentException) {
+                errorMessage = e.message
             }
-            _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock))
         }
     }
 
