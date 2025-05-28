@@ -263,7 +263,7 @@ fun MainScreen() {
                 blocksManager = blocksManager,
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(color = Color(0xFFF9F9FF), shape = RoundedCornerShape(16.dp))
+                    .background(color = Color.White)
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState()),
                 onError = { message -> errorMessage = message }

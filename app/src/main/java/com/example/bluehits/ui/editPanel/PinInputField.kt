@@ -164,18 +164,6 @@ private fun NumberInputController(
         currentValue.value = initialValue
     }
 
-//    fun applyValue(newValue: Number) {
-//        if (isInt) {
-//            intValue.intValue = newValue.toInt()
-//            valueText.value = intValue.intValue.toString()
-//            onValueChange(intValue.intValue)
-//        } else {
-//            floatValue.value = newValue.toFloat()
-//            valueText.value = floatValue.value.toString()
-//            onValueChange(floatValue.value)
-//        }
-//    }
-
     Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -187,12 +175,14 @@ private fun NumberInputController(
                     else currentValue.value.toFloat() - step.value.toFloat()
                     onValueChange(currentValue.value)
                 },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White),
                 modifier = Modifier
                     .height(48.dp)
                     .padding(end = 4.dp),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("-", color = Color.White)
+                Text("-", color = Color.DarkGray)
             }
 
             if (isManualValueInput.value) {
@@ -243,12 +233,14 @@ private fun NumberInputController(
                     else currentValue.value.toFloat() + step.value.toFloat()
                     onValueChange(currentValue.value)
                 },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White),
                 modifier = Modifier
                     .height(48.dp)
                     .padding(start = 4.dp),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("+", color = Color.White)
+                Text("+", color = Color.DarkGray)
             }
         }
 
@@ -266,12 +258,14 @@ private fun NumberInputController(
                     step.value = (step.value - (if (isInt) 1f else 0.01f)).coerceAtLeast(if (isInt) 1f else 0.01f)
                     onValueChange(currentValue.value)
                 },
+                colors =  ButtonDefaults.buttonColors(
+                    containerColor = Color.White),
                 modifier = Modifier
                     .height(48.dp)
                     .padding(end = 4.dp),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("-", color = Color.White)
+                Text("-", color = Color.DarkGray)
             }
 
             if (isManualStepInput.value) {
@@ -325,12 +319,14 @@ private fun NumberInputController(
                     stepText.value = step.value.toString()
                     onValueChange(currentValue.value)
                 },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White),
                 modifier = Modifier
                     .height(48.dp)
                     .padding(start = 4.dp),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("+", color = Color.White)
+                Text("+", color = Color.DarkGray)
             }
         }
     }
@@ -479,7 +475,7 @@ fun ArrayInputField(
                         val newList = items.value.toMutableList()
                         newList.add(createDefaultValue())
                         items.value = newList
-                        BlockEditManager.updatePinValue(fieldPin.pin, newList.toTypedArray())
+                        BlockEditManager.updatePinValue(fieldPin.pin, newList.toTypedArray())  //Где то здесь происходит фигня с сохранением в массив
                     },
                 contentAlignment = Alignment.Center
             ) {

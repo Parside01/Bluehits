@@ -91,7 +91,6 @@ fun BlockEditPanel(
                 shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
                 color = Color(0xFF333333),
                 shadowElevation = 8.dp,
-                border = CardDefaults.outlinedCardBorder()
             ) {
                 Column(
                     modifier = Modifier
