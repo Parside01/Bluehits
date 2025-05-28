@@ -4,14 +4,14 @@ import com.example.interpreter.blocks.FunctionCallBlock
 import com.example.interpreter.blocks.FunctionDefinitionBlock
 import com.example.interpreter.blocks.FunctionReturnBlock
 
-internal data class FunctionInfo(
+data class FunctionInfo(
     var name: String,
     var definitionBlock: FunctionDefinitionBlock,
     val returnBlocks: MutableSet<FunctionReturnBlock>,
     val callBlocks: MutableSet<FunctionCallBlock>,
 )
 
-internal object FunctionManager {
+object FunctionManager {
     val functions = mutableMapOf<String, FunctionInfo>()
 
     fun getFunctionInfo(funcName: String) = functions[funcName]
