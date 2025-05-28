@@ -14,7 +14,9 @@ import com.example.interpreter.blocks.IfElseBlock
 import com.example.interpreter.blocks.IndexBlock
 import com.example.interpreter.blocks.IntBlock
 import com.example.interpreter.blocks.MainBlock
+import com.example.interpreter.blocks.MathBlock
 import com.example.interpreter.blocks.PrintBlock
+import com.example.interpreter.blocks.StringBlock
 import com.example.interpreter.blocks.SwapBlock
 import java.io.OutputStreamWriter
 import java.util.concurrent.atomic.AtomicInteger
@@ -162,6 +164,21 @@ object BlockManager {
         return block
     }
 
+    fun createStringBlock(
+        varName: String = "String",
+        value: String = Utils.getDefaultValue(String::class.java)
+    ): Block {
+        val block = createBlock { id -> StringBlock(id, value, varName) }
+
+        val blockState = VariableManager.getOrCreateVarState(varName, value, String::class)
+        block.setVarState(blockState)
+
+        blockState.addObserver(block)
+        block.setPin.setValue(blockState.getValue() as Any)
+
+        return block
+    }
+
     fun <T> createArrayBlock(
         varName: String = "Array",
         value: List<T> = emptyList()
@@ -197,5 +214,9 @@ object BlockManager {
         val block = createBlock { id -> FunctionReturnBlock(id, funcName) }
         FunctionManager.addFunctionReturnBlock(block)
         return block
+    }
+
+    fun createMathBlock(): Block {
+        return createBlock { id -> MathBlock(id) }
     }
 }
