@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -57,6 +59,7 @@ class BlocksManager {
             "Int" -> showFunctionNameDialog("Int")
             "Float" -> showFunctionNameDialog("Float")
             "Bool" -> showFunctionNameDialog("Bool")
+            "String" -> showFunctionNameDialog("String")
 
             else -> createBlockWithoutType(type)
         }
@@ -81,7 +84,7 @@ class BlocksManager {
                 "Int" -> BlockManager.createIntBlock(name)
                 "Float" -> BlockManager.createFloatBlock(name)
                 "Bool" -> BlockManager.createBoolBlock(name)
-
+                "String" -> BlockManager.createStringBlock(name)
                 else -> throw IllegalArgumentException("Unknown function dialog type")
             }
             _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock))
@@ -152,6 +155,7 @@ class BlocksManager {
             "For" -> BlockManager.createForBlock()
             "Print" -> BlockManager.createPrintBlock()
             "IfElse" -> BlockManager.createIfElseBlock()
+            "Math" -> BlockManager.createMathBlock()
             else -> throw IllegalArgumentException("Unsupported type")
         }
         _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock))
@@ -241,18 +245,20 @@ fun TypeSelectionDialog(
     Dialog(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier
-                .background(Color.White, RoundedCornerShape(12.dp))
+                .background(Color.DarkGray, RoundedCornerShape(12.dp))
                 .padding(16.dp)
         ) {
             Text(
                 text = "Select data type",
                 style = MaterialTheme.typography.titleMedium,
+                color = Color.White,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
             DataType.values().forEach { type ->
                 Button(
                     onClick = { onTypeSelected(type) },
+                    shape = RoundedCornerShape(6.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp),
@@ -280,11 +286,12 @@ fun FunctionNameDialog(
     Dialog(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier
-                .background(Color.White, RoundedCornerShape(12.dp))
+                .background(Color.DarkGray, RoundedCornerShape(12.dp))
                 .padding(16.dp)
         ) {
             Text(
                 text = title,
+                color = Color.White,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
@@ -292,8 +299,18 @@ fun FunctionNameDialog(
             OutlinedTextField(
                 value = functionName,
                 onValueChange = { functionName = it },
-                label = { Text(label) },
-                modifier = Modifier.fillMaxWidth()
+                label = { Text(label,
+                    color = Color.White) },
+                modifier = Modifier.fillMaxWidth(),
+                textStyle = LocalTextStyle.current.copy(color = Color.White),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    cursorColor = Color.White,
+                    focusedBorderColor = Color.LightGray,
+                    unfocusedBorderColor = Color.Gray
+                )
+
             )
 
             Button(
@@ -302,6 +319,8 @@ fun FunctionNameDialog(
                         onNameEntered(functionName)
                     }
                 },
+                shape = RoundedCornerShape(6.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.DarkGray),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp)

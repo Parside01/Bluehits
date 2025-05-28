@@ -1,23 +1,35 @@
 package com.example.bluehits.ui.editPanel
 
+import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
@@ -25,12 +37,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.delay
+import kotlin.reflect.KClass
+
 
 @Composable
 fun PinInputField(
@@ -46,25 +64,77 @@ fun PinInputField(
                 isInt = true
             )
         }
+
         filedPin.pin.getType() == Float::class -> {
             NumberInputController(
-                initialValue = value.toString().toIntOrNull() ?: 0,
+                initialValue = value.toString().toFloatOrNull() ?: 0f,
                 onValueChange = onValueChange,
                 isInt = false
             )
         }
+
+        filedPin.pin.getType() == Double::class -> {
+            NumberInputController(
+                initialValue = value.toString().toDoubleOrNull() ?: 0f,
+                onValueChange = onValueChange,
+                isInt = false
+            )
+        }
+
+        filedPin.pin.getType() == Long::class -> {
+            NumberInputController(
+                initialValue = value.toString().toLongOrNull() ?: 0,
+                onValueChange = onValueChange,
+                isInt = true
+            )
+        }
+
         filedPin.pin.getType() == Boolean::class -> {
             BooleanInputField(
                 value = value,
                 onValueChange = onValueChange
             )
         }
+
         filedPin.pin.getType() == String::class -> {
             TextInputField(
                 value = value,
                 onValueChange = onValueChange
             )
         }
+
+        filedPin.pin.getType() == emptyList<Int>()::class -> {
+            ArrayInputField(
+                fieldPin = filedPin,
+                onValueChange = onValueChange,
+                value = value
+            )
+        }
+
+        filedPin.pin.getType() == emptyList<Float>()::class -> {
+            ArrayInputField(
+                fieldPin = filedPin,
+                onValueChange = onValueChange,
+                value = value
+            )
+        }
+
+        filedPin.pin.getType() == emptyList<Double>()::class -> {
+            ArrayInputField(
+                fieldPin = filedPin,
+                onValueChange = onValueChange,
+                value = value
+            )
+        }
+
+        filedPin.pin.getType() == emptyList<Long>()::class -> {
+            ArrayInputField(
+                fieldPin = filedPin,
+                onValueChange = onValueChange,
+                value = value
+            )
+        }
+
         else -> {
             TextInputField(
                 value = value,
@@ -88,17 +158,10 @@ private fun NumberInputController(
     val isManualStepInput = remember { mutableStateOf(false) }
     val valueText = remember { mutableStateOf(initialValue.toString()) }
     val stepText = remember { mutableStateOf(step.value.toString()) }
+    val currentValue = remember { mutableStateOf(initialValue) }
 
-    fun applyValue(newValue: Number) {
-        if (isInt) {
-            intValue.intValue = newValue.toInt()
-            valueText.value = intValue.intValue.toString()
-            onValueChange(intValue.intValue)
-        } else {
-            floatValue.value = newValue.toFloat()
-            valueText.value = floatValue.value.toString()
-            onValueChange(floatValue.value)
-        }
+    LaunchedEffect(initialValue) {
+        currentValue.value = initialValue
     }
 
     Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
@@ -108,27 +171,28 @@ private fun NumberInputController(
         ) {
             Button(
                 onClick = {
-                    applyValue(
-                        if (isInt) intValue.intValue - step.value.toInt()
-                        else floatValue.value - step.value
-                    )
+                    currentValue.value = if (isInt) currentValue.value.toInt() - step.value.toInt()
+                    else currentValue.value.toFloat() - step.value.toFloat()
+                    onValueChange(currentValue.value)
                 },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White),
                 modifier = Modifier
                     .height(48.dp)
                     .padding(end = 4.dp),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("-", color = Color.White)
+                Text("-", color = Color.DarkGray)
             }
 
             if (isManualValueInput.value) {
                 OutlinedTextField(
-                    value = valueText.value,
+                    value = currentValue.value.toString(),
                     onValueChange = { newText ->
                         if (newText.isEmpty() || newText.matches(Regex(if (isInt) "-?\\d*" else "-?\\d*\\.?\\d*"))) {
-                            valueText.value = newText
-                            val parsed = if (isInt) newText.toIntOrNull() else newText.toFloatOrNull()
-                            parsed?.let { applyValue(it) }
+                            val parsed = if (isInt) newText.toIntOrNull() ?: 0 else newText.toFloatOrNull() ?: 0f
+                            currentValue.value = parsed
+                            onValueChange(currentValue.value)
                         }
                     },
                     keyboardOptions = KeyboardOptions(
@@ -157,8 +221,7 @@ private fun NumberInputController(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = if (isInt) intValue.intValue.toString()
-                        else "%.2f".format(floatValue.value),
+                        text = currentValue.value.toString(),
                         color = Color.White
                     )
                 }
@@ -166,17 +229,18 @@ private fun NumberInputController(
 
             Button(
                 onClick = {
-                    applyValue(
-                        if (isInt) intValue.intValue + step.value.toInt()
-                        else floatValue.value + step.value
-                    )
+                    currentValue.value = if (isInt) currentValue.value.toInt() + step.value.toInt()
+                    else currentValue.value.toFloat() + step.value.toFloat()
+                    onValueChange(currentValue.value)
                 },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White),
                 modifier = Modifier
                     .height(48.dp)
                     .padding(start = 4.dp),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("+", color = Color.White)
+                Text("+", color = Color.DarkGray)
             }
         }
 
@@ -192,14 +256,16 @@ private fun NumberInputController(
             Button(
                 onClick = {
                     step.value = (step.value - (if (isInt) 1f else 0.01f)).coerceAtLeast(if (isInt) 1f else 0.01f)
-                    stepText.value = step.value.toString()
+                    onValueChange(currentValue.value)
                 },
+                colors =  ButtonDefaults.buttonColors(
+                    containerColor = Color.White),
                 modifier = Modifier
                     .height(48.dp)
                     .padding(end = 4.dp),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("-", color = Color.White)
+                Text("-", color = Color.DarkGray)
             }
 
             if (isManualStepInput.value) {
@@ -251,13 +317,16 @@ private fun NumberInputController(
                 onClick = {
                     step.value += if (isInt) 1f else 0.1f
                     stepText.value = step.value.toString()
+                    onValueChange(currentValue.value)
                 },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White),
                 modifier = Modifier
                     .height(48.dp)
                     .padding(start = 4.dp),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("+", color = Color.White)
+                Text("+", color = Color.DarkGray)
             }
         }
     }
@@ -268,7 +337,7 @@ private fun BooleanInputField(
     value: Any,
     onValueChange: (Any) -> Unit
 ) {
-    val checked = value.toString().toBooleanStrictOrNull() ?: false
+    val checked = remember { mutableStateOf(value.toString().toBooleanStrictOrNull() ?: false) }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -276,10 +345,10 @@ private fun BooleanInputField(
     ) {
         Text("Value:", modifier = Modifier.padding(end = 8.dp))
         Switch(
-            checked = checked,
+            checked = checked.value,
             onCheckedChange = { onValueChange(it) }
         )
-        Text(if (checked) "True" else "False", modifier = Modifier.padding(start = 8.dp))
+        Text(if (checked.value) "True" else "False", modifier = Modifier.padding(start = 8.dp))
     }
 }
 
@@ -289,11 +358,352 @@ private fun TextInputField(
     onValueChange: (String) -> Unit,
     placeholder: String = "Enter value"
 ) {
+    val textState = remember { mutableStateOf(value.toString()) }
+
     OutlinedTextField(
-        value = value.toString(),
-        onValueChange = onValueChange,
+        value = textState.value,
+        onValueChange = {
+            textState.value = it
+            onValueChange(it)
+        },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
         placeholder = { Text(placeholder) }
     )
 }
+
+@Composable
+fun ArrayInputField(
+    fieldPin: PinEditField,
+    onValueChange: (Any) -> Unit,
+    value: Any
+) {
+    val initialList = remember {
+        (value as? Array<*>)?.toList() ?: emptyList<Any?>()
+    }
+    val items = remember { mutableStateOf(initialList) }
+    val scrollState = rememberScrollState()
+    val itemType = fieldPin.pin.getType().simpleName
+    val elementType = when (fieldPin.pin.getType()) {
+        emptyList<Int>()::class -> Int::class
+        emptyList<Float>()::class -> Float::class
+        emptyList<Double>()::class -> Double::class
+        emptyList<Long>()::class -> Long::class
+        else -> Any::class
+    }
+
+    val selectedIndex = remember { mutableStateOf<Int?>(null) }
+
+    fun createDefaultValue(): Any {
+        return when (elementType) {
+            Int::class -> 0
+            Float::class -> 0f
+            Double::class -> 0
+            Long::class -> 0
+            Boolean::class -> false
+            String::class -> ""
+            else -> ""
+        }
+    }
+    val state = BlockEditManager.editState ?: return
+    val transition = updateTransition(targetState = state.isVisible, label = "editPanelTransition")
+
+    LaunchedEffect(value) {
+        items.value = (value as? Array<*>)?.toList() ?: emptyList()
+    }
+
+    LaunchedEffect(items.value) {
+        BlockEditManager.updatePinValue(fieldPin.pin, items.value.toTypedArray())
+        onValueChange(items.value.toTypedArray())
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
+        Text(
+            text = "Array<$itemType> ${fieldPin.pin.name}",
+            color = Color.White,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(scrollState)
+                .height(50.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items.value.forEachIndexed { index, item ->
+                ArrayItemBox(
+                    item = item,
+                    onValueChange = { newValue ->
+                        val newList = items.value.toMutableList()
+                        newList[index] = when (elementType) {
+                            Int::class -> (newValue as String).toIntOrNull() ?: 0
+                            Float::class -> (newValue as String).toFloatOrNull() ?: 0f
+                            Double::class -> (newValue as String).toDoubleOrNull() ?: 0
+                            Long::class -> (newValue as String).toLongOrNull() ?: 0
+                            Boolean::class -> (newValue as String).toBooleanStrictOrNull() ?: false
+                            else -> newValue
+                        }
+                        items.value = newList
+                        BlockEditManager.updatePinValue(fieldPin.pin, newList.toTypedArray())
+                        onValueChange(newList.toTypedArray())
+                    },
+                    onRemove = {
+                        val newList = items.value.toMutableList()
+                        newList.removeAt(index)
+                        items.value = newList
+                        BlockEditManager.updatePinValue(fieldPin.pin, newList.toTypedArray())
+                        onValueChange(newList.toTypedArray())
+                    },
+                    fieldPin = fieldPin,
+                    elementType = elementType,
+                    onItemSelected = { selectedIndex.value = index }
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .size(30.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(Color(0xFF3A3A3A))
+                    .clickable {
+                        val newList = items.value.toMutableList()
+                        newList.add(createDefaultValue())
+                        items.value = newList
+                        BlockEditManager.updatePinValue(fieldPin.pin, newList.toTypedArray())  //Где то здесь происходит фигня с сохранением в массив
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Text("+", color = Color.White, fontSize = 20.sp)
+            }
+        }
+    }
+
+    if (selectedIndex.value != null) {
+        val index = selectedIndex.value!!
+        EditItemDialog(
+            item = items.value[index],
+            elementType = elementType,
+            onValueChange = { newValue ->
+                val newList = items.value.toMutableList().apply {
+                    set(index, newValue)
+                }
+                items.value = newList
+                BlockEditManager.updatePinValue(fieldPin.pin, items.value.toTypedArray())
+                onValueChange(items.value.toTypedArray())
+            },
+            onDismiss = { selectedIndex.value = null },
+            fieldPin = fieldPin
+        )
+    }
+}
+
+@Composable
+private fun ArrayItemBox(
+    item: Any?,
+    onValueChange: (Any) -> Unit,
+    onRemove: () -> Unit,
+    fieldPin: PinEditField,
+    elementType: KClass<*>,
+    onItemSelected: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .size(30.dp)
+            .clip(RoundedCornerShape(4.dp))
+            .background(Color(0xFF424242))
+            .clickable { onItemSelected() },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = item?.toString()?.takeIf { it.isNotBlank() } ?: "0",
+            color = Color.White,
+            fontSize = 12.sp
+        )
+    }
+}
+
+@Composable
+fun EditItemDialog(
+    item: Any?,
+    elementType: KClass<*>,
+    onValueChange: (Any) -> Unit,
+    onDismiss: () -> Unit,
+    fieldPin: PinEditField
+) {
+
+    val textValue = remember { mutableStateOf(item?.toString() ?: "") }
+
+    val editingValue = remember { mutableStateOf(item) }
+
+    LaunchedEffect(item) {
+        editingValue.value = item
+    }
+
+    Dialog(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .background(Color(0xFF424242), RoundedCornerShape(8.dp))
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Edit Item",
+                fontSize = 20.sp,
+                color = Color.White
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            when (elementType) {
+                Int::class -> {
+                    val intValue = remember { mutableIntStateOf(editingValue.value.toString().toIntOrNull() ?: 0) }
+                    val initialValue = intValue.intValue
+                    NumberInputController(
+                        initialValue = initialValue,
+                        onValueChange = { newValue ->
+                            onValueChange(newValue)
+                        },
+                        isInt = true
+                    )
+                }
+
+                Float::class -> {
+                    val initialValue = item?.toString()?.toFloatOrNull() ?: 0f
+                    NumberInputController(
+                        initialValue = initialValue,
+                        onValueChange = { newValue ->
+                            onValueChange(newValue.toFloat())
+                        },
+                        isInt = false
+                    )
+                }
+
+                Double::class -> {
+                    val initialValue = item?.toString()?.toDoubleOrNull() ?: 0
+                    NumberInputController(
+                        initialValue = initialValue,
+                        onValueChange = { newValue ->
+                            onValueChange(newValue.toDouble())
+                        },
+                        isInt = false
+                    )
+                }
+
+                Long::class -> {
+                    val initialValue = item?.toString()?.toLongOrNull() ?: 0f
+                    NumberInputController(
+                        initialValue = initialValue,
+                        onValueChange = { newValue ->
+                            onValueChange(newValue.toLong())
+                        },
+                        isInt = true
+                    )
+                }
+
+                Boolean::class -> {
+                    val initialValue = item?.toString()?.toBooleanStrictOrNull() ?: false
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("Value: ", color = Color.Black)
+                        Switch(
+                            checked = initialValue,
+                            onCheckedChange = { newValue ->
+                                onValueChange(newValue)
+                            }
+                        )
+                    }
+                }
+
+                String::class -> {
+                    TextInputField(
+                        value = item?.toString() ?: "",
+                        onValueChange = { textValue.value = it },
+                    )
+                }
+
+//                emptyList<Int>()::class -> {
+//                    val initialValue = item?.toString()?.toIntOrNull() ?: 0f
+//                    NumberInputController(
+//                        initialValue = initialValue,
+//                        onValueChange = { newValue ->
+//                            onValueChange(newValue.toInt())
+//                        },
+//                        isInt = true
+//                    )
+//                }
+//
+//                emptyList<Float>()::class -> {
+//                    val initialValue = item?.toString()?.toFloatOrNull() ?: 0f
+//                    NumberInputController(
+//                        initialValue = initialValue,
+//                        onValueChange = { newValue ->
+//                            onValueChange(newValue.toFloat())
+//                        },
+//                        isInt = false
+//                    )
+//                }
+//
+//                emptyList<Double>()::class -> {
+//                    val initialValue = item?.toString()?.toDoubleOrNull() ?: 0f
+//                    NumberInputController(
+//                        initialValue = initialValue,
+//                        onValueChange = { newValue ->
+//                            onValueChange(newValue.toDouble())
+//                        },
+//                        isInt = false
+//                    )
+//                }
+//
+//                emptyList<Long>()::class -> {
+//                    val initialValue = item?.toString()?.toLongOrNull() ?: 0f
+//                    NumberInputController(
+//                        initialValue = initialValue,
+//                        onValueChange = { newValue ->
+//                            onValueChange(newValue.toFloat())
+//                        },
+//                        isInt = true
+//                    )
+//                }
+
+                else -> {
+                    Text("Unsupported type", color = Color.Black)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = {
+                        val newValue: Any = when (elementType) {
+                            Int::class -> textValue.value.toIntOrNull() ?: 0
+                            Float::class -> textValue.value.toFloatOrNull() ?: 0f
+                            Double::class -> textValue.value.toDoubleOrNull() ?: 0
+                            Long::class -> textValue.value.toLongOrNull() ?: 0
+                            Boolean::class -> item?.toString()?.toBooleanStrictOrNull() ?: false
+                            else -> textValue.value
+                        }
+                        onDismiss()
+                        onValueChange(newValue)
+                    },
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Color.Red)
+                ) {
+                    Text("Cancel", color = Color.White)
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(
+                    onClick = {
+                        editingValue.value?.let(onValueChange)
+                        onDismiss()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Green)
+                ) {
+                    Text("Save", color = Color.White)
+                }
+            }
+        }
+    }
+}
+
