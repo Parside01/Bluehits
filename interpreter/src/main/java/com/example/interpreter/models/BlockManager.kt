@@ -166,9 +166,9 @@ object BlockManager {
         varName: String = "Array",
         value: List<T> = emptyList()
     ): Block {
-        val block = createBlock { id -> ArrayBlock<T>(id, value, varName) }
+        val block = createBlock { id -> ArrayBlock<T>(id, value as List<T>, varName) }
 
-        val blockState = VariableManager.getOrCreateVarState(varName, value, List::class)
+        val blockState = VariableManager.getOrCreateVarState(varName, value as List<T>, List::class)
         block.setVarState(blockState as VarState<List<T>>)
 
         blockState.addObserver(block)
