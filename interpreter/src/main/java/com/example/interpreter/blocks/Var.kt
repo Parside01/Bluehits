@@ -111,6 +111,17 @@ class ArrayBlock<T> internal constructor(
         return ExecutionState.COMPLETED
     }
 
+    fun append(value: Any) {
+        var arr = setPin.getValue() as List<T>
+        arr = arr.toMutableList()
+        arr.add(value as T)
+        setPin.setValue(arr)
+    }
+
+    fun index(index: Int): T {
+        return (setPin.getValue() as List<T>).elementAt(index) as T
+    }
+
     override fun onValueChanged(newValue: List<T>) {
         getPin.setValue(newValue)
         setPin.setValue(newValue)
