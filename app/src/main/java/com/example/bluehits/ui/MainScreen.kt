@@ -314,7 +314,8 @@ fun MainScreen() {
                     width = Dimension.wrapContent
                     height = Dimension.wrapContent
                 }
-                .zIndex(3f)
+                .zIndex(3f),
+            fontSize = 12.sp
         )
 
 
