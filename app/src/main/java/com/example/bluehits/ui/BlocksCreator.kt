@@ -57,7 +57,7 @@ class BlocksManager {
 
     fun addNewBlock(type: String) {
         when (type) {
-            "Index", "Append", "Swap", "Array", "Add", "Sub", "Greator" -> {
+            "Index", "Append", "Swap", "Array", "Add", "Sub", "Greater" -> {
                 currentBlockType = type
                 _showTypeDialog.value = true
             }
@@ -141,16 +141,16 @@ class BlocksManager {
                     DataType.LONG -> BlockManager.createAddBlock(type = Long::class)
                 }
                 "Sub" ->  when (type) {
-                    DataType.INT -> BlockManager.createAddBlock(type = Int::class)
-                    DataType.FLOAT -> BlockManager.createAddBlock(type = Float::class)
-                    DataType.DOUBLE -> BlockManager.createAddBlock(type = Double::class)
-                    DataType.LONG -> BlockManager.createAddBlock(type = Long::class)
+                    DataType.INT -> BlockManager.createSubBlock(type = Int::class)
+                    DataType.FLOAT -> BlockManager.createSubBlock(type = Float::class)
+                    DataType.DOUBLE -> BlockManager.createSubBlock(type = Double::class)
+                    DataType.LONG -> BlockManager.createSubBlock(type = Long::class)
                 }
-                "Greator" ->  when (type) {
-                    DataType.INT -> BlockManager.createAddBlock(type = Int::class)
-                    DataType.FLOAT -> BlockManager.createAddBlock(type = Float::class)
-                    DataType.DOUBLE -> BlockManager.createAddBlock(type = Double::class)
-                    DataType.LONG -> BlockManager.createAddBlock(type = Long::class)
+                "Greater" ->  when (type) {
+                    DataType.INT -> BlockManager.createGreaterBlock(type = Int::class)
+                    DataType.FLOAT -> BlockManager.createGreaterBlock(type = Float::class)
+                    DataType.DOUBLE -> BlockManager.createGreaterBlock(type = Double::class)
+                    DataType.LONG -> BlockManager.createGreaterBlock(type = Long::class)
                 }
                 else -> throw IllegalArgumentException("Unsupported type")
             }

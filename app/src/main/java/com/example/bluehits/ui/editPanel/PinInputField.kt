@@ -444,11 +444,6 @@ fun ArrayInputField(
             .fillMaxWidth()
             .padding(8.dp)
     ) {
-        Text(
-            text = "Array<$itemType> ${fieldPin.pin.name}",
-            color = Color.White,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
 
         Row(
             modifier = Modifier
