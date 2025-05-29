@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bluehits.ui.pinCreator.drawBlockPin
 import com.example.bluehits.ui.pinCreator.drawPin
+import com.example.interpreter.blocks.FunctionDefinitionBlock
 import com.example.interpreter.models.Pin
 import com.example.interpreter.models.Block
 import com.example.interpreter.models.Id
@@ -296,6 +297,9 @@ fun DrawScope.drawPins(
     density: Density,
     selectedPinId: Id? = null
 ) {
+    if (block.logicBlock is FunctionDefinitionBlock) {
+    }
+
     val pinRadius = PIN_RADIUS_DP.toPx()
     val textPadding = PIN_TEXT_PADDING_DP.toPx()
 

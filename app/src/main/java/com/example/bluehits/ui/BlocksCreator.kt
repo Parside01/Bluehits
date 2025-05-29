@@ -213,7 +213,6 @@ class BlocksManager {
             title = mainLogicBlock.name,
             inputPins = mainLogicBlock.inputs,
             outputPins = mainLogicBlock.outputs,
-            inBlockPin = mainLogicBlock.blockPin,
             outBlockPin = mainLogicBlock.outBlockPin,
         )
         _uiBlocks.add(mainBlueBlock)
