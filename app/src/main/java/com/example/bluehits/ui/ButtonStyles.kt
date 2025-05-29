@@ -72,12 +72,12 @@ object ButtonStyles {
                 .shadow(4.dp, shape = RoundedCornerShape(cornerRadius)),
             shape = RoundedCornerShape(cornerRadius),
             colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = Color(0xFFF3F3FF)
+                containerColor = Color.DarkGray
             ),
             contentPadding = PaddingValues(vertical = 8.dp),
             border = BorderStroke(1.dp, Color(0xFF888888)),
             textStyle = TextStyle(
-                color = Color.Black,
+                color = Color.White,
                 fontSize = (buttonHeight.value * 0.4f).coerceAtMost(16f).sp,
                 textAlign = TextAlign.Center
             )

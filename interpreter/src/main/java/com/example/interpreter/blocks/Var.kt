@@ -34,6 +34,7 @@ class IntBlock internal constructor(
         }
         val inputValue = setPin.getValue() as Int
         varState.setValue(inputValue)
+        getPin.setValue(inputValue)
         return ExecutionState.COMPLETED
     }
 
@@ -42,6 +43,7 @@ class IntBlock internal constructor(
         setPin.setValue(newValue)
     }
 }
+
 @Suppress("UNCHECKED_CAST")
 class BoolBlock internal constructor(
     id: Id,
@@ -105,7 +107,19 @@ class ArrayBlock<T> internal constructor(
 
         val inputValue = setPin.getValue()
         varState.setValue(inputValue as List<T>)
+        getPin.setValue(inputValue)
         return ExecutionState.COMPLETED
+    }
+
+    fun append(value: Any) {
+        var arr = setPin.getValue() as List<T>
+        arr = arr.toMutableList()
+        arr.add(value as T)
+        setPin.setValue(arr)
+    }
+
+    fun index(index: Int): T {
+        return (setPin.getValue() as List<T>).elementAt(index) as T
     }
 
     override fun onValueChanged(newValue: List<T>) {
@@ -141,10 +155,49 @@ class FloatBlock internal constructor(
 
         val inputValue = setPin.getValue() as Float
         varState.setValue(inputValue)
+        getPin.setValue(inputValue)
+
         return ExecutionState.COMPLETED
     }
 
     override fun onValueChanged(newValue: Float) {
+        getPin.setValue(newValue)
+        setPin.setValue(newValue)
+    }
+}
+
+class StringBlock internal constructor(
+    id: Id,
+    default: String = "",
+    name: String = "String"
+) : Block(
+    id,
+    name,
+    mutableListOf(PinManager.createPinString("set", default, ownId = id)),
+    mutableListOf(PinManager.createPinString("get", default, ownId = id))
+), VarObserver<String> {
+    lateinit var varState: VarState<String>
+
+    internal fun setVarState(varState: VarState<String>) {
+        this.varState = varState
+    }
+
+    internal val setPin: TPin<String> get() = inputs[0] as TPin<String>
+    internal val getPin: TPin<String> get() = outputs[0] as TPin<String>
+
+    override fun execute(): ExecutionState {
+        if (!::varState.isInitialized) {
+            throw IllegalStateException("StringBlock '${name}' (ID: ${id.string()}) not initialized.")
+        }
+
+        val inputValue = setPin.getValue() as String
+        varState.setValue(inputValue)
+        getPin.setValue(inputValue)
+
+        return ExecutionState.COMPLETED
+    }
+
+    override fun onValueChanged(newValue: String) {
         getPin.setValue(newValue)
         setPin.setValue(newValue)
     }

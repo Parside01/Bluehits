@@ -151,12 +151,14 @@ fun MainScreen() {
                 "Int" -> "Enter Int name"
                 "Float" -> "Enter Float name"
                 "Bool" -> "Enter Bool name"
+                "String" -> "Enter String name"
                 else -> "Enter Function Name"
             },
             label = when (blocksManager.currentFunctionDialogType) {
                 "Int" -> "Int name"
                 "Float" -> "Float name"
                 "Bool" -> "Bool name"
+                "String" -> "String name"
                 else -> "Function name"
             },
             onNameEntered = { name ->
@@ -269,7 +271,7 @@ fun MainScreen() {
                 blocksManager = blocksManager,
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(color = Color(0xFFF9F9FF), shape = RoundedCornerShape(16.dp))
+                    .background(color = Color.White)
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState()),
                 onError = { message -> errorMessage = message }
@@ -320,7 +322,8 @@ fun MainScreen() {
                     width = Dimension.wrapContent
                     height = Dimension.wrapContent
                 }
-                .zIndex(3f)
+                .zIndex(3f),
+            fontSize = 12.sp
         )
 
 
@@ -428,6 +431,8 @@ fun ControlPanel(
             "IfElse" to "IfElse",
             "For" to "For",
             "Array" to "Array",
+            "String" to "String",
+            "Math" to "Math",
             "Index" to "Index",
             "Append" to "Append",
             "Swap" to "Swap",

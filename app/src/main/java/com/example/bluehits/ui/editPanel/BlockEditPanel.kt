@@ -60,13 +60,6 @@ fun BlockEditPanel(
     val state = BlockEditManager.editState ?: return
     val transition = updateTransition(targetState = state.isVisible, label = "editPanelTransition")
 
-    val slideIn by transition.animateDp(
-        transitionSpec = { tween(durationMillis = 300) },
-        label = "slideIn"
-    ) { visible ->
-        if (visible) 0.dp else (-300).dp
-    }
-
     val alpha by transition.animateFloat(
         transitionSpec = { tween(durationMillis = 300) },
         label = "alpha"
@@ -94,12 +87,10 @@ fun BlockEditPanel(
                 modifier = modifier
                     .widthIn(max = 400.dp)
                     .wrapContentHeight()
-                    .offset(y = slideIn)
                     .alpha(alpha),
                 shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
                 color = Color(0xFF333333),
                 shadowElevation = 8.dp,
-                border = CardDefaults.outlinedCardBorder()
             ) {
                 Column(
                     modifier = Modifier
