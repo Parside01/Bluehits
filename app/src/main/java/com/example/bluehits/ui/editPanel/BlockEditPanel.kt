@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LocalTextStyle
@@ -25,7 +24,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
@@ -107,7 +105,7 @@ fun BlockEditPanel(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Text(
-                        text = "Edit Pins",
+                        text = "Редактировать пины",
                         style = MaterialTheme.typography.titleMedium,
                         color = Color.White
                     )
@@ -118,7 +116,7 @@ fun BlockEditPanel(
                             modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
                         ) {
-                            Text("+ add pin", color = Color.White)
+                            Text("+ Добавить пин", color = Color.White)
                         }
                     }
 
@@ -166,11 +164,17 @@ fun BlockEditPanel(
                         else -> PinManager.createPinAny(pinName)
                     }
                     val functionName = block.title.removePrefix("def ").removePrefix("return ").trim()
-                    FunctionManager.addFunctionInArg(functionName, pin)
-                    val updatedInputPins = mutableListOf<Pin>().apply {
-                        addAll(block.inputPins)
-                        add(pin)
+                    val updatedInputPins = mutableListOf<Pin>().apply { addAll(block.inputPins) }
+                    val updatedOutputPins = mutableListOf<Pin>().apply { addAll(block.outputPins) }
+
+                    if (block.title.startsWith("def ")) {
+                        FunctionManager.addFunctionInArg(functionName, pin)
+                        updatedOutputPins.add(pin)
+                    } else if (block.title.startsWith("return ")) {
+                        FunctionManager.addFunctionOutArg(functionName, pin)
+                        updatedInputPins.add(pin)
                     }
+
                     val newBlock = BlueBlock(
                         id = block.id,
                         initialX = block.x,
@@ -178,7 +182,7 @@ fun BlockEditPanel(
                         color = block.color,
                         title = block.title,
                         inputPins = updatedInputPins,
-                        outputPins = block.outputPins,
+                        outputPins = updatedOutputPins,
                         inBlockPin = block.inBlockPin,
                         outBlockPin = block.outBlockPin,
                         functionName = block.functionName
@@ -191,6 +195,7 @@ fun BlockEditPanel(
         }
     }
 }
+
 @Composable
 fun EditPinTypeDialog(
     onDismiss: () -> Unit,
@@ -203,7 +208,7 @@ fun EditPinTypeDialog(
                 .padding(16.dp)
         ) {
             Text(
-                text = "Select Pin Type",
+                text = "Выберите тип пина",
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.White,
                 modifier = Modifier.padding(bottom = 16.dp)
@@ -267,7 +272,7 @@ fun EditPinNameDialog(
                     .fillMaxWidth()
                     .padding(top = 16.dp)
             ) {
-                Text("Create")
+                Text("Создать")
             }
         }
     }
