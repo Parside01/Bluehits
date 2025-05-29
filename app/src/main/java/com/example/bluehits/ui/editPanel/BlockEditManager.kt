@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.example.bluehits.ui.BlueBlock
+import com.example.interpreter.blocks.FunctionDefinitionBlock
 import com.example.interpreter.models.Pin
 
 object BlockEditManager {
@@ -11,8 +12,7 @@ object BlockEditManager {
         private set
 
     fun shouldShowEditPanel(block: BlueBlock): Boolean {
-        // Разрешаем показ панели для блока Function def или если есть входные пины
-        return block.title == "definition" || block.inputPins.isNotEmpty()
+        return block.title.startsWith("def ") || block.inputPins.isNotEmpty()
     }
 
     fun showEditPanel(block: BlueBlock) {
