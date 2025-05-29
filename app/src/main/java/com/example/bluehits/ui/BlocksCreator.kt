@@ -194,7 +194,6 @@ class BlocksManager {
             title = mainLogicBlock.name,
             inputPins = mainLogicBlock.inputs,
             outputPins = mainLogicBlock.outputs,
-            inBlockPin = mainLogicBlock.blockPin,
             outBlockPin = mainLogicBlock.outBlockPin,
         )
         _uiBlocks.add(mainBlueBlock)
@@ -210,7 +209,9 @@ class BlocksManager {
 
     fun removeBlock(block: BlueBlock, connectionManager: UIConnectionManager) {
         val pinIds = mutableListOf<Id>()
-        pinIds.add(block.inBlockPin.id)
+        if (block.inBlockPin != null) {
+            pinIds.add(block.inBlockPin.id)
+        }
         block.inputPins.forEach { pinIds.add(it.id) }
         block.outputPins.forEach { pinIds.add(it.id) }
         pinIds.forEach { pinId ->
@@ -231,7 +232,9 @@ class BlocksManager {
         _uiBlocks.toList().forEach { block ->
             if (block.title != "Main") {
                 val pinIds = mutableListOf<Id>()
-                pinIds.add(block.inBlockPin.id)
+                if (block.inBlockPin != null) {
+                    pinIds.add(block.inBlockPin.id)
+                }
                 block.inputPins.forEach { pinIds.add(it.id) }
                 block.outputPins.forEach { pinIds.add(it.id) }
                 pinIds.forEach { pinId ->

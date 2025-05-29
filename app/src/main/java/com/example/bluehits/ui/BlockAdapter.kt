@@ -40,8 +40,14 @@ object BlockAdapter {
             title = title,
             inputPins = logicBlock.inputs,
             outputPins = logicBlock.outputs,
-            inBlockPin = logicBlock.blockPin,
-            outBlockPin = logicBlock.outBlockPin,
+            inBlockPin =  when (logicBlock) {
+                is FunctionDefinitionBlock -> null
+                else -> logicBlock.blockPin
+            },
+            outBlockPin = when (logicBlock) {
+                is FunctionReturnBlock -> null
+                else -> logicBlock.outBlockPin
+            },
             functionName = when (logicBlock) {
                 is FunctionDefinitionBlock -> logicBlock.getFunctionName()
                 is FunctionCallBlock -> logicBlock.getFunctionName()
