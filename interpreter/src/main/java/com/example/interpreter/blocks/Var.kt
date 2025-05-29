@@ -69,6 +69,7 @@ class BoolBlock internal constructor(
 
         val inputValue = setPin.getValue() as Boolean
         varState.setValue(inputValue)
+        getPin.setValue(inputValue)
         return ExecutionState.COMPLETED
     }
 

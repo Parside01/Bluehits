@@ -2,7 +2,7 @@ package com.example.interpreter.models
 
 abstract class Block internal constructor(
     val id: Id, // TODO: Для реализации функций надо сделать open метод getId()
-    val name: String,
+    var name: String,
     val inputs: MutableList<Pin> = mutableListOf(),
     val outputs: MutableList<Pin> = mutableListOf()
 ) {

@@ -27,8 +27,10 @@ class BlocksManager {
     val uiBlocks: List<BlueBlock> get() = _uiBlocks
     private var _showTypeDialog = mutableStateOf(false)
     val showTypeDialog: State<Boolean> get() = _showTypeDialog
-    var errorMessage by mutableStateOf<String?>(null)
-        private set
+    private var _showValueNameDialog = mutableStateOf(false)
+    val showValueNameDialog: State<Boolean> get() = _showValueNameDialog
+    private var currentValueBlockType: String? = null
+
     private var currentBlockType: String? = null
     private var onTypeSelected: ((DataType) -> Unit)? = null
 
@@ -52,6 +54,10 @@ class BlocksManager {
             "Function def" -> showFunctionNameDialog("Function def")
             "Function call" -> showFunctionNameDialog("Function call")
             "Function return" -> showFunctionNameDialog("Function return")
+            "Int" -> showFunctionNameDialog("Int")
+            "Float" -> showFunctionNameDialog("Float")
+            "Bool" -> showFunctionNameDialog("Bool")
+
             else -> createBlockWithoutType(type)
         }
     }
@@ -68,29 +74,17 @@ class BlocksManager {
     fun onFunctionNameEntered(name: String) {
         _showFunctionNameDialog.value = false
         currentFunctionDialogType?.let { dialogType ->
-            try {
-                val logicBlock = when (dialogType) {
-                    "Function def" -> BlockManager.createFunctionDefinitionBlock(name)
-                    "Function call" -> {
+            val logicBlock = when (dialogType) {
+                "Function def" -> BlockManager.createFunctionDefinitionBlock(name)
+                "Function call" -> BlockManager.createFunctionCalledBlock(name)
+                "Function return" -> BlockManager.createFunctionReturnBlock(name)
+                "Int" -> BlockManager.createIntBlock(name)
+                "Float" -> BlockManager.createFloatBlock(name)
+                "Bool" -> BlockManager.createBoolBlock(name)
 
-                        val defined = uiBlocks.any {
-                            it.title == "definition" && it.functionName == name
-                        }
-                        if (!defined) {
-                            throw IllegalArgumentException("Функция '$name' не определена")
-                        }
-                        BlockManager.createFunctionCalledBlock(name)
-                    }
-                    "Function return" -> BlockManager.createFunctionReturnBlock(name)
-                    else -> throw IllegalArgumentException("Unknown function dialog type")
-                }
-
-                val uiBlock = BlockAdapter.wrapLogicBlock(logicBlock)
-
-                _uiBlocks.add(uiBlock)
-            } catch (e: IllegalArgumentException) {
-                errorMessage = e.message
+                else -> throw IllegalArgumentException("Unknown function dialog type")
             }
+            _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock))
         }
     }
 
@@ -152,10 +146,10 @@ class BlocksManager {
 
     private fun createBlockWithoutType(type: String) {
         val logicBlock = when (type) {
+//            "Int" -> BlockManager.createIntBlock()
+//            "Bool" -> BlockManager.createBoolBlock()
+//            "Float" -> BlockManager.createFloatBlock()
             "For" -> BlockManager.createForBlock()
-            "Int" -> BlockManager.createIntBlock()
-            "Bool" -> BlockManager.createBoolBlock()
-            "Float" -> BlockManager.createFloatBlock()
             "Print" -> BlockManager.createPrintBlock()
             "IfElse" -> BlockManager.createIfElseBlock()
             else -> throw IllegalArgumentException("Unsupported type")
@@ -234,15 +228,10 @@ class BlocksManager {
                 UIPinManager.clearPinsForBlock(block)
                 _uiBlocks.remove(block)
             }
+
         }
     }
-
-    fun clearErrorMessage() {
-        errorMessage = null
-    }
 }
-
-
 
 @Composable
 fun TypeSelectionDialog(
@@ -282,6 +271,7 @@ fun TypeSelectionDialog(
 @Composable
 fun FunctionNameDialog(
     title: String,
+    label: String = "Function name",
     onNameEntered: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -302,7 +292,7 @@ fun FunctionNameDialog(
             OutlinedTextField(
                 value = functionName,
                 onValueChange = { functionName = it },
-                label = { Text("Function name") },
+                label = { Text(label) },
                 modifier = Modifier.fillMaxWidth()
             )
 
