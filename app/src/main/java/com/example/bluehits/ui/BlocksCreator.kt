@@ -162,9 +162,6 @@ class BlocksManager {
 
     private fun createBlockWithoutType(type: String) {
         val logicBlock = when (type) {
-//            "Int" -> BlockManager.createIntBlock()
-//            "Bool" -> BlockManager.createBoolBlock()
-//            "Float" -> BlockManager.createFloatBlock()
             "For" -> BlockManager.createForBlock()
             "Print" -> BlockManager.createPrintBlock()
             "IfElse" -> BlockManager.createIfElseBlock()
