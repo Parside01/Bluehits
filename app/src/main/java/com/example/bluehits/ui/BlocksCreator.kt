@@ -36,6 +36,14 @@ class BlocksManager {
     private var currentBlockType: String? = null
     private var onTypeSelected: ((DataType) -> Unit)? = null
 
+    private var screenWidthPx by mutableStateOf(0f)
+    private var screenHeightPx by mutableStateOf(0f)
+
+    fun updateScreenSize(width: Float, height: Float) {
+        screenWidthPx = width
+        screenHeightPx = height
+    }
+
     public fun getPrintBlockValue(uiBlocks: List<BlueBlock>): Any? {
         uiBlocks.forEach { block ->
             if (block.title == "Print") {
@@ -87,7 +95,10 @@ class BlocksManager {
                 "String" -> BlockManager.createStringBlock(name)
                 else -> throw IllegalArgumentException("Unknown function dialog type")
             }
-            _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock))
+
+            val centerX = screenWidthPx
+            val centerY = screenHeightPx
+            _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock, centerX = centerX, centerY = centerY))
         }
     }
 
@@ -143,7 +154,9 @@ class BlocksManager {
                 }
                 else -> throw IllegalArgumentException("Unsupported type")
             }
-            _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock))
+            val centerX = screenWidthPx
+            val centerY = screenHeightPx
+            _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock, centerX = centerX, centerY = centerY))
         }
     }
 
@@ -158,7 +171,9 @@ class BlocksManager {
             "Math" -> BlockManager.createMathBlock()
             else -> throw IllegalArgumentException("Unsupported type")
         }
-        _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock))
+        val centerX = screenWidthPx
+        val centerY = screenHeightPx
+        _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock, centerX = centerX, centerY = centerY))
     }
 
     fun dismissTypeDialog() {
@@ -176,7 +191,7 @@ class BlocksManager {
             initialX = 0f,
             initialY = 0f,
             color = Color.Gray,
-            title = mainLogicBlock.name ?: "Block",
+            title = mainLogicBlock.name,
             inputPins = mainLogicBlock.inputs,
             outputPins = mainLogicBlock.outputs,
             inBlockPin = mainLogicBlock.blockPin,

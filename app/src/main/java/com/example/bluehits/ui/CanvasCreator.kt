@@ -33,7 +33,8 @@ fun CreateCanvas(
     connectionManager: UIConnectionManager,
     onDrag: (dragAmount: Offset) -> Unit,
     onBlockDrag: (block: BlueBlock, dragAmount: Offset, isDragging: Boolean) -> Unit,
-    onBlockClick: (blockId: Id) -> Unit
+    onBlockClick: (blockId: Id) -> Unit,
+    blocksManager: BlocksManager
 ) {
     var canvasOffset by remember { mutableStateOf(Offset.Zero) }
     var scale by remember { mutableStateOf(1f) }
@@ -135,21 +136,16 @@ fun CreateCanvas(
                 }
             }
     ) {
+        val visibleCenterX = -canvasOffset.x / scale + size.width / (2 * scale)
+        val visibleCenterY = -canvasOffset.y / scale + size.height / (2 * scale)
+        blocksManager.updateScreenSize(visibleCenterX, visibleCenterY)
+
         withTransform({
             translate(canvasOffset.x, canvasOffset.y)
             scale(scaleX = scale, scaleY = scale)
         }) {
             blocks.forEach { block ->
                 drawBlock(block, textMeasurer, density)
-
-//                if (block == selectedBlock) {
-//                    drawRect(
-//                        color = Color.White,
-//                        topLeft = Offset(block.x - 4, block.y - 4),
-//                        size = Size(block.width + 8, block.height + 8),
-//                        style = Stroke(width = 4f / scale)
-//                    )
-//                }
             }
             connectionManager.connections.forEach { (pin1, pin2) ->
                 lineCreator.run { drawBezierCurve(pin1, pin2) }

@@ -227,7 +227,8 @@ fun MainScreen() {
                     showSettingsDialog = true
                     BlockEditManager.showEditPanel(blocksManager.uiBlocks.find { it.id == blockId }!!)
                 },
-                connectionManager = connectionManager
+                connectionManager = connectionManager,
+                blocksManager = blocksManager,
             )
         }
 

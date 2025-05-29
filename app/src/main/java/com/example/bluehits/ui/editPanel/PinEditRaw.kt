@@ -24,7 +24,7 @@ fun PinEditRow(
     fieldPin: PinEditField,
     onValueChange: (Any) -> Unit
 ) {
-    val currentValue = fieldPin.pin.getStringValue()
+    val currentValue = fieldPin.pin.getValue()
 
     Column {
         Row (
