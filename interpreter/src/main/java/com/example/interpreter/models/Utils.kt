@@ -5,6 +5,7 @@ object Utils {
     fun <T> getDefaultValue(type: Class<T>): T {
         return when (type) {
             Int::class.java -> 0 as T
+            Integer::class.java -> 0 as T
             Long::class.java -> 0L as T
             Short::class.java -> 0.toShort() as T
             Byte::class.java -> 0.toByte() as T
