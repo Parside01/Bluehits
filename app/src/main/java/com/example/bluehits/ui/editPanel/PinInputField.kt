@@ -9,6 +9,8 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +23,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LocalTextStyle
@@ -415,7 +418,7 @@ private fun TextInputField(
         )
     )
 }
-
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ArrayInputField(
     fieldPin: PinEditField,
@@ -437,6 +440,7 @@ fun ArrayInputField(
     }
 
     val selectedIndex = remember { mutableStateOf<Int?>(null) }
+
 
     fun createDefaultValue(): Any {
         return when (elementType) {
@@ -467,13 +471,13 @@ fun ArrayInputField(
             .padding(8.dp)
     ) {
 
-        Row(
+        FlowRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .horizontalScroll(scrollState)
-                .height(50.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                .horizontalScroll(scrollState),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            maxItemsInEachRow = 9
         ) {
             items.value.forEachIndexed { index, item ->
                 ArrayItemBox(
