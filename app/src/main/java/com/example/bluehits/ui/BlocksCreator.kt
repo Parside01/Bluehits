@@ -36,6 +36,13 @@ class BlocksManager {
     private var currentBlockType: String? = null
     private var onTypeSelected: ((DataType) -> Unit)? = null
 
+    fun updateBlock(blockId: Id, newBlock: BlueBlock) {
+        val index = _uiBlocks.indexOfFirst { it.id == blockId }
+        if (index != -1) {
+            _uiBlocks[index] = newBlock
+        }
+    }
+
     public fun getPrintBlockValue(uiBlocks: List<BlueBlock>): Any? {
         uiBlocks.forEach { block ->
             if (block.title == "Print") {
@@ -45,7 +52,6 @@ class BlocksManager {
         }
         return null
     }
-
 
     fun addNewBlock(type: String) {
         when (type) {
@@ -60,7 +66,6 @@ class BlocksManager {
             "Float" -> showFunctionNameDialog("Float")
             "Bool" -> showFunctionNameDialog("Bool")
             "String" -> showFunctionNameDialog("String")
-
             else -> createBlockWithoutType(type)
         }
     }
@@ -123,19 +128,19 @@ class BlocksManager {
                     DataType.DOUBLE -> BlockManager.createArrayBlock<Double>()
                     DataType.LONG -> BlockManager.createArrayBlock<Long>()
                 }
-                "Add" ->  when (type) {
+                "Add" -> when (type) {
                     DataType.INT -> BlockManager.createAddBlock(type = Int::class)
                     DataType.FLOAT -> BlockManager.createAddBlock(type = Float::class)
                     DataType.DOUBLE -> BlockManager.createAddBlock(type = Double::class)
                     DataType.LONG -> BlockManager.createAddBlock(type = Long::class)
                 }
-                "Sub" ->  when (type) {
+                "Sub" -> when (type) {
                     DataType.INT -> BlockManager.createAddBlock(type = Int::class)
                     DataType.FLOAT -> BlockManager.createAddBlock(type = Float::class)
                     DataType.DOUBLE -> BlockManager.createAddBlock(type = Double::class)
                     DataType.LONG -> BlockManager.createAddBlock(type = Long::class)
                 }
-                "Greator" ->  when (type) {
+                "Greator" -> when (type) {
                     DataType.INT -> BlockManager.createAddBlock(type = Int::class)
                     DataType.FLOAT -> BlockManager.createAddBlock(type = Float::class)
                     DataType.DOUBLE -> BlockManager.createAddBlock(type = Double::class)
@@ -149,9 +154,6 @@ class BlocksManager {
 
     private fun createBlockWithoutType(type: String) {
         val logicBlock = when (type) {
-//            "Int" -> BlockManager.createIntBlock()
-//            "Bool" -> BlockManager.createBoolBlock()
-//            "Float" -> BlockManager.createFloatBlock()
             "For" -> BlockManager.createForBlock()
             "Print" -> BlockManager.createPrintBlock()
             "IfElse" -> BlockManager.createIfElseBlock()
@@ -232,7 +234,6 @@ class BlocksManager {
                 UIPinManager.clearPinsForBlock(block)
                 _uiBlocks.remove(block)
             }
-
         }
     }
 }
@@ -299,8 +300,7 @@ fun FunctionNameDialog(
             OutlinedTextField(
                 value = functionName,
                 onValueChange = { functionName = it },
-                label = { Text(label,
-                    color = Color.White) },
+                label = { Text(label, color = Color.White) },
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = LocalTextStyle.current.copy(color = Color.White),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -310,7 +310,6 @@ fun FunctionNameDialog(
                     focusedBorderColor = Color.LightGray,
                     unfocusedBorderColor = Color.Gray
                 )
-
             )
 
             Button(

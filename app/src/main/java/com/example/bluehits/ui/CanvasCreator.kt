@@ -23,6 +23,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextMeasurer
+import com.example.bluehits.ui.editPanel.BlockEditManager
 import com.example.interpreter.models.Id
 import kotlin.math.sqrt
 
@@ -51,7 +52,7 @@ fun CreateCanvas(
                     val startPosition = down.position
                     val adjusted = (startPosition - canvasOffset) / scale
 
-                    selectedBlock = blocks.lastOrNull() { block ->
+                    selectedBlock = blocks.lastOrNull { block ->
                         adjusted.x in block.x..(block.x + block.width) &&
                                 adjusted.y in block.y..(block.y + block.height)
                     }
@@ -129,7 +130,11 @@ fun CreateCanvas(
                             adjustedOffset.x in block.x..(block.x + block.width) &&
                                     adjustedOffset.y in block.y..(block.y + block.height)
                         }?.let { clickedBlock ->
-                            onBlockClick(clickedBlock.id)
+                            if (clickedBlock.title.startsWith("def ")) {
+                                BlockEditManager.showEditPanel(clickedBlock)
+                            } else {
+                                onBlockClick(clickedBlock.id)
+                            }
                         }
                     }
                 }
@@ -141,15 +146,6 @@ fun CreateCanvas(
         }) {
             blocks.forEach { block ->
                 drawBlock(block, textMeasurer, density)
-
-//                if (block == selectedBlock) {
-//                    drawRect(
-//                        color = Color.White,
-//                        topLeft = Offset(block.x - 4, block.y - 4),
-//                        size = Size(block.width + 8, block.height + 8),
-//                        style = Stroke(width = 4f / scale)
-//                    )
-//                }
             }
             connectionManager.connections.forEach { (pin1, pin2) ->
                 lineCreator.run { drawBezierCurve(pin1, pin2) }

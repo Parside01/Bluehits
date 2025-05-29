@@ -49,6 +49,6 @@ object BlockEditManager {
     }
 
     fun hideEditPanel() {
-        editState = editState?.copy(isVisible = false) // Сохраняем состояние, но скрываем панель
+        editState = editState?.copy(isVisible = false)
     }
 }

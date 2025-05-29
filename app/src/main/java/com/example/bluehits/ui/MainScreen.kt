@@ -99,12 +99,6 @@ fun MainScreen() {
             onDismiss = { errorMessage = null }
         )
     }
-    /*blocksManager.errorMessage?.let { message ->
-        ErrorNotification(
-            message = message,
-            onDismiss = { blocksManager.clearErrorMessage() }
-        )
-    }*/
     successMessage?.let { message ->
         SuccessNotification(
             message = message,
@@ -223,9 +217,9 @@ fun MainScreen() {
                     } else {
                         if (isBlockOverTrash) {
                             if (block.title != "Main") {
-                            draggedBlock?.let { blocksManager.removeBlock(it, connectionManager) }
-                        }
+                                draggedBlock?.let { blocksManager.removeBlock(it, connectionManager) }
                             }
+                        }
                         draggedBlock = null
                         isBlockOverTrash = false
                     }
@@ -240,6 +234,7 @@ fun MainScreen() {
         }
 
         BlockEditPanel(
+            blocksManager = blocksManager,
             modifier = Modifier
                 .constrainAs(editPanel) {
                     bottom.linkTo(parent.bottom)
@@ -299,8 +294,8 @@ fun MainScreen() {
 
         StyledButton(
             text = "Add",
-            onClick = { isPanelVisible = !isPanelVisible
-                      isConsoleVisible.value = false},
+            onClick = {isPanelVisible = !isPanelVisible
+                isConsoleVisible.value = false},
             modifier = Modifier
                 .constrainAs(addButton) {
                     end.linkTo(parent.end, margin = baseDimension * 0.05f)
@@ -314,7 +309,7 @@ fun MainScreen() {
         StyledButton(
             text = "Console",
             onClick = { isConsoleVisible.value = !isConsoleVisible.value
-                      isPanelVisible = false },
+                isPanelVisible = false },
             modifier = Modifier
                 .constrainAs(consoleButton) {
                     end.linkTo(addButton.start, margin = baseDimension * 0.02f)
@@ -325,7 +320,6 @@ fun MainScreen() {
                 .zIndex(3f),
             fontSize = 12.sp
         )
-
 
         StyledButton(
             text = "Debug",
