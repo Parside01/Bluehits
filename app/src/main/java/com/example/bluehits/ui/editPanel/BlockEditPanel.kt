@@ -3,6 +3,7 @@ package com.example.bluehits.ui.editPanel
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,8 +19,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -35,6 +38,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import com.example.bluehits.ui.BlueBlock
 import com.example.bluehits.ui.BlocksManager
@@ -108,13 +112,13 @@ fun BlockEditPanel(
                         color = Color.White
                     )
 
-                    if (block?.title?.startsWith("def ") == true) {
+                    if (block?.title?.startsWith("def ") == true || block?.title?.startsWith("return ") == true) {
                         Button(
                             onClick = { showTypeDialog = true },
                             modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
                         ) {
-                            Text("+ Add Pin", color = Color.White)
+                            Text("+ add pin", color = Color.White)
                         }
                     }
 
@@ -161,9 +165,8 @@ fun BlockEditPanel(
                         "Boolean" -> PinManager.createPinBool(pinName)
                         else -> PinManager.createPinAny(pinName)
                     }
-                    val functionName = block.title.removePrefix("def ").trim()
+                    val functionName = block.title.removePrefix("def ").removePrefix("return ").trim()
                     FunctionManager.addFunctionInArg(functionName, pin)
-                    // Создаём новый BlueBlock с обновлённым списком inputPins
                     val updatedInputPins = mutableListOf<Pin>().apply {
                         addAll(block.inputPins)
                         add(pin)
@@ -180,36 +183,49 @@ fun BlockEditPanel(
                         outBlockPin = block.outBlockPin,
                         functionName = block.functionName
                     )
-                    // Обновляем блок через метод updateBlock в BlocksManager
                     blocksManager.updateBlock(block.id, newBlock)
-                    BlockEditManager.showEditPanel(newBlock) // Refresh panel with new block
+                    BlockEditManager.showEditPanel(newBlock)
                     showNameDialog = false
                 }
             )
         }
     }
 }
-
 @Composable
 fun EditPinTypeDialog(
     onDismiss: () -> Unit,
     onConfirm: (String) -> Unit
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Select Pin Type") },
-        text = { Text("Choose the type for the new pin:") },
-        confirmButton = {
-            Column {
-                TextButton(onClick = { onConfirm("Int") }) { Text("Int") }
-                TextButton(onClick = { onConfirm("Float") }) { Text("Float") }
-                TextButton(onClick = { onConfirm("String") }) { Text("String") }
-                TextButton(onClick = { onConfirm("Boolean") }) { Text("Boolean") }
-                TextButton(onClick = { onConfirm("Any") }) { Text("Any") }
+    Dialog(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .background(Color.DarkGray, RoundedCornerShape(12.dp))
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Select Pin Type",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.White,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            listOf("Int", "Float", "String", "Boolean", "Any").forEach { type ->
+                Button(
+                    onClick = { onConfirm(type) },
+                    shape = RoundedCornerShape(6.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.LightGray,
+                        contentColor = Color.Black
+                    )
+                ) {
+                    Text(text = type)
+                }
             }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }
-    )
+        }
+    }
 }
 
 @Composable
@@ -219,23 +235,40 @@ fun EditPinNameDialog(
 ) {
     var pinName by remember { mutableStateOf("NewPin") }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Enter Pin Name") },
-        text = {
-            Column {
-                Text("Enter a name for the new pin:")
-                OutlinedTextField(
-                    value = pinName,
-                    onValueChange = { pinName = it },
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                    singleLine = true
+    Dialog(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .background(Color.DarkGray, RoundedCornerShape(12.dp))
+                .padding(16.dp)
+        ) {
+            OutlinedTextField(
+                value = pinName,
+                onValueChange = { pinName = it },
+                modifier = Modifier.fillMaxWidth(),
+                textStyle = LocalTextStyle.current.copy(color = Color.White),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    cursorColor = Color.White,
+                    focusedBorderColor = Color.LightGray,
+                    unfocusedBorderColor = Color.Gray
                 )
+            )
+
+            Button(
+                onClick = {
+                    if (pinName.isNotBlank()) {
+                        onConfirm(pinName)
+                    }
+                },
+                shape = RoundedCornerShape(6.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.DarkGray),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+            ) {
+                Text("Create")
             }
-        },
-        confirmButton = {
-            TextButton(onClick = { onConfirm(pinName) }) { Text("Confirm") }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }
-    )
+        }
+    }
 }

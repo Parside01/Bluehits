@@ -12,7 +12,7 @@ object BlockEditManager {
         private set
 
     fun shouldShowEditPanel(block: BlueBlock): Boolean {
-        return block.title.startsWith("def ") || block.inputPins.isNotEmpty()
+        return block.title.startsWith("def ") || block.title.startsWith("return ") || block.inputPins.isNotEmpty()
     }
 
     fun showEditPanel(block: BlueBlock) {
