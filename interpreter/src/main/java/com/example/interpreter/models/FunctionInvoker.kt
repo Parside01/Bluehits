@@ -5,13 +5,13 @@ internal object FunctionInvoker {
         val functionInfo = FunctionManager.getFunctionInfo(funcName)
             ?: throw IllegalArgumentException("Function not found: $funcName")
         val definitionBlock = functionInfo.definitionBlock
-        val functionContext = ContextManager.getContext(definitionBlock.id)
-            ?: throw IllegalStateException("Context not found for function: $funcName")
 
         arguments.forEach { (arg, value) ->
             definitionBlock.pinByName(arg)?.setValue(value)
+            println(definitionBlock.outputs)
         }
 
+        // TODO: Вынести этот блок кода в ContextManager
         var executed = false
         while (!executed) {
             executed = ContextManager.getContext(definitionBlock.id)?.execute() == true
@@ -28,8 +28,8 @@ internal object FunctionInvoker {
         val returnBlock = functionInfo.returnBlocks.firstOrNull { block ->
             block.getExecutionState() == ExecutionState.COMPLETED
         }
-        returnBlock?.inputs?.forEach { returnPin ->
-            returnValues[returnPin.name] = returnPin.getValue()
+        returnBlock?.inputs?.forEach { res ->
+            returnValues[res.name] = res.getValue()
         }
         return returnValues
     }

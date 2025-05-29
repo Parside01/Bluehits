@@ -40,6 +40,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import com.example.bluehits.ui.BlueBlock
 import com.example.bluehits.ui.BlocksManager
+import com.example.bluehits.ui.UIPinManager
+import com.example.interpreter.models.BlockManager
 import com.example.interpreter.models.FunctionManager
 import com.example.interpreter.models.Id
 import com.example.interpreter.models.Pin
@@ -157,22 +159,19 @@ fun BlockEditPanel(
                 onDismiss = { showNameDialog = false },
                 onConfirm = { pinName ->
                     val pin = when (selectedType) {
-                        "Int" -> PinManager.createPinInt(pinName)
-                        "Float" -> PinManager.createPinFloat(pinName)
-                        "String" -> PinManager.createPinString(pinName)
-                        "Boolean" -> PinManager.createPinBool(pinName)
-                        else -> PinManager.createPinAny(pinName)
+                        "Int" -> PinManager.createPinInt(pinName, ownId = state.blockId)
+                        "Float" -> PinManager.createPinFloat(pinName, ownId = state.blockId)
+                        "String" -> PinManager.createPinString(pinName, ownId = state.blockId)
+                        "Boolean" -> PinManager.createPinBool(pinName, ownId = state.blockId)
+                        else -> PinManager.createPinAny(pinName, ownId = state.blockId)
                     }
+                    // TODO: можно просто кастить и делать getFuncName
                     val functionName = block.title.removePrefix("def ").removePrefix("return ").trim()
-                    val updatedInputPins = mutableListOf<Pin>().apply { addAll(block.inputPins) }
-                    val updatedOutputPins = mutableListOf<Pin>().apply { addAll(block.outputPins) }
 
                     if (block.title.startsWith("def ")) {
                         FunctionManager.addFunctionInArg(functionName, pin)
-                        updatedOutputPins.add(pin)
                     } else if (block.title.startsWith("return ")) {
                         FunctionManager.addFunctionOutArg(functionName, pin)
-                        updatedInputPins.add(pin)
                     }
 
                     val newBlock = BlueBlock(
@@ -181,8 +180,8 @@ fun BlockEditPanel(
                         initialY = block.y,
                         color = block.color,
                         title = block.title,
-                        inputPins = updatedInputPins,
-                        outputPins = updatedOutputPins,
+                        inputPins = BlockManager.getBlock(block.id)!!.inputs,
+                        outputPins = BlockManager.getBlock(block.id)!!.outputs,
                         inBlockPin = block.inBlockPin,
                         outBlockPin = block.outBlockPin,
                         functionName = block.functionName

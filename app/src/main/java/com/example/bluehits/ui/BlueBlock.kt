@@ -85,8 +85,8 @@ class BlueBlock(
     initialY: Float,
     val color: Color = BlockBodyColor,
     var title: String = "Block",
-    val inputPins: List<Pin> = emptyList(),
-    val outputPins: List<Pin> = emptyList(),
+    val inputPins: MutableList<Pin> = mutableListOf(),
+    val outputPins: MutableList<Pin> = mutableListOf(),
     val inBlockPin: Pin,
     val outBlockPin: Pin,
     val functionName: String? = null

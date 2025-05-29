@@ -22,7 +22,6 @@ abstract class FunctionPartBlock(
 
     open fun addInputArg(pin : Pin) {
         inputs.add(pin)
-        println(inputs)
     }
 
     open fun addOutputArg(pin : Pin) {

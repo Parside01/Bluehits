@@ -63,6 +63,7 @@ class UIConnectionManager {
         }
 
         val connection = ConnectionManager.connect(fromPin, toPin)
-        return connection?.id
+        println(connection)
+        return connection.id
     }
 }

@@ -35,22 +35,21 @@ object FunctionManager {
 
     fun addFunctionReturnBlock(returnBlock: FunctionReturnBlock) {
         if (!functions.containsKey(returnBlock.getFunctionName())) throw IllegalArgumentException("Function definition does not exist")
-        val funcInfo = functions[returnBlock.getFunctionName()]
-
-        funcInfo?.returnBlocks?.add(returnBlock)
-        funcInfo?.outputs?.forEach { output ->
-            returnBlock.addInputArg(output)
+        functions[returnBlock.getFunctionName()]?.returnBlocks?.add(returnBlock)
+        functions[returnBlock.getFunctionName()]?.outputs?.forEach { pin ->
+            returnBlock.addInputArg(PinManager.copyPin(pin, returnBlock.id))
         }
     }
 
     fun addFunctionCallBlock(call : FunctionCallBlock) {
         if (!functions.containsKey(call.getFunctionName())) throw IllegalArgumentException("Function definition does not exist")
+
         functions[call.getFunctionName()]?.callBlocks?.add(call)
-        functions[call.getFunctionName()]?.inputs?.forEach { input ->
-            call.addInputArg(input)
+        functions[call.getFunctionName()]?.outputs?.forEach { pin ->
+            call.addOutputArg(PinManager.copyPin(pin, call.id))
         }
-        functions[call.getFunctionName()]?.outputs?.forEach { output ->
-            call.addOutputArg(output)
+        functions[call.getFunctionName()]?.inputs?.forEach { pin ->
+            call.addInputArg(PinManager.copyPin(pin, call.id))
         }
     }
 
@@ -80,9 +79,9 @@ object FunctionManager {
 
         val info = functions[funcName]
         info?.let { info ->
-            info.definitionBlock.addOutputArg(arg)
-            info.callBlocks.forEach { callBlock -> callBlock.addInputArg(arg) }
-            info.inputs.add(arg)
+            info.inputs.add(PinManager.copyPin(arg, info.definitionBlock.id))
+            info.definitionBlock.addOutputArg(PinManager.copyPin(arg, info.definitionBlock.id))
+            info.callBlocks.forEach { callBlock -> callBlock.addInputArg(PinManager.copyPin(arg, callBlock.id)) }
         }
     }
 
@@ -93,9 +92,9 @@ object FunctionManager {
 
         val info = functions[funcName]
         info?.let { info ->
-            info.callBlocks.forEach { callBlock -> callBlock.addOutputArg(arg) }
-            info.returnBlocks.forEach { returnBlock -> returnBlock.addInputArg(arg) }
-            info.outputs.add(arg)
+            info.outputs.add(PinManager.copyPin(arg, info.definitionBlock.id))
+            info.callBlocks.forEach { callBlock -> callBlock.addOutputArg(PinManager.copyPin(arg, callBlock.id)) }
+            info.returnBlocks.forEach { returnBlock -> returnBlock.addInputArg(PinManager.copyPin(arg, returnBlock.id)) }
         }
     }
 }
