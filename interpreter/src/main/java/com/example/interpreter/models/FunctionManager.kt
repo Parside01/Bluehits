@@ -15,7 +15,7 @@ data class FunctionInfo(
 )
 
 object FunctionManager {
-    val functions = mutableMapOf<String, FunctionInfo>()
+    private val functions = mutableMapOf<String, FunctionInfo>()
 
     fun getFunctionInfo(funcName: String) = functions[funcName]
 
@@ -74,6 +74,10 @@ object FunctionManager {
             functions.remove(funcName)
             functions[newName] = info
         }
+    }
+
+    fun removeFunction(funcName: String) {
+        functions.remove(funcName)
     }
 
     fun addFunctionInArg(funcName :String, arg: Pin) {

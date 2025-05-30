@@ -90,14 +90,14 @@ class BlueBlock(
     var outputPins: MutableList<Pin> = mutableListOf(),
     val inBlockPin: Pin? = null,
     val outBlockPin: Pin? = null,
-    val functionName: String? = null
+    val functionName: String? = null,
+    var logicBlock: Block? = null
 ) {
     var width by mutableStateOf(0f)
     var height by mutableStateOf(0f)
 
     var x by mutableStateOf(initialX)
     var y by mutableStateOf(initialY)
-    var logicBlock: Block? = null
 
     val layout: BlockLayout
         get() = BlockLayout(width, height)

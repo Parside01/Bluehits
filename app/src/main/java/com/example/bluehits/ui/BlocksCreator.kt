@@ -21,11 +21,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.example.interpreter.blocks.FunctionPartBlock
 import com.example.interpreter.models.BlockManager
 import com.example.interpreter.models.ConnectionManager
+import com.example.interpreter.models.FunctionManager
 import com.example.interpreter.models.Id
 import com.example.interpreter.models.PinManager
 import com.example.interpreter.models.Program
+import com.example.interpreter.models.ScopeBlock
 
 class BlocksManager {
     private val _uiBlocks = mutableStateListOf<BlueBlock>()
@@ -74,7 +77,7 @@ class BlocksManager {
         }
     }
 
-    public fun getPrintBlockValue(uiBlocks: List<BlueBlock>): Any? {
+    fun getPrintBlockValue(uiBlocks: List<BlueBlock>): Any? {
         uiBlocks.forEach { block ->
             if (block.title == "Print") {
                 val logicBlock = BlockManager.getBlock(block.id)
@@ -90,15 +93,18 @@ class BlocksManager {
                 currentBlockType = type
                 _showTypeDialog.value = true
             }
+
             "Function def" -> showFunctionNameDialog("Function def")
             "Function call" -> {
                 currentFunctionSelectionType = "call"
                 _showFunctionSelectionDialog.value = true
             }
+
             "Function return" -> {
                 currentFunctionSelectionType = "return"
                 _showFunctionSelectionDialog.value = true
             }
+
             "Int" -> showFunctionNameDialog("Int")
             "Float" -> showFunctionNameDialog("Float")
             "Bool" -> showFunctionNameDialog("Bool")
@@ -165,42 +171,49 @@ class BlocksManager {
                     DataType.DOUBLE -> BlockManager.createIndexBlock<Double>()
                     DataType.LONG -> BlockManager.createIndexBlock<Long>()
                 }
+
                 "Append" -> when (type) {
                     DataType.INT -> BlockManager.createAppendBlock<Int>()
                     DataType.FLOAT -> BlockManager.createAppendBlock<Float>()
                     DataType.DOUBLE -> BlockManager.createAppendBlock<Double>()
                     DataType.LONG -> BlockManager.createAppendBlock<Long>()
                 }
+
                 "Swap" -> when (type) {
                     DataType.INT -> BlockManager.createSwapBlock<Int>()
                     DataType.FLOAT -> BlockManager.createSwapBlock<Float>()
                     DataType.DOUBLE -> BlockManager.createSwapBlock<Double>()
                     DataType.LONG -> BlockManager.createSwapBlock<Long>()
                 }
+
                 "Array" -> when (type) {
                     DataType.INT -> BlockManager.createArrayBlock(elementType = Int::class)
                     DataType.FLOAT -> BlockManager.createArrayBlock(elementType = Float::class)
                     DataType.DOUBLE -> BlockManager.createArrayBlock(elementType = Double::class)
                     DataType.LONG -> BlockManager.createArrayBlock(elementType = Long::class)
                 }
+
                 "Add" -> when (type) {
                     DataType.INT -> BlockManager.createAddBlock(type = Int::class)
                     DataType.FLOAT -> BlockManager.createAddBlock(type = Float::class)
                     DataType.DOUBLE -> BlockManager.createAddBlock(type = Double::class)
                     DataType.LONG -> BlockManager.createAddBlock(type = Long::class)
                 }
-                "Sub" ->  when (type) {
+
+                "Sub" -> when (type) {
                     DataType.INT -> BlockManager.createSubBlock(type = Int::class)
                     DataType.FLOAT -> BlockManager.createSubBlock(type = Float::class)
                     DataType.DOUBLE -> BlockManager.createSubBlock(type = Double::class)
                     DataType.LONG -> BlockManager.createSubBlock(type = Long::class)
                 }
-                "Greater" ->  when (type) {
+
+                "Greater" -> when (type) {
                     DataType.INT -> BlockManager.createGreaterBlock(type = Int::class)
                     DataType.FLOAT -> BlockManager.createGreaterBlock(type = Float::class)
                     DataType.DOUBLE -> BlockManager.createGreaterBlock(type = Double::class)
                     DataType.LONG -> BlockManager.createGreaterBlock(type = Long::class)
                 }
+
                 else -> throw IllegalArgumentException("Unsupported type")
             }
             val centerX = screenWidthPx
@@ -271,30 +284,38 @@ class BlocksManager {
             pinIds.contains(pin1.id) || pinIds.contains(pin2.id)
         }
         UIPinManager.clearPinsForBlock(block)
+
+        val functionName = (block.logicBlock as? FunctionPartBlock)?.getFunctionName()
+        functionName?.let {
+            removeFunction(functionName)
+        }
+
         _uiBlocks.remove(block)
     }
 
-    fun clearAllBlocks(connectionManager: UIConnectionManager) {
+    private fun removeFunction(funcName: String) {
+        val info = FunctionManager.getFunctionInfo(funcName)
+        if (info == null) return
+        // Важная фигня так как иначе может зайти в беск. рекурсию.
+        FunctionManager.removeFunction(funcName)
+
+        val idToDelete = mutableListOf<Id>()
+        idToDelete.add(info.definitionBlock.id)
+        info.callBlocks.forEach { block -> idToDelete.add(block.id) }
+        info.returnBlocks.forEach { block -> idToDelete.add(block.id) }
+        idToDelete.forEach { id ->
+            val block = _uiBlocks.firstOrNull { it.id == id }
+            block?.let {
+                removeBlock(block, UIConnectionManager)
+            }
+        }
+        println(idToDelete)
+    }
+
+    fun clearAllBlocks() {
         _uiBlocks.toList().forEach { block ->
             if (block.title != "Main") {
-                val pinIds = mutableListOf<Id>()
-                if (block.inBlockPin != null) {
-                    pinIds.add(block.inBlockPin.id)
-                }
-                block.inputPins.forEach { pinIds.add(it.id) }
-                block.outputPins.forEach { pinIds.add(it.id) }
-                pinIds.forEach { pinId ->
-                    PinManager.getPin(pinId)?.let { pin ->
-                        ConnectionManager.getPinConnections(pin).forEach { connection ->
-                            ConnectionManager.disconnect(connection.id.string())
-                        }
-                    }
-                }
-                connectionManager.connections.removeAll { (pin1, pin2) ->
-                    pinIds.contains(pin1.id) || pinIds.contains(pin2.id)
-                }
-                UIPinManager.clearPinsForBlock(block)
-                _uiBlocks.remove(block)
+                removeBlock(block, UIConnectionManager)
             }
         }
     }

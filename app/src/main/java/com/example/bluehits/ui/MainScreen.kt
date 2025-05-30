@@ -419,7 +419,7 @@ fun MainScreen() {
 
         StyledButton(
             text = "Clear",
-            onClick = { blocksManager.clearAllBlocks(connectionManager) },
+            onClick = { blocksManager.clearAllBlocks() },
             style = ButtonStyles.baseButtonStyle().copy(
                 colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = Color.White,
