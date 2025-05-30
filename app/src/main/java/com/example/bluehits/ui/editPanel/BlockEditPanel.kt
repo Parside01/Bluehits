@@ -176,14 +176,15 @@ fun BlockEditPanel(
                 onDismiss = { showNameDialog = false },
                 onConfirm = { pinName ->
                     val pin = when {
-                        selectedType?.startsWith("Array<") == true -> {
-                            val elementType = selectedType!!.removePrefix("Array<").removeSuffix(">")
+                        selectedType.startsWith("Array<") -> {
+                            val elementType = selectedType.removePrefix("Array<").removeSuffix(">")
+                            println(elementType)
                             when (elementType) {
-                                "Int" -> PinManager.createPinArray<Int>(pinName, ownId = state.blockId)
-                                "Float" -> PinManager.createPinArray<Float>(pinName, ownId = state.blockId)
-                                "Double" -> PinManager.createPinArray<Double>(pinName, ownId = state.blockId)
-                                "Long" -> PinManager.createPinArray<Long>(pinName, ownId = state.blockId)
-                                else -> PinManager.createPinArray<Any>(pinName, ownId = state.blockId)
+                                "Int" -> PinManager.createPinArray(pinName, ownId = state.blockId, elementType = Int::class)
+                                "Float" -> PinManager.createPinArray(pinName, ownId = state.blockId, elementType = Float::class)
+                                "Double" -> PinManager.createPinArray(pinName, ownId = state.blockId, elementType = Double::class)
+                                "Long" -> PinManager.createPinArray(pinName, ownId = state.blockId, elementType = Long::class)
+                                else -> PinManager.createPinArray(pinName, ownId = state.blockId, elementType = Any::class)
                             }
                         }
                         selectedType == "Int" -> PinManager.createPinInt(pinName, ownId = state.blockId)

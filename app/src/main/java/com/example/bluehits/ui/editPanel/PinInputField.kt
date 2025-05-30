@@ -108,31 +108,8 @@ fun PinInputField(
             )
         }
 
+        // Один фиг там всегда просто emptyList какая разница какой тип ставить
         filedPin.pin.getType() == emptyList<Int>()::class -> {
-            ArrayInputField(
-                fieldPin = filedPin,
-                onValueChange = onValueChange,
-                value = value
-            )
-        }
-
-        filedPin.pin.getType() == emptyList<Float>()::class -> {
-            ArrayInputField(
-                fieldPin = filedPin,
-                onValueChange = onValueChange,
-                value = value
-            )
-        }
-
-        filedPin.pin.getType() == emptyList<Double>()::class -> {
-            ArrayInputField(
-                fieldPin = filedPin,
-                onValueChange = onValueChange,
-                value = value
-            )
-        }
-
-        filedPin.pin.getType() == emptyList<Long>()::class -> {
             ArrayInputField(
                 fieldPin = filedPin,
                 onValueChange = onValueChange,
@@ -431,14 +408,7 @@ fun ArrayInputField(
     val items = remember { mutableStateOf(initialList) }
     val scrollState = rememberScrollState()
     val itemType = fieldPin.pin.getType().simpleName
-    val elementType = when (fieldPin.pin.getType()) {
-        emptyList<Int>()::class -> Int::class
-        emptyList<Float>()::class -> Float::class
-        emptyList<Double>()::class -> Double::class
-        emptyList<Long>()::class -> Long::class
-        else -> Any::class
-    }
-
+    val elementType = fieldPin.pin.getElementType()
     val selectedIndex = remember { mutableStateOf<Int?>(null) }
 
 

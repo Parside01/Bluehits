@@ -8,6 +8,7 @@ import com.example.interpreter.models.PinManager
 import com.example.interpreter.models.Utils
 import com.example.interpreter.models.VarObserver
 import com.example.interpreter.models.VarState
+import kotlin.reflect.KClass
 
 @Suppress("UNCHECKED_CAST")
 class IntBlock internal constructor(
@@ -81,15 +82,16 @@ class BoolBlock internal constructor(
     }
 }
 
-class ArrayBlock<T> internal constructor(
+class ArrayBlock<T:Any> internal constructor(
     id: Id,
     default: List<T> = mutableListOf(),
-    name: String = "Array"
+    name: String = "Array",
+    private val elementType: KClass<T>,
 ) : Block(
     id,
     name,
-    mutableListOf(PinManager.createPinArray("set", default, ownId = id)),
-    mutableListOf(PinManager.createPinArray("get", default, ownId = id))
+    mutableListOf(PinManager.createPinArray("set", default, ownId = id, elementType=elementType)),
+    mutableListOf(PinManager.createPinArray("get", default, ownId = id, elementType=elementType))
 ), VarObserver<List<T>> {
     lateinit var varState: VarState<List<T>>
 
