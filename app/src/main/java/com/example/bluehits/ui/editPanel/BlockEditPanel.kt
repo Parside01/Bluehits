@@ -235,6 +235,7 @@ fun EditPinTypeDialog(
             modifier = Modifier
                 .background(Color.DarkGray, RoundedCornerShape(12.dp))
                 .padding(16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             Text(
                 text = "Choose pin type",
@@ -322,6 +323,7 @@ fun ArrayElementTypeDialog(
             modifier = Modifier
                 .background(Color.DarkGray, RoundedCornerShape(12.dp))
                 .padding(16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             Text(
                 text = "Select array element type",
