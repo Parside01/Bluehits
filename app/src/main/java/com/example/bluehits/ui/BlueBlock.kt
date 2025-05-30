@@ -86,8 +86,8 @@ class BlueBlock(
     initialY: Float,
     val color: Color = BlockBodyColor,
     var title: String = "Block",
-    var inputPins: List<Pin> = emptyList(),
-    var outputPins: List<Pin> = emptyList(),
+    var inputPins: MutableList<Pin> = mutableListOf(),
+    var outputPins: MutableList<Pin> = mutableListOf(),
     val inBlockPin: Pin? = null,
     val outBlockPin: Pin? = null,
     val functionName: String? = null
@@ -297,9 +297,6 @@ fun DrawScope.drawPins(
     density: Density,
     selectedPinId: Id? = null
 ) {
-    if (block.logicBlock is FunctionDefinitionBlock) {
-    }
-
     val pinRadius = PIN_RADIUS_DP.toPx()
     val textPadding = PIN_TEXT_PADDING_DP.toPx()
 

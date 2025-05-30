@@ -42,6 +42,21 @@ class BlocksManager {
     private var currentBlockType: String? = null
     private var onTypeSelected: ((DataType) -> Unit)? = null
 
+    private var _showFunctionSelectionDialog = mutableStateOf(false)
+    val showFunctionSelectionDialog: State<Boolean> get() = _showFunctionSelectionDialog
+    private var currentFunctionSelectionType: String? = null
+
+    fun getAvailableFunctions(): List<String> {
+        return _uiBlocks
+            .filter { it.title.startsWith("def ") }
+            .map { it.title.removePrefix("def ").trim() }
+    }
+
+    fun dismissFunctionSelectionDialog() {
+        _showFunctionSelectionDialog.value = false
+        currentFunctionSelectionType = null
+    }
+
     private var screenWidthPx by mutableStateOf(0f)
     private var screenHeightPx by mutableStateOf(0f)
 
@@ -55,7 +70,6 @@ class BlocksManager {
         if (index != -1) {
             _uiBlocks[index].inputPins = newBlock.inputPins
             _uiBlocks[index].outputPins = newBlock.outputPins
-            println("update")
             _blockUpdated.value = !_blockUpdated.value
         }
     }
@@ -77,8 +91,14 @@ class BlocksManager {
                 _showTypeDialog.value = true
             }
             "Function def" -> showFunctionNameDialog("Function def")
-            "Function call" -> showFunctionNameDialog("Function call")
-            "Function return" -> showFunctionNameDialog("Function return")
+            "Function call" -> {
+                currentFunctionSelectionType = "call"
+                _showFunctionSelectionDialog.value = true
+            }
+            "Function return" -> {
+                currentFunctionSelectionType = "return"
+                _showFunctionSelectionDialog.value = true
+            }
             "Int" -> showFunctionNameDialog("Int")
             "Float" -> showFunctionNameDialog("Float")
             "Bool" -> showFunctionNameDialog("Bool")
@@ -108,6 +128,21 @@ class BlocksManager {
                 "Bool" -> BlockManager.createBoolBlock(name)
                 "String" -> BlockManager.createStringBlock(name)
                 else -> throw IllegalArgumentException("Unknown function dialog type")
+            }
+
+            val centerX = screenWidthPx
+            val centerY = screenHeightPx
+            _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock, centerX = centerX, centerY = centerY))
+        }
+    }
+
+    fun onFunctionSelected(functionName: String) {
+        _showFunctionSelectionDialog.value = false
+        currentFunctionSelectionType?.let { type ->
+            val logicBlock = when (type) {
+                "call" -> BlockManager.createFunctionCalledBlock(functionName)
+                "return" -> BlockManager.createFunctionReturnBlock(functionName)
+                else -> throw IllegalArgumentException("Unknown function selection type")
             }
 
             val centerX = screenWidthPx
@@ -327,8 +362,7 @@ fun FunctionNameDialog(
             OutlinedTextField(
                 value = functionName,
                 onValueChange = { functionName = it },
-                label = { Text(label,
-                    color = Color.White) },
+                label = { Text(label, color = Color.White) },
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = LocalTextStyle.current.copy(color = Color.White),
                 keyboardOptions = KeyboardOptions(
@@ -364,6 +398,44 @@ fun FunctionNameDialog(
                     .padding(top = 16.dp)
             ) {
                 Text("Create")
+            }
+        }
+    }
+}
+
+@Composable
+fun FunctionSelectionDialog(
+    functions: List<String>,
+    onFunctionSelected: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .background(Color.DarkGray, RoundedCornerShape(12.dp))
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Select function",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.White,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            functions.forEach { function ->
+                Button(
+                    onClick = { onFunctionSelected(function) },
+                    shape = RoundedCornerShape(6.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.LightGray,
+                        contentColor = Color.Black
+                    )
+                ) {
+                    Text(text = function)
+                }
             }
         }
     }

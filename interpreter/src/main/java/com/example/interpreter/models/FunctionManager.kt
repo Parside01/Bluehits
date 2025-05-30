@@ -19,6 +19,10 @@ object FunctionManager {
 
     fun getFunctionInfo(funcName: String) = functions[funcName]
 
+    fun getAllFunctions(): List<FunctionInfo> {
+        return functions.values.toList()
+    }
+
     fun addFunctionDefinitionBlock(definition: FunctionDefinitionBlock) {
         if (functions.containsKey(definition.getFunctionName())) throw IllegalArgumentException("Function definition already exists")
 
