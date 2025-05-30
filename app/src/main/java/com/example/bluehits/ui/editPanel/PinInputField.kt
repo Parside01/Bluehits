@@ -31,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchColors
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
@@ -61,6 +62,7 @@ fun PinInputField(
     onValueChange: (Any) -> Unit,
     value: Any,
 ) {
+    println(filedPin.pin.getType())
     when {
         filedPin.pin.getType() == Int::class -> {
             NumberInputController(
@@ -233,7 +235,8 @@ private fun NumberInputController(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = currentValue.value.toString(),
+                        text = if (isInt) currentValue.value.toString()
+                        else "%.2f".format(currentValue.value.toDouble()),
                         color = Color.White
                     )
                 }
@@ -326,7 +329,7 @@ private fun NumberInputController(
                 ) {
                     Text(
                         text = if (isInt) step.value.toInt().toString()
-                        else "%.1f".format(step.value),
+                        else "%.2f".format(step.value.toDouble()),
                         color = Color.White
                     )
                 }
@@ -357,7 +360,7 @@ private fun BooleanInputField(
     onValueChange: (Any) -> Unit
 ) {
     val checked = remember { mutableStateOf(value.toString().toBooleanStrictOrNull() ?: false) }
-    val textColor = Color.Black
+    val textColor = Color.White
     val switchColors = SwitchDefaults.colors(
         checkedThumbColor = Color.Black,
         checkedTrackColor = Color.DarkGray,
@@ -541,7 +544,11 @@ fun ArrayInputField(
                 onValueChange(items.value.toTypedArray())
             },
             onDismiss = { selectedIndex.value = null },
-            fieldPin = fieldPin
+            fieldPin = fieldPin,
+            isInt = when (elementType) {
+                Int::class, Long::class -> true
+                else -> false
+            }
         )
     }
 }
@@ -577,7 +584,8 @@ fun EditItemDialog(
     elementType: KClass<*>,
     onValueChange: (Any) -> Unit,
     onDismiss: () -> Unit,
-    fieldPin: PinEditField
+    fieldPin: PinEditField,
+    isInt: Boolean
 ) {
 
     val textValue = remember { mutableStateOf(item?.toString() ?: "") }
@@ -610,7 +618,7 @@ fun EditItemDialog(
                         onValueChange = { newValue ->
                             onValueChange(newValue)
                         },
-                        isInt = true
+                        isInt = isInt
                     )
                 }
 
@@ -621,7 +629,7 @@ fun EditItemDialog(
                         onValueChange = { newValue ->
                             onValueChange(newValue.toFloat())
                         },
-                        isInt = false
+                        isInt = isInt
                     )
                 }
 
@@ -632,7 +640,7 @@ fun EditItemDialog(
                         onValueChange = { newValue ->
                             onValueChange(newValue.toDouble())
                         },
-                        isInt = false
+                        isInt = isInt
                     )
                 }
 
@@ -643,14 +651,14 @@ fun EditItemDialog(
                         onValueChange = { newValue ->
                             onValueChange(newValue.toLong())
                         },
-                        isInt = true
+                        isInt = isInt
                     )
                 }
 
                 Boolean::class -> {
                     val initialValue = item?.toString()?.toBooleanStrictOrNull() ?: false
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Value: ", color = Color.Black)
+                        Text("Value: ", color = Color.White)
                         Switch(
                             checked = initialValue,
                             onCheckedChange = { newValue ->
@@ -663,7 +671,7 @@ fun EditItemDialog(
                 String::class -> {
                     TextInputField(
                         value = item?.toString() ?: "",
-                        onValueChange = { textValue.value = it },
+                        onValueChange = { textValue.value = it }
                     )
                 }
 

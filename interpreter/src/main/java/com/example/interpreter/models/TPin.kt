@@ -38,8 +38,7 @@ class TPin<T>(
     val ownId: Id,
     val name: String,
     private val zeroValue: T,
-    initValue: T? = null,
-    private val elementType: KClass<*>? = null
+    initValue: T? = null
 ) {
     private var value: T? = initValue
     private var type: KClass<*> = zeroValue!!::class
@@ -71,9 +70,6 @@ class TPin<T>(
 
     // Молимся чтобы ничего не крашнулось.
     fun getType(): KClass<*> {
-        if (elementType != null) {
-            return emptyList<T>()::class
-        }
         return type
     }
 
