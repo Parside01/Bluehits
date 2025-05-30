@@ -50,6 +50,7 @@ import com.example.interpreter.models.Id
 import com.example.interpreter.models.Pin
 import com.example.interpreter.models.PinManager
 import com.example.bluehits.R
+import com.example.bluehits.ui.theme.*
 
 @Immutable
 data class PinEditField(

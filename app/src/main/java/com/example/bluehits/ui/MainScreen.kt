@@ -72,6 +72,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.core.content.ContextCompat.getString
 import com.example.bluehits.ui.console.ConsoleBuffer
 import com.example.bluehits.ui.console.ConsoleUI
 import com.example.bluehits.ui.console.ConsoleWriteAdapter
@@ -445,136 +446,6 @@ fun MainScreen() {
                 consoleBounds = newBounds
             }
         )
-
-        StyledButton(
-            text = getString(context, R.string.add_button_text),
-            onClick = {
-                isPanelVisible = !isPanelVisible
-                isConsoleVisible.value = false
-            },
-            modifier = Modifier
-                .constrainAs(addButton) {
-                    end.linkTo(parent.end, margin = baseDimension * 0.05f)
-                    bottom.linkTo(parent.bottom, margin = baseDimension * 0.05f)
-                    width = Dimension.wrapContent
-                    height = Dimension.wrapContent
-                }
-                .zIndex(3f)
-        )
-
-        StyledButton(
-            text = getString(context, R.string.console_button_text),
-            onClick = {
-                isConsoleVisible.value = !isConsoleVisible.value
-                isPanelVisible = false
-            },
-            modifier = Modifier
-                .constrainAs(consoleButton) {
-                    end.linkTo(addButton.start, margin = baseDimension * 0.02f)
-                    bottom.linkTo(addButton.bottom)
-                    width = Dimension.wrapContent
-                    height = Dimension.wrapContent
-                }
-                .zIndex(3f),
-            fontSize = 12.sp
-        )
-
-        StyledButton(
-            text = getString(context, R.string.debug_button_text),
-            onClick = {},
-            modifier = Modifier
-                .constrainAs(debugButton) {
-                    end.linkTo(parent.end, margin = baseDimension * 0.05f)
-                    top.linkTo(parent.top, margin = baseDimension * 0.05f)
-                    width = Dimension.wrapContent
-                    height = Dimension.wrapContent
-                }
-                .zIndex(3f)
-        )
-
-        StyledButton(
-            text = if (isProgramRunning) getString(context, R.string.running_text) else getString(context, R.string.run_button_text),
-            onClick = {
-                if (!isProgramRunning) {
-                    isProgramRunning = true
-                    programJob = programScope.launch {
-                        runProgram(
-                            blocksManager,
-                            context,
-                            showError = { message ->
-                                errorMessage = message
-                                isProgramRunning = false
-                            },
-                            showSuccess = { message ->
-                                successMessage = message
-                                isProgramRunning = false
-                            },
-                            onProgramStopped = {
-                                Program.stop()
-                                isProgramRunning = false
-                            },
-                            programScope = programScope
-                        )
-                    }
-                }
-            },
-            modifier = Modifier
-                .constrainAs(runButton) {
-                    end.linkTo(debugButton.start, margin = baseDimension * 0.02f)
-                    top.linkTo(parent.top, margin = baseDimension * 0.05f)
-                    width = Dimension.wrapContent
-                    height = Dimension.wrapContent
-                }
-                .zIndex(3f)
-        )
-        StyledButton(
-            text = getString(context, R.string.trash_button_text),
-            onClick = {},
-            style = ButtonStyles.baseButtonStyle().copy(
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = if (isBlockOverTrash) Color.Red else Color.White,
-                    contentColor = Color.Black
-                )
-            ),
-            modifier = Modifier
-                .constrainAs(trashButton) {
-                    end.linkTo(clearButton.start, margin = baseDimension * 0.02f)
-                    top.linkTo(debugButton.bottom, margin = baseDimension * 0.03f)
-                    width = Dimension.wrapContent
-                    height = Dimension.wrapContent
-                }
-                .onGloballyPositioned { coordinates ->
-                    with(density) {
-                        val position = coordinates.positionInRoot()
-                        trashBounds = Rect(
-                            left = position.x,
-                            top = position.y,
-                            right = position.x + coordinates.size.width.toFloat(),
-                            bottom = position.y + coordinates.size.height.toFloat()
-                        )
-                    }
-                }
-                .zIndex(3f)
-        )
-
-        StyledButton(
-            text = getString(context, R.string.clear_button_text),
-            onClick = { blocksManager.clearAllBlocks() },
-            style = ButtonStyles.baseButtonStyle().copy(
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = Color.White,
-                    contentColor = Color.Black
-                )
-            ),
-            modifier = Modifier
-                .constrainAs(clearButton) {
-                    end.linkTo(parent.end, margin = baseDimension * 0.05f)
-                    top.linkTo(debugButton.bottom, margin = baseDimension * 0.03f)
-                    width = Dimension.wrapContent
-                    height = Dimension.wrapContent
-                }
-                .zIndex(3f)
-        )
     }
 }
 
@@ -582,7 +453,8 @@ fun MainScreen() {
 fun ControlPanel(
     blocksManager: BlocksManager,
     modifier: Modifier = Modifier,
-    onError: (String) -> Unit = {}
+    onError: (String) -> Unit = {},
+    context: Context
 ) {
     Column(
         modifier = modifier,
