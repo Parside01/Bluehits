@@ -16,6 +16,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,7 +27,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Recycling
+import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -92,6 +101,7 @@ fun MainScreen() {
     val density = LocalDensity.current
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var successMessage by remember { mutableStateOf<String?>(null) }
+    var isDeleteMode by remember { mutableStateOf(false) }
 
     errorMessage?.let { message ->
         ErrorNotification(
@@ -190,7 +200,7 @@ fun MainScreen() {
                 }
             }
     ) {
-        val (canvas, panel, addButton, debugButton, runButton, trashButton, clearButton, editPanel, consoleUi, consoleButton) = createRefs()
+        val (canvas, panel, sidePanel, addButton, debugButton, runButton, trashButton, clearButton, editPanel, consoleUi, consoleButton) = createRefs()
 
         Column(
             modifier = Modifier
@@ -235,13 +245,127 @@ fun MainScreen() {
                     }
                 },
                 onBlockClick = { blockId ->
-                    selectedBlockId = blockId
-                    showSettingsDialog = true
-                    BlockEditManager.showEditPanel(blocksManager.uiBlocks.find { it.id == blockId }!!)
+                    if (isDeleteMode) {
+                        blocksManager.uiBlocks.find { it.id == blockId }?.let { block ->
+                            if (block.title != "Main") {
+                                blocksManager.removeBlock(block, connectionManager)
+                            }
+                        }
+                    } else {
+                        selectedBlockId = blockId
+                        showSettingsDialog = true
+                        BlockEditManager.showEditPanel(blocksManager.uiBlocks.find { it.id == blockId }!!)
+                    }
                 },
                 connectionManager = connectionManager,
                 blocksManager = blocksManager,
             )
+        }
+
+        Column(
+            modifier = Modifier
+                .constrainAs(sidePanel) {
+                    end.linkTo(parent.end)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    width = Dimension.value(56.dp)
+                }
+                .zIndex(3f)
+                .background(Color(0xFF292525))
+                .padding(vertical = 8.dp)
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                IconButton(
+                    onClick = {
+                        runProgram(
+                            blocksManager,
+                            context,
+                            showError = { message -> errorMessage = message },
+                            showSuccess = { message -> successMessage = message }
+                        )
+                    },
+                    modifier = Modifier
+                        .size(48.dp)
+                        .padding(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PlayArrow,
+                        contentDescription = "Run",
+                        tint = Color.Green,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+
+                IconButton(
+                    onClick = {
+                        isPanelVisible = !isPanelVisible
+                        isConsoleVisible.value = false
+                    },
+                    modifier = Modifier
+                        .size(48.dp)
+                        .padding(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+
+                IconButton(
+                    onClick = {
+                        isConsoleVisible.value = !isConsoleVisible.value
+                        isPanelVisible = false
+                    },
+                    modifier = Modifier
+                        .size(48.dp)
+                        .padding(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Terminal,
+                        contentDescription = "Console",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
+
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                IconButton(
+                    onClick = { isDeleteMode = !isDeleteMode
+                        if (!isDeleteMode) {
+                            isBlockOverTrash = false
+                        }
+                    },
+                    modifier = Modifier
+                        .size(48.dp)
+                        .padding(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Delete,
+                        contentDescription = "Trash",
+                        tint = if (isDeleteMode) Color.Red else Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+
+                IconButton(
+                    onClick = { blocksManager.clearAllBlocks(connectionManager) },
+                    modifier = Modifier
+                        .size(48.dp)
+                        .padding(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Recycling,
+                        contentDescription = "Clear",
+                        tint = Color.Red,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
         }
 
         BlockEditPanel(
@@ -301,117 +425,6 @@ fun MainScreen() {
             onConsoleBoundsChange = { newBounds ->
                 consoleBounds = newBounds
             }
-        )
-
-        StyledButton(
-            text = "Add",
-            onClick = {isPanelVisible = !isPanelVisible
-                isConsoleVisible.value = false},
-            modifier = Modifier
-                .constrainAs(addButton) {
-                    end.linkTo(parent.end, margin = baseDimension * 0.05f)
-                    bottom.linkTo(parent.bottom, margin = baseDimension * 0.05f)
-                    width = Dimension.wrapContent
-                    height = Dimension.wrapContent
-                }
-                .zIndex(3f)
-        )
-
-        StyledButton(
-            text = "Console",
-            onClick = { isConsoleVisible.value = !isConsoleVisible.value
-                isPanelVisible = false },
-            modifier = Modifier
-                .constrainAs(consoleButton) {
-                    end.linkTo(addButton.start, margin = baseDimension * 0.02f)
-                    bottom.linkTo(addButton.bottom)
-                    width = Dimension.wrapContent
-                    height = Dimension.wrapContent
-                }
-                .zIndex(3f),
-            fontSize = 12.sp
-        )
-
-        StyledButton(
-            text = "Debug",
-            onClick = {},
-            modifier = Modifier
-                .constrainAs(debugButton) {
-                    end.linkTo(parent.end, margin = baseDimension * 0.05f)
-                    top.linkTo(parent.top, margin = baseDimension * 0.05f)
-                    width = Dimension.wrapContent
-                    height = Dimension.wrapContent
-                }
-                .zIndex(3f)
-        )
-
-        StyledButton(
-            text = "Run",
-            onClick = {
-                runProgram(
-                    blocksManager,
-                    context,
-                    showError = { message -> errorMessage = message },
-                    showSuccess = { message -> successMessage = message }
-                )
-            },
-            modifier = Modifier
-                .constrainAs(runButton) {
-                    end.linkTo(debugButton.start, margin = baseDimension * 0.02f)
-                    top.linkTo(parent.top, margin = baseDimension * 0.05f)
-                    width = Dimension.wrapContent
-                    height = Dimension.wrapContent
-                }
-                .zIndex(3f)
-        )
-
-        StyledButton(
-            text = "Trash",
-            onClick = {},
-            style = ButtonStyles.baseButtonStyle().copy(
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = if (isBlockOverTrash) Color.Red else Color.White,
-                    contentColor = Color.Black
-                )
-            ),
-            modifier = Modifier
-                .constrainAs(trashButton) {
-                    end.linkTo(clearButton.start, margin = baseDimension * 0.02f)
-                    top.linkTo(debugButton.bottom, margin = baseDimension * 0.03f)
-                    width = Dimension.wrapContent
-                    height = Dimension.wrapContent
-                }
-                .onGloballyPositioned { coordinates ->
-                    with(density) {
-                        val position = coordinates.positionInRoot()
-                        trashBounds = Rect(
-                            left = position.x,
-                            top = position.y,
-                            right = position.x + coordinates.size.width.toFloat(),
-                            bottom = position.y + coordinates.size.height.toFloat()
-                        )
-                    }
-                }
-                .zIndex(3f)
-        )
-
-        StyledButton(
-            text = "Clear",
-            onClick = { blocksManager.clearAllBlocks(connectionManager) },
-            style = ButtonStyles.baseButtonStyle().copy(
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = Color.White,
-                    contentColor = Color.Black
-                )
-            ),
-            modifier = Modifier
-                .constrainAs(clearButton) {
-                    end.linkTo(parent.end, margin = baseDimension * 0.05f)
-                    top.linkTo(debugButton.bottom, margin = baseDimension * 0.03f)
-                    width = Dimension.wrapContent
-                    height = Dimension.wrapContent
-                }
-                .zIndex(3f)
         )
     }
 }
