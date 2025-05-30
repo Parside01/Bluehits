@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bluehits.ui.pinCreator.drawBlockPin
 import com.example.bluehits.ui.pinCreator.drawPin
-import com.example.interpreter.blocks.FunctionDefinitionBlock
 import com.example.interpreter.models.Pin
 import com.example.interpreter.models.Block
 import com.example.interpreter.models.Id
@@ -185,7 +184,8 @@ class BlueBlock(
 fun DrawScope.drawBlock(
     block: BlueBlock,
     textMeasurer: TextMeasurer,
-    density: Density
+    density: Density,
+    selectedPinId: Id? = null
 ) {
     val cornerRadius = 8.dp.toPx()
     val shadowOffset = 4.dp.toPx()
@@ -257,8 +257,8 @@ fun DrawScope.drawBlock(
         style = Fill
     )
 
-    drawPins(block, block.inBlockPin, block.leftPins, block.inputPins, InOutPinType.INPUT, textMeasurer, density)
-    drawPins(block, block.outBlockPin, block.rightPins, block.outputPins, InOutPinType.OUTPUT, textMeasurer, density)
+    drawPins(block, block.inBlockPin, block.leftPins, block.inputPins, InOutPinType.INPUT, textMeasurer, density, selectedPinId)
+    drawPins(block, block.outBlockPin, block.rightPins, block.outputPins, InOutPinType.OUTPUT, textMeasurer, density, selectedPinId)
 
     val textLayout = textMeasurer.measure(
         text = block.title,
@@ -293,11 +293,9 @@ fun DrawScope.drawPins(
     logicPins: List<Pin>,
     type: InOutPinType,
     textMeasurer: TextMeasurer,
-    density: Density
+    density: Density,
+    selectedPinId: Id? = null
 ) {
-    if (block.logicBlock is FunctionDefinitionBlock) {
-    }
-
     val pinRadius = PIN_RADIUS_DP.toPx()
     val textPadding = PIN_TEXT_PADDING_DP.toPx()
 
@@ -308,7 +306,7 @@ fun DrawScope.drawPins(
             type,
             blockPin
         )
-        drawBlockPin(firstPin)
+        drawBlockPin(firstPin, isSelected = firstPin.id == selectedPinId)
 
         if (block.inBlockPin != null) {
             val pinName = block.inBlockPin.name
@@ -349,7 +347,7 @@ fun DrawScope.drawPins(
                 type,
                 logicPins[i]
             )
-            drawPin(pin)
+            drawPin(pin, isSelected = pin.id == selectedPinId)
 
             val pinName = logicPins[i].name
             if (pinName.isNotEmpty()) {

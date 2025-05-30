@@ -150,7 +150,7 @@ fun CreateCanvas(
             scale(scaleX = scale, scaleY = scale)
         }) {
             blocks.forEach { block ->
-                drawBlock(block, textMeasurer, density)
+                drawBlock(block, textMeasurer, density, selectedPinId = connectionManager.tempPin?.value?.id)
             }
             connectionManager.connections.forEach { (pin1, pin2) ->
                 lineCreator.run { drawBezierCurve(pin1, pin2) }
