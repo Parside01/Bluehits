@@ -127,6 +127,15 @@ class BlocksManager {
                 "Float" -> BlockManager.createFloatBlock(name)
                 "Bool" -> BlockManager.createBoolBlock(name)
                 "String" -> BlockManager.createStringBlock(name)
+                "Array" -> {
+                    when (currentValueBlockType) {
+                        "Int" -> BlockManager.createArrayBlock(name, elementType = Int::class)
+                        "Float" -> BlockManager.createArrayBlock(name, elementType = Float::class)
+                        "Double" -> BlockManager.createArrayBlock(name, elementType = Double::class)
+                        "Long" -> BlockManager.createArrayBlock(name, elementType = Long::class)
+                        else -> throw IllegalStateException("No type selected for array")
+                    }
+                }
                 else -> throw IllegalArgumentException("Unknown function dialog type")
             }
 
@@ -158,54 +167,76 @@ class BlocksManager {
     fun onTypeSelected(type: DataType) {
         _showTypeDialog.value = false
         currentBlockType?.let { blockType ->
-            val logicBlock = when (blockType) {
-                "Index" -> when (type) {
-                    DataType.INT -> BlockManager.createIndexBlock<Int>()
-                    DataType.FLOAT -> BlockManager.createIndexBlock<Float>()
-                    DataType.DOUBLE -> BlockManager.createIndexBlock<Double>()
-                    DataType.LONG -> BlockManager.createIndexBlock<Long>()
+            when (blockType) {
+                "Array" -> {
+                    currentValueBlockType = type.title
+                    showFunctionNameDialog("Array")
                 }
-                "Append" -> when (type) {
-                    DataType.INT -> BlockManager.createAppendBlock<Int>()
-                    DataType.FLOAT -> BlockManager.createAppendBlock<Float>()
-                    DataType.DOUBLE -> BlockManager.createAppendBlock<Double>()
-                    DataType.LONG -> BlockManager.createAppendBlock<Long>()
+
+                else -> {
+                    val logicBlock = when (blockType) {
+                        "Index" -> when (type) {
+                            DataType.INT -> BlockManager.createIndexBlock<Int>()
+                            DataType.FLOAT -> BlockManager.createIndexBlock<Float>()
+                            DataType.DOUBLE -> BlockManager.createIndexBlock<Double>()
+                            DataType.LONG -> BlockManager.createIndexBlock<Long>()
+                        }
+
+                        "Append" -> when (type) {
+                            DataType.INT -> BlockManager.createAppendBlock<Int>()
+                            DataType.FLOAT -> BlockManager.createAppendBlock<Float>()
+                            DataType.DOUBLE -> BlockManager.createAppendBlock<Double>()
+                            DataType.LONG -> BlockManager.createAppendBlock<Long>()
+                        }
+
+                        "Swap" -> when (type) {
+                            DataType.INT -> BlockManager.createSwapBlock<Int>()
+                            DataType.FLOAT -> BlockManager.createSwapBlock<Float>()
+                            DataType.DOUBLE -> BlockManager.createSwapBlock<Double>()
+                            DataType.LONG -> BlockManager.createSwapBlock<Long>()
+                        }
+
+                        "Array" -> when (type) {
+                            DataType.INT -> BlockManager.createArrayBlock(elementType = Int::class)
+                            DataType.FLOAT -> BlockManager.createArrayBlock(elementType = Float::class)
+                            DataType.DOUBLE -> BlockManager.createArrayBlock(elementType = Double::class)
+                            DataType.LONG -> BlockManager.createArrayBlock(elementType = Long::class)
+                        }
+
+                        "Add" -> when (type) {
+                            DataType.INT -> BlockManager.createAddBlock(type = Int::class)
+                            DataType.FLOAT -> BlockManager.createAddBlock(type = Float::class)
+                            DataType.DOUBLE -> BlockManager.createAddBlock(type = Double::class)
+                            DataType.LONG -> BlockManager.createAddBlock(type = Long::class)
+                        }
+
+                        "Sub" -> when (type) {
+                            DataType.INT -> BlockManager.createSubBlock(type = Int::class)
+                            DataType.FLOAT -> BlockManager.createSubBlock(type = Float::class)
+                            DataType.DOUBLE -> BlockManager.createSubBlock(type = Double::class)
+                            DataType.LONG -> BlockManager.createSubBlock(type = Long::class)
+                        }
+
+                        "Greater" -> when (type) {
+                            DataType.INT -> BlockManager.createGreaterBlock(type = Int::class)
+                            DataType.FLOAT -> BlockManager.createGreaterBlock(type = Float::class)
+                            DataType.DOUBLE -> BlockManager.createGreaterBlock(type = Double::class)
+                            DataType.LONG -> BlockManager.createGreaterBlock(type = Long::class)
+                        }
+
+                        else -> throw IllegalArgumentException("Unsupported type")
+                    }
+                    val centerX = screenWidthPx
+                    val centerY = screenHeightPx
+                    _uiBlocks.add(
+                        BlockAdapter.wrapLogicBlock(
+                            logicBlock,
+                            centerX = centerX,
+                            centerY = centerY
+                        )
+                    )
                 }
-                "Swap" -> when (type) {
-                    DataType.INT -> BlockManager.createSwapBlock<Int>()
-                    DataType.FLOAT -> BlockManager.createSwapBlock<Float>()
-                    DataType.DOUBLE -> BlockManager.createSwapBlock<Double>()
-                    DataType.LONG -> BlockManager.createSwapBlock<Long>()
-                }
-                "Array" -> when (type) {
-                    DataType.INT -> BlockManager.createArrayBlock(elementType = Int::class)
-                    DataType.FLOAT -> BlockManager.createArrayBlock(elementType = Float::class)
-                    DataType.DOUBLE -> BlockManager.createArrayBlock(elementType = Double::class)
-                    DataType.LONG -> BlockManager.createArrayBlock(elementType = Long::class)
-                }
-                "Add" -> when (type) {
-                    DataType.INT -> BlockManager.createAddBlock(type = Int::class)
-                    DataType.FLOAT -> BlockManager.createAddBlock(type = Float::class)
-                    DataType.DOUBLE -> BlockManager.createAddBlock(type = Double::class)
-                    DataType.LONG -> BlockManager.createAddBlock(type = Long::class)
-                }
-                "Sub" ->  when (type) {
-                    DataType.INT -> BlockManager.createSubBlock(type = Int::class)
-                    DataType.FLOAT -> BlockManager.createSubBlock(type = Float::class)
-                    DataType.DOUBLE -> BlockManager.createSubBlock(type = Double::class)
-                    DataType.LONG -> BlockManager.createSubBlock(type = Long::class)
-                }
-                "Greater" ->  when (type) {
-                    DataType.INT -> BlockManager.createGreaterBlock(type = Int::class)
-                    DataType.FLOAT -> BlockManager.createGreaterBlock(type = Float::class)
-                    DataType.DOUBLE -> BlockManager.createGreaterBlock(type = Double::class)
-                    DataType.LONG -> BlockManager.createGreaterBlock(type = Long::class)
-                }
-                else -> throw IllegalArgumentException("Unsupported type")
             }
-            val centerX = screenWidthPx
-            val centerY = screenHeightPx
-            _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock, centerX = centerX, centerY = centerY))
         }
     }
 
