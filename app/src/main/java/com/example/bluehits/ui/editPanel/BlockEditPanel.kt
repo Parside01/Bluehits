@@ -40,6 +40,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import com.example.bluehits.ui.BlueBlock
 import com.example.bluehits.ui.BlocksManager
+import com.example.bluehits.ui.DataType
 import com.example.bluehits.ui.UIPinManager
 import com.example.interpreter.models.BlockManager
 import com.example.interpreter.models.FunctionManager
@@ -79,6 +80,7 @@ fun BlockEditPanel(
     var showTypeDialog by remember { mutableStateOf(false) }
     var showNameDialog by remember { mutableStateOf(false) }
     var selectedType by remember { mutableStateOf("") }
+    var showArrayTypeDialog by remember { mutableStateOf(false) }
     val block = blocksManager.uiBlocks.find { it.id == state.blockId }
 
     if (state.isVisible) {
@@ -107,7 +109,7 @@ fun BlockEditPanel(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Text(
-                        text = "Редактировать пины",
+                        text = "Change pins",
                         style = MaterialTheme.typography.titleMedium,
                         color = Color.White
                     )
@@ -115,10 +117,14 @@ fun BlockEditPanel(
                     if (block?.title?.startsWith("def ") == true || block?.title?.startsWith("return ") == true) {
                         Button(
                             onClick = { showTypeDialog = true },
+                            shape = RoundedCornerShape(6.dp),
                             modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.LightGray,
+                                contentColor = Color.Black
+                            )
                         ) {
-                            Text("+ Добавить пин", color = Color.White)
+                            Text("+ Add new pin", color = Color.White)
                         }
                     }
 
@@ -143,6 +149,24 @@ fun BlockEditPanel(
                     selectedType = pinType
                     showTypeDialog = false
                     showNameDialog = true
+                },
+                onArrayTypeSelected = {
+                    showTypeDialog = false
+                    showArrayTypeDialog = true
+                }
+            )
+        }
+
+        if (showArrayTypeDialog) {
+            ArrayElementTypeDialog(
+                onTypeSelected = { dataType ->
+                    selectedType = "Array<${dataType.title}>"
+                    showArrayTypeDialog = false
+                    showNameDialog = true
+                },
+                onDismiss = {
+                    showArrayTypeDialog = false
+                    showTypeDialog = true
                 }
             )
         }
@@ -151,13 +175,24 @@ fun BlockEditPanel(
             EditPinNameDialog(
                 onDismiss = { showNameDialog = false },
                 onConfirm = { pinName ->
-                    val pin = when (selectedType) {
-                        "Int" -> PinManager.createPinInt(pinName, ownId = state.blockId)
-                        "Float" -> PinManager.createPinFloat(pinName, ownId = state.blockId)
-                        "String" -> PinManager.createPinString(pinName, ownId = state.blockId)
-                        "Boolean" -> PinManager.createPinBool(pinName, ownId = state.blockId)
+                    val pin = when {
+                        selectedType?.startsWith("Array<") == true -> {
+                            val elementType = selectedType!!.removePrefix("Array<").removeSuffix(">")
+                            when (elementType) {
+                                "Int" -> PinManager.createPinArray<Int>(pinName, ownId = state.blockId)
+                                "Float" -> PinManager.createPinArray<Float>(pinName, ownId = state.blockId)
+                                "Double" -> PinManager.createPinArray<Double>(pinName, ownId = state.blockId)
+                                "Long" -> PinManager.createPinArray<Long>(pinName, ownId = state.blockId)
+                                else -> PinManager.createPinArray<Any>(pinName, ownId = state.blockId)
+                            }
+                        }
+                        selectedType == "Int" -> PinManager.createPinInt(pinName, ownId = state.blockId)
+                        selectedType == "Float" -> PinManager.createPinFloat(pinName, ownId = state.blockId)
+                        selectedType == "String" -> PinManager.createPinString(pinName, ownId = state.blockId)
+                        selectedType == "Boolean" -> PinManager.createPinBool(pinName, ownId = state.blockId)
                         else -> PinManager.createPinAny(pinName, ownId = state.blockId)
                     }
+
                     // TODO: можно просто кастить и делать getFuncName
                     val functionName = block.title.removePrefix("def ").removePrefix("return ").trim()
 
@@ -192,7 +227,8 @@ fun BlockEditPanel(
 @Composable
 fun EditPinTypeDialog(
     onDismiss: () -> Unit,
-    onConfirm: (String) -> Unit
+    onConfirm: (String) -> Unit,
+    onArrayTypeSelected: () -> Unit
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Column(
@@ -201,15 +237,19 @@ fun EditPinTypeDialog(
                 .padding(16.dp)
         ) {
             Text(
-                text = "Выберите тип пина",
+                text = "Choose pin type",
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.White,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-            listOf("Int", "Float", "String", "Boolean", "Any").forEach { type ->
+            listOf("Int", "Float", "String", "Boolean", "Array", "Any").forEach { type ->
                 Button(
-                    onClick = { onConfirm(type) },
+                    onClick = { if (type == "Array") {
+                        onArrayTypeSelected()
+                    } else {
+                        onConfirm(type)
+                    } },
                     shape = RoundedCornerShape(6.dp),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -266,7 +306,44 @@ fun EditPinNameDialog(
                     .fillMaxWidth()
                     .padding(top = 16.dp)
             ) {
-                Text("Создать")
+                Text("Create")
+            }
+        }
+    }
+}
+
+@Composable
+fun ArrayElementTypeDialog(
+    onTypeSelected: (DataType) -> Unit,
+    onDismiss: () -> Unit
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .background(Color.DarkGray, RoundedCornerShape(12.dp))
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Select array element type",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.White,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            DataType.values().forEach { type ->
+                Button(
+                    onClick = { onTypeSelected(type) },
+                    shape = RoundedCornerShape(6.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.LightGray,
+                        contentColor = Color.Black
+                    )
+                ) {
+                    Text(text = type.title)
+                }
             }
         }
     }
