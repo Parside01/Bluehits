@@ -5,6 +5,7 @@ import com.example.interpreter.blocks.ArrayBlock
 import com.example.interpreter.blocks.BinaryLogicOperatorBlock
 import com.example.interpreter.blocks.BinaryOperatorBlock
 import com.example.interpreter.blocks.BoolBlock
+import com.example.interpreter.blocks.CastBlock
 import com.example.interpreter.blocks.FloatBlock
 import com.example.interpreter.blocks.ForBlock
 import com.example.interpreter.blocks.FunctionCallBlock
@@ -177,6 +178,10 @@ object BlockManager {
         block.setPin.setValue(blockState.getValue() as Any)
 
         return block
+    }
+
+    fun <F:Any, T:Any> createCastBlock(typeFrom: KClass<F>, typeTo: KClass<in T>): Block {
+        return createBlock { id -> CastBlock(id, typeFrom, typeTo) }
     }
 
     fun <T : Any> createArrayBlock(
