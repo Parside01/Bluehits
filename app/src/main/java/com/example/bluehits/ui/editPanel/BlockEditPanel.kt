@@ -122,14 +122,7 @@ fun BlockEditPanel(
                         }
                     }
 
-                    if (state.pinFields.isEmpty()) {
-                        Text(
-                            text = "Нет пинов для редактирования",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.White,
-                            modifier = Modifier.padding(16.dp)
-                        )
-                    } else {
+                    if (!state.pinFields.isEmpty()) {
                         state.pinFields.forEach { field ->
                             PinEditRow(
                                 fieldPin = field,
@@ -174,7 +167,7 @@ fun BlockEditPanel(
                         FunctionManager.addFunctionOutArg(functionName, pin)
                     }
 
-                    val updatedBlock = BlueBlock(
+                    val newBlock = BlueBlock(
                         id = block.id,
                         initialX = block.x,
                         initialY = block.y,
@@ -186,8 +179,8 @@ fun BlockEditPanel(
                         outBlockPin = block.outBlockPin,
                         functionName = block.functionName
                     )
-                    blocksManager.updateBlock(block.id, updatedBlock)
-                    BlockEditManager.showEditPanel(updatedBlock)
+                    blocksManager.updateBlock(block.id, newBlock)
+                    BlockEditManager.showEditPanel(newBlock)
                     showNameDialog = false
                     showTypeDialog = false
                 }
