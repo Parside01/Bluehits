@@ -13,7 +13,7 @@ class ForBlock(
     mutableListOf(
         PinManager.createPinInt("first", ownId = id),
         PinManager.createPinInt("last", ownId = id),
-        PinManager.createPinInt("step", ownId = id)
+        PinManager.createPinInt("step", ownId = id, value = 1)
     ),
     mutableListOf(
         PinManager.createPinBlock("body", ownId = id),

@@ -21,27 +21,33 @@ object BlockAdapter {
         "For" to Color (0xFFc93c20)
     )
 
-    fun wrapLogicBlock(logicBlock: Block): BlueBlock {
+    fun wrapLogicBlock(logicBlock: Block, centerX: Float = 0f, centerY: Float = 0f): BlueBlock {
         val title = when (logicBlock) {
-            is FunctionDefinitionBlock -> "def ${logicBlock.getFunctionName()}" ?: "definition"
-            is FunctionCallBlock -> "call ${logicBlock.getFunctionName()}" ?: "call"
-            is FunctionReturnBlock -> "return ${logicBlock.getFunctionName()}" ?: "return"
-            is IntBlock -> "Int ${logicBlock.name}" ?: "int"
-            is FloatBlock -> "Float ${logicBlock.name}" ?: "float"
-            is BoolBlock -> "Bool ${logicBlock.name}" ?: "bool"
-            else -> logicBlock.name ?: "Block"
+            is FunctionDefinitionBlock -> "def ${logicBlock.getFunctionName()}"
+            is FunctionCallBlock -> "call ${logicBlock.getFunctionName()}"
+            is FunctionReturnBlock -> "return ${logicBlock.getFunctionName()}"
+            is IntBlock -> "Int ${logicBlock.name}"
+            is FloatBlock -> "Float ${logicBlock.name}"
+            is BoolBlock -> "Bool ${logicBlock.name}"
+            else -> logicBlock.name
         }
 
         return BlueBlock(
             id = logicBlock.id,
-            initialX = 0f,
-            initialY = 0f,
+            initialX = centerX,
+            initialY = centerY,
             color = BlockBodyColor,
             title = title,
             inputPins = logicBlock.inputs,
             outputPins = logicBlock.outputs,
-            inBlockPin = logicBlock.blockPin,
-            outBlockPin = logicBlock.outBlockPin,
+            inBlockPin =  when (logicBlock) {
+                is FunctionDefinitionBlock -> null
+                else -> logicBlock.blockPin
+            },
+            outBlockPin = when (logicBlock) {
+                is FunctionReturnBlock -> null
+                else -> logicBlock.outBlockPin
+            },
             functionName = when (logicBlock) {
                 is FunctionDefinitionBlock -> logicBlock.getFunctionName()
                 is FunctionCallBlock -> logicBlock.getFunctionName()

@@ -52,4 +52,8 @@ object ConnectionManager {
     internal fun rollback() {
         connectionRegistry.values.forEach { it.rollback() }
     }
+
+    internal fun getAllConnections() : List<Connection> {
+        return connectionRegistry.values.toList()
+    }
 }

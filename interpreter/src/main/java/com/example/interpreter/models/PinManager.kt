@@ -62,4 +62,33 @@ object PinManager {
     fun createPinString(name: String, value: String = Utils.getDefaultValue(String::class.java), ownId: Id = Utils.getDefaultValue(Id::class.java)): TPin<String> {
         return createPinInternal { id -> TPin(id, ownId, name, Utils.getDefaultValue(String::class.java), value) }
     }
+
+    // Черная магия.
+    fun copyPin(pinToCopy: Pin, ownId: Id): Pin {
+        val originalName = pinToCopy.name
+        val originalOwnId = pinToCopy.ownId
+        val originalValue = pinToCopy.getValue()
+        val originalKClass = pinToCopy.getType()
+
+        @Suppress("UNCHECKED_CAST")
+        fun <S : Any> createTypedCopy(
+            name: String,
+            kClass: KClass<S>,
+            value: Any?,
+            ownId: Id
+        ): TPin<S> {
+            return if (value != null) {
+                createPin(name = name, type = kClass, value = value as S, ownId = ownId)
+            } else {
+                createPin(name = name, type = kClass, ownId = ownId)
+            }
+        }
+
+        return createTypedCopy(
+            name = originalName,
+            kClass = originalKClass as KClass<out Any>,
+            value = originalValue,
+            ownId = ownId
+        )
+    }
 }

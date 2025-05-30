@@ -1,5 +1,7 @@
 package com.example.bluehits.ui
+
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -27,6 +29,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -96,7 +99,6 @@ fun MainScreen() {
             onDismiss = { errorMessage = null }
         )
     }
-
     successMessage?.let { message ->
         SuccessNotification(
             message = message,
@@ -215,9 +217,9 @@ fun MainScreen() {
                     } else {
                         if (isBlockOverTrash) {
                             if (block.title != "Main") {
-                            draggedBlock?.let { blocksManager.removeBlock(it, connectionManager) }
-                        }
+                                draggedBlock?.let { blocksManager.removeBlock(it, connectionManager) }
                             }
+                        }
                         draggedBlock = null
                         isBlockOverTrash = false
                     }
@@ -227,11 +229,13 @@ fun MainScreen() {
                     showSettingsDialog = true
                     BlockEditManager.showEditPanel(blocksManager.uiBlocks.find { it.id == blockId }!!)
                 },
-                connectionManager = connectionManager
+                connectionManager = connectionManager,
+                blocksManager = blocksManager,
             )
         }
 
         BlockEditPanel(
+            blocksManager = blocksManager,
             modifier = Modifier
                 .constrainAs(editPanel) {
                     bottom.linkTo(parent.bottom)
@@ -291,8 +295,8 @@ fun MainScreen() {
 
         StyledButton(
             text = "Add",
-            onClick = { isPanelVisible = !isPanelVisible
-                      isConsoleVisible.value = false},
+            onClick = {isPanelVisible = !isPanelVisible
+                isConsoleVisible.value = false},
             modifier = Modifier
                 .constrainAs(addButton) {
                     end.linkTo(parent.end, margin = baseDimension * 0.05f)
@@ -306,7 +310,7 @@ fun MainScreen() {
         StyledButton(
             text = "Console",
             onClick = { isConsoleVisible.value = !isConsoleVisible.value
-                      isPanelVisible = false },
+                isPanelVisible = false },
             modifier = Modifier
                 .constrainAs(consoleButton) {
                     end.linkTo(addButton.start, margin = baseDimension * 0.02f)
@@ -317,7 +321,6 @@ fun MainScreen() {
                 .zIndex(3f),
             fontSize = 12.sp
         )
-
 
         StyledButton(
             text = "Debug",
@@ -419,7 +422,7 @@ fun ControlPanel(
             "Bool" to "Bool",
             "Add" to "Add",
             "Sub" to "Sub",
-            "Greator" to "Greator",
+            "Greater" to "Greater",
             "IfElse" to "IfElse",
             "For" to "For",
             "Array" to "Array",
@@ -523,7 +526,7 @@ fun ErrorNotification(
     LaunchedEffect(Unit) {
         delay(5000)
         visible = false
-        delay(300) // Allow animation to complete
+        delay(300)
         onDismiss()
     }
 

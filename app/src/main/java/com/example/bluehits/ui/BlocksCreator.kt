@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LocalTextStyle
@@ -16,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.interpreter.models.BlockManager
@@ -33,8 +36,29 @@ class BlocksManager {
     val showValueNameDialog: State<Boolean> get() = _showValueNameDialog
     private var currentValueBlockType: String? = null
 
+    private val _blockUpdated = mutableStateOf(false)
+    val blockUpdated: State<Boolean> get() = _blockUpdated
+
     private var currentBlockType: String? = null
     private var onTypeSelected: ((DataType) -> Unit)? = null
+
+    private var screenWidthPx by mutableStateOf(0f)
+    private var screenHeightPx by mutableStateOf(0f)
+
+    fun updateScreenSize(width: Float, height: Float) {
+        screenWidthPx = width
+        screenHeightPx = height
+    }
+
+    fun updateBlock(blockId: Id, newBlock: BlueBlock) {
+        val index = _uiBlocks.indexOfFirst { it.id == blockId }
+        if (index != -1) {
+            _uiBlocks[index].inputPins = newBlock.inputPins
+            _uiBlocks[index].outputPins = newBlock.outputPins
+            println("update")
+            _blockUpdated.value = !_blockUpdated.value
+        }
+    }
 
     public fun getPrintBlockValue(uiBlocks: List<BlueBlock>): Any? {
         uiBlocks.forEach { block ->
@@ -46,10 +70,9 @@ class BlocksManager {
         return null
     }
 
-
     fun addNewBlock(type: String) {
         when (type) {
-            "Index", "Append", "Swap", "Array", "Add", "Sub", "Greator" -> {
+            "Index", "Append", "Swap", "Array", "Add", "Sub", "Greater" -> {
                 currentBlockType = type
                 _showTypeDialog.value = true
             }
@@ -60,7 +83,6 @@ class BlocksManager {
             "Float" -> showFunctionNameDialog("Float")
             "Bool" -> showFunctionNameDialog("Bool")
             "String" -> showFunctionNameDialog("String")
-
             else -> createBlockWithoutType(type)
         }
     }
@@ -87,7 +109,10 @@ class BlocksManager {
                 "String" -> BlockManager.createStringBlock(name)
                 else -> throw IllegalArgumentException("Unknown function dialog type")
             }
-            _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock))
+
+            val centerX = screenWidthPx
+            val centerY = screenHeightPx
+            _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock, centerX = centerX, centerY = centerY))
         }
     }
 
@@ -123,42 +148,43 @@ class BlocksManager {
                     DataType.DOUBLE -> BlockManager.createArrayBlock<Double>()
                     DataType.LONG -> BlockManager.createArrayBlock<Long>()
                 }
-                "Add" ->  when (type) {
+                "Add" -> when (type) {
                     DataType.INT -> BlockManager.createAddBlock(type = Int::class)
                     DataType.FLOAT -> BlockManager.createAddBlock(type = Float::class)
                     DataType.DOUBLE -> BlockManager.createAddBlock(type = Double::class)
                     DataType.LONG -> BlockManager.createAddBlock(type = Long::class)
                 }
                 "Sub" ->  when (type) {
-                    DataType.INT -> BlockManager.createAddBlock(type = Int::class)
-                    DataType.FLOAT -> BlockManager.createAddBlock(type = Float::class)
-                    DataType.DOUBLE -> BlockManager.createAddBlock(type = Double::class)
-                    DataType.LONG -> BlockManager.createAddBlock(type = Long::class)
+                    DataType.INT -> BlockManager.createSubBlock(type = Int::class)
+                    DataType.FLOAT -> BlockManager.createSubBlock(type = Float::class)
+                    DataType.DOUBLE -> BlockManager.createSubBlock(type = Double::class)
+                    DataType.LONG -> BlockManager.createSubBlock(type = Long::class)
                 }
-                "Greator" ->  when (type) {
-                    DataType.INT -> BlockManager.createAddBlock(type = Int::class)
-                    DataType.FLOAT -> BlockManager.createAddBlock(type = Float::class)
-                    DataType.DOUBLE -> BlockManager.createAddBlock(type = Double::class)
-                    DataType.LONG -> BlockManager.createAddBlock(type = Long::class)
+                "Greater" ->  when (type) {
+                    DataType.INT -> BlockManager.createGreaterBlock(type = Int::class)
+                    DataType.FLOAT -> BlockManager.createGreaterBlock(type = Float::class)
+                    DataType.DOUBLE -> BlockManager.createGreaterBlock(type = Double::class)
+                    DataType.LONG -> BlockManager.createGreaterBlock(type = Long::class)
                 }
                 else -> throw IllegalArgumentException("Unsupported type")
             }
-            _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock))
+            val centerX = screenWidthPx
+            val centerY = screenHeightPx
+            _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock, centerX = centerX, centerY = centerY))
         }
     }
 
     private fun createBlockWithoutType(type: String) {
         val logicBlock = when (type) {
-//            "Int" -> BlockManager.createIntBlock()
-//            "Bool" -> BlockManager.createBoolBlock()
-//            "Float" -> BlockManager.createFloatBlock()
             "For" -> BlockManager.createForBlock()
             "Print" -> BlockManager.createPrintBlock()
             "IfElse" -> BlockManager.createIfElseBlock()
             "Math" -> BlockManager.createMathBlock()
             else -> throw IllegalArgumentException("Unsupported type")
         }
-        _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock))
+        val centerX = screenWidthPx
+        val centerY = screenHeightPx
+        _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock, centerX = centerX, centerY = centerY))
     }
 
     fun dismissTypeDialog() {
@@ -176,10 +202,9 @@ class BlocksManager {
             initialX = 0f,
             initialY = 0f,
             color = Color.Gray,
-            title = mainLogicBlock.name ?: "Block",
+            title = mainLogicBlock.name,
             inputPins = mainLogicBlock.inputs,
             outputPins = mainLogicBlock.outputs,
-            inBlockPin = mainLogicBlock.blockPin,
             outBlockPin = mainLogicBlock.outBlockPin,
         )
         _uiBlocks.add(mainBlueBlock)
@@ -195,7 +220,9 @@ class BlocksManager {
 
     fun removeBlock(block: BlueBlock, connectionManager: UIConnectionManager) {
         val pinIds = mutableListOf<Id>()
-        pinIds.add(block.inBlockPin.id)
+        if (block.inBlockPin != null) {
+            pinIds.add(block.inBlockPin.id)
+        }
         block.inputPins.forEach { pinIds.add(it.id) }
         block.outputPins.forEach { pinIds.add(it.id) }
         pinIds.forEach { pinId ->
@@ -216,7 +243,9 @@ class BlocksManager {
         _uiBlocks.toList().forEach { block ->
             if (block.title != "Main") {
                 val pinIds = mutableListOf<Id>()
-                pinIds.add(block.inBlockPin.id)
+                if (block.inBlockPin != null) {
+                    pinIds.add(block.inBlockPin.id)
+                }
                 block.inputPins.forEach { pinIds.add(it.id) }
                 block.outputPins.forEach { pinIds.add(it.id) }
                 pinIds.forEach { pinId ->
@@ -232,7 +261,6 @@ class BlocksManager {
                 UIPinManager.clearPinsForBlock(block)
                 _uiBlocks.remove(block)
             }
-
         }
     }
 }
@@ -303,6 +331,17 @@ fun FunctionNameDialog(
                     color = Color.White) },
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = LocalTextStyle.current.copy(color = Color.White),
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        if (functionName.isNotBlank()) {
+                            onNameEntered(functionName)
+                        }
+                    }
+                ),
+                singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Color.White,
                     unfocusedTextColor = Color.White,
@@ -310,7 +349,6 @@ fun FunctionNameDialog(
                     focusedBorderColor = Color.LightGray,
                     unfocusedBorderColor = Color.Gray
                 )
-
             )
 
             Button(

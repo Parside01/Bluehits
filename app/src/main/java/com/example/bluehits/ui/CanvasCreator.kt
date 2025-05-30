@@ -23,6 +23,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextMeasurer
+import com.example.bluehits.ui.editPanel.BlockEditManager
 import com.example.interpreter.models.Id
 import kotlin.math.sqrt
 
@@ -33,12 +34,14 @@ fun CreateCanvas(
     connectionManager: UIConnectionManager,
     onDrag: (dragAmount: Offset) -> Unit,
     onBlockDrag: (block: BlueBlock, dragAmount: Offset, isDragging: Boolean) -> Unit,
-    onBlockClick: (blockId: Id) -> Unit
+    onBlockClick: (blockId: Id) -> Unit,
+    blocksManager: BlocksManager
 ) {
     var canvasOffset by remember { mutableStateOf(Offset.Zero) }
     var scale by remember { mutableStateOf(1f) }
     var selectedBlock by remember { mutableStateOf<BlueBlock?>(null) }
     val lineCreator = remember { LineCreator() }
+    val triggerRecomposition = blocksManager.blockUpdated.value
     val density = LocalDensity.current
 
     Canvas(
@@ -51,7 +54,7 @@ fun CreateCanvas(
                     val startPosition = down.position
                     val adjusted = (startPosition - canvasOffset) / scale
 
-                    selectedBlock = blocks.lastOrNull() { block ->
+                    selectedBlock = blocks.lastOrNull { block ->
                         adjusted.x in block.x..(block.x + block.width) &&
                                 adjusted.y in block.y..(block.y + block.height)
                     }
@@ -129,27 +132,26 @@ fun CreateCanvas(
                             adjustedOffset.x in block.x..(block.x + block.width) &&
                                     adjustedOffset.y in block.y..(block.y + block.height)
                         }?.let { clickedBlock ->
-                            onBlockClick(clickedBlock.id)
+                            if (clickedBlock.title.startsWith("def ")) {
+                                BlockEditManager.showEditPanel(clickedBlock)
+                            } else {
+                                onBlockClick(clickedBlock.id)
+                            }
                         }
                     }
                 }
             }
     ) {
+        val visibleCenterX = -canvasOffset.x / scale + size.width / (2 * scale)
+        val visibleCenterY = -canvasOffset.y / scale + size.height / (2 * scale)
+        blocksManager.updateScreenSize(visibleCenterX, visibleCenterY)
+
         withTransform({
             translate(canvasOffset.x, canvasOffset.y)
             scale(scaleX = scale, scaleY = scale)
         }) {
             blocks.forEach { block ->
-                drawBlock(block, textMeasurer, density)
-
-//                if (block == selectedBlock) {
-//                    drawRect(
-//                        color = Color.White,
-//                        topLeft = Offset(block.x - 4, block.y - 4),
-//                        size = Size(block.width + 8, block.height + 8),
-//                        style = Stroke(width = 4f / scale)
-//                    )
-//                }
+                drawBlock(block, textMeasurer, density, selectedPinId = connectionManager.tempPin?.value?.id)
             }
             connectionManager.connections.forEach { (pin1, pin2) ->
                 lineCreator.run { drawBezierCurve(pin1, pin2) }

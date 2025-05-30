@@ -11,6 +11,10 @@ object ContextManager {
     // Это надо для иерархии контекстов.
     private val ctxParents = mutableMapOf<String, String>();
 
+    internal fun getAllContexts() : List<Context> {
+        return contextRegistry.values.toList()
+    }
+
     fun createContext(startBlock: ScopeBlock): Context {
         val context = Context(startBlock)
         contextRegistry[startBlock.id.string()] = context
