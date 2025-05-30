@@ -189,7 +189,7 @@ object BlockManager {
         value: List<T> = emptyList(),
         elementType: KClass<T>,
     ): Block {
-        val block = createBlock { id -> ArrayBlock<T>(id, value as List<T>, varName, elementType = elementType) }
+        val block = createBlock { id -> ArrayBlock(id, value as List<T>, varName, elementType = elementType) }
 
         val blockState = VariableManager.getOrCreateVarState(varName, value as List<T>, List::class)
         block.setVarState(blockState as VarState<List<T>>)
