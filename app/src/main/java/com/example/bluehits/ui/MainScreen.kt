@@ -79,7 +79,7 @@ fun MainScreen() {
     val context = LocalContext.current
     val textMeasurer = rememberTextMeasurer()
     val blocksManager = remember { BlocksManager() }
-    val connectionManager = remember { UIConnectionManager() }
+    val connectionManager = remember { UIConnectionManager }
     var isPanelVisible by remember { mutableStateOf(false) }
     var draggedBlock by remember { mutableStateOf<BlueBlock?>(null) }
     var trashBounds by remember { mutableStateOf<Rect?>(null) }

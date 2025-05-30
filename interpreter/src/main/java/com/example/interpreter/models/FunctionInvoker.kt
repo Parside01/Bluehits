@@ -8,7 +8,6 @@ internal object FunctionInvoker {
 
         arguments.forEach { (arg, value) ->
             definitionBlock.pinByName(arg)?.setValue(value)
-            println(definitionBlock.outputs)
         }
 
         // TODO: Вынести этот блок кода в ContextManager

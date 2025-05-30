@@ -8,7 +8,7 @@ import com.example.interpreter.models.Id
 import com.example.interpreter.models.Pin
 import com.example.interpreter.models.PinManager
 
-class UIConnectionManager {
+object UIConnectionManager {
     var tempPin = mutableStateOf<PinUi?>(null)
     val connections = mutableStateListOf<Pair<PinUi, PinUi>>()
 
