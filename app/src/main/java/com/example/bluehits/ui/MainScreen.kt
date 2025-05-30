@@ -634,8 +634,6 @@ fun runProgram(
     programScope.launch {
         try {
             Program.run()
-            val printValue = blocksManager.getPrintBlockValue(blocksManager.uiBlocks)
-            showSuccess("Вывод: ${printValue ?: "не определено"}")
         } catch (e: Exception) {
             if (e !is CancellationException) {
                 showError("Ошибка при выполнении программы: ${e.message}")

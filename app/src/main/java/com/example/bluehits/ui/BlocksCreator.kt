@@ -77,16 +77,6 @@ class BlocksManager {
         }
     }
 
-    fun getPrintBlockValue(uiBlocks: List<BlueBlock>): Any? {
-        uiBlocks.forEach { block ->
-            if (block.title == "Print") {
-                val logicBlock = BlockManager.getBlock(block.id)
-                return logicBlock?.let { notNullBlock -> notNullBlock.inputs[0].getValue() }
-            }
-        }
-        return null
-    }
-
     fun addNewBlock(type: String) {
         when (type) {
             "Index", "Append", "Swap", "Array", "Add", "Sub", "Greater" -> {
