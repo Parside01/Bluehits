@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.example.bluehits.ui.BlueBlock
+import com.example.interpreter.blocks.FunctionDefinitionBlock
 import com.example.interpreter.models.Pin
 
 object BlockEditManager {
@@ -11,7 +12,7 @@ object BlockEditManager {
         private set
 
     fun shouldShowEditPanel(block: BlueBlock): Boolean {
-        return block.inputPins.isNotEmpty()
+        return block.title.startsWith("def ") || block.title.startsWith("return ") || block.inputPins.isNotEmpty()
     }
 
     fun showEditPanel(block: BlueBlock) {
@@ -48,6 +49,6 @@ object BlockEditManager {
     }
 
     fun hideEditPanel() {
-        editState = editState?.copy(isVisible = false) // Сохраняем состояние, но скрываем панель
+        editState = editState?.copy(isVisible = false)
     }
 }
