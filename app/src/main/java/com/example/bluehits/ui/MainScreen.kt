@@ -239,6 +239,7 @@ fun MainScreen() {
                 },
                 connectionManager = connectionManager,
                 blocksManager = blocksManager,
+                showError = { message -> errorMessage = message }
             )
         }
 
