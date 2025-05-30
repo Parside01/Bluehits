@@ -13,7 +13,7 @@ object PinManager {
 
     fun getPin(id: Id) = pinRegistry[id.string()]
 
-    private fun <T : Pin> createPinInternal(createPinFunc: (Id) -> T): T {
+    fun <T : Pin> createPinInternal(createPinFunc: (Id) -> T): T {
         val id = generateId()
         val pin = createPinFunc(id)
         pinRegistry[id.string()] = pin
@@ -47,8 +47,8 @@ object PinManager {
         return createPinInternal { id -> TPin(id, ownId, name, Any(), value) }
     }
 
-    fun <T> createPinArray(name: String, value: List<T> = emptyList(), ownId: Id = Utils.getDefaultValue(Id::class.java)): TPin<List<T>> {
-        return createPinInternal { id -> TPin(id, ownId, name, emptyList(), value) }
+    inline fun <reified T> createPinArray(name: String, value: List<T> = emptyList(), ownId: Id = Utils.getDefaultValue(Id::class.java)): TPin<List<T>> {
+        return createPinInternal { id -> TPin(id, ownId, name, emptyList(), value, T::class) }
     }
 
     fun createPinBool(name: String, value: Boolean = false, ownId: Id = Utils.getDefaultValue(Id::class.java)): TPin<Boolean> {
