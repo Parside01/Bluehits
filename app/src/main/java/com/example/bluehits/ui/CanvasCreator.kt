@@ -41,6 +41,7 @@ fun CreateCanvas(
     var scale by remember { mutableStateOf(1f) }
     var selectedBlock by remember { mutableStateOf<BlueBlock?>(null) }
     val lineCreator = remember { LineCreator() }
+    val triggerRecomposition = blocksManager.blockUpdated.value
     val density = LocalDensity.current
 
     Canvas(
