@@ -189,6 +189,7 @@ fun BlockEditPanel(
                     blocksManager.updateBlock(block.id, newBlock)
                     BlockEditManager.showEditPanel(newBlock)
                     showNameDialog = false
+                    showTypeDialog = false
                 }
             )
         }
@@ -263,6 +264,7 @@ fun EditPinNameDialog(
                 onClick = {
                     if (pinName.isNotBlank()) {
                         onConfirm(pinName)
+                        BlockEditManager.hideEditPanel()
                     }
                 },
                 shape = RoundedCornerShape(6.dp),

@@ -33,13 +33,19 @@ class BlocksManager {
     val showValueNameDialog: State<Boolean> get() = _showValueNameDialog
     private var currentValueBlockType: String? = null
 
+    private val _blockUpdated = mutableStateOf(false)
+    val blockUpdated: State<Boolean> get() = _blockUpdated
+
     private var currentBlockType: String? = null
     private var onTypeSelected: ((DataType) -> Unit)? = null
 
     fun updateBlock(blockId: Id, newBlock: BlueBlock) {
         val index = _uiBlocks.indexOfFirst { it.id == blockId }
         if (index != -1) {
-            _uiBlocks[index] = newBlock
+            _uiBlocks[index].inputPins = newBlock.inputPins
+            _uiBlocks[index].outputPins = newBlock.outputPins
+            println("update")
+            _blockUpdated.value = !_blockUpdated.value
         }
     }
 
