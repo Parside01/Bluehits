@@ -12,8 +12,10 @@ object BlockEditManager {
         private set
 
     fun shouldShowEditPanel(block: BlueBlock): Boolean {
-        return block.title.startsWith("def ") || block.title.startsWith("return ") || block.inputPins.isNotEmpty()
-    }
+        return block.title.startsWith("def ") ||
+                block.title.startsWith("return ") ||
+                block.inputPins.isNotEmpty() ||
+                block.outputPins.isNotEmpty()    }
 
     fun showEditPanel(block: BlueBlock) {
         if (!shouldShowEditPanel(block)) return
@@ -23,6 +25,13 @@ object BlockEditManager {
                 PinEditField(
                     pin = pin,
                     isInput = true,
+                    value = pin.getStringValue()
+                )
+            })
+            addAll(block.outputPins.map { pin ->
+                PinEditField(
+                    pin = pin,
+                    isInput = false,
                     value = pin.getStringValue()
                 )
             })

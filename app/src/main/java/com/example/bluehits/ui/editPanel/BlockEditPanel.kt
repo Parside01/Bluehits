@@ -174,7 +174,7 @@ fun BlockEditPanel(
                         FunctionManager.addFunctionOutArg(functionName, pin)
                     }
 
-                    val newBlock = BlueBlock(
+                    val updatedBlock = BlueBlock(
                         id = block.id,
                         initialX = block.x,
                         initialY = block.y,
@@ -186,8 +186,8 @@ fun BlockEditPanel(
                         outBlockPin = block.outBlockPin,
                         functionName = block.functionName
                     )
-                    blocksManager.updateBlock(block.id, newBlock)
-                    BlockEditManager.showEditPanel(newBlock)
+                    blocksManager.updateBlock(block.id, updatedBlock)
+                    BlockEditManager.showEditPanel(updatedBlock)
                     showNameDialog = false
                     showTypeDialog = false
                 }
