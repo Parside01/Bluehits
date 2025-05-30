@@ -105,7 +105,7 @@ fun BlockEditPanel(
                     .wrapContentHeight()
                     .alpha(alpha),
                 shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
-                color = Color(0xFF333333),
+                color = BlockEditPanelSurface,
                 shadowElevation = 8.dp
             ) {
                 Column(
@@ -115,7 +115,7 @@ fun BlockEditPanel(
                     Text(
                         text = getString(context, R.string.change_pins),
                         style = MaterialTheme.typography.titleMedium,
-                        color = Color.White
+                        color = WhiteClassic
                     )
 
                     if (block?.title?.startsWith("def ") == true || block?.title?.startsWith("return ") == true) {
@@ -124,11 +124,11 @@ fun BlockEditPanel(
                             shape = RoundedCornerShape(6.dp),
                             modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.LightGray,
-                                contentColor = Color.Black
+                                containerColor = BlockEditPanelButtonContainer,
+                                contentColor = BlockEditPanelButtonContent
                             )
                         ) {
-                            Text(getString(context, R.string.add_new_pin), color = Color.White)
+                            Text(getString(context, R.string.add_new_pin), color = WhiteClassic)
                         }
                     }
 
@@ -242,14 +242,14 @@ fun EditPinTypeDialog(
     Dialog(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier
-                .background(Color.DarkGray, RoundedCornerShape(12.dp))
+                .background(EditPinTypeDialogBackground, RoundedCornerShape(12.dp))
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
             Text(
                 text = getString(context, R.string.choose_pin_type),
                 style = MaterialTheme.typography.titleMedium,
-                color = Color.White,
+                color = WhiteClassic,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
@@ -265,8 +265,8 @@ fun EditPinTypeDialog(
                         .fillMaxWidth()
                         .padding(vertical = 4.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.LightGray,
-                        contentColor = Color.Black
+                        containerColor = EditPinTypeDialogContainer,
+                        contentColor = EditPinTypeDialogContent
                     )
                 ) {
                     Text(text = type)
@@ -287,20 +287,20 @@ fun EditPinNameDialog(
     Dialog(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier
-                .background(Color.DarkGray, RoundedCornerShape(12.dp))
+                .background(DarkBackground, RoundedCornerShape(12.dp))
                 .padding(16.dp)
         ) {
             OutlinedTextField(
                 value = pinName,
                 onValueChange = { pinName = it },
                 modifier = Modifier.fillMaxWidth(),
-                textStyle = LocalTextStyle.current.copy(color = Color.White),
+                textStyle = LocalTextStyle.current.copy(color = WhiteClassic),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    cursorColor = Color.White,
-                    focusedBorderColor = Color.LightGray,
-                    unfocusedBorderColor = Color.Gray
+                    focusedTextColor = WhiteClassic,
+                    unfocusedTextColor = WhiteClassic,
+                    cursorColor = WhiteClassic,
+                    focusedBorderColor = LightGrayClassic,
+                    unfocusedBorderColor = GrayClassic
                 )
             )
 
@@ -312,7 +312,7 @@ fun EditPinNameDialog(
                     }
                 },
                 shape = RoundedCornerShape(6.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.DarkGray),
+                colors = ButtonDefaults.buttonColors(containerColor = EditPinNameDialogContainer, contentColor = EditPinNameDialogContent),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp)
@@ -332,14 +332,14 @@ fun ArrayElementTypeDialog(
     Dialog(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier
-                .background(Color.DarkGray, RoundedCornerShape(12.dp))
+                .background(DarkBackground, RoundedCornerShape(12.dp))
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
             Text(
                 text = getString(context, R.string.select_array_elem_type),
                 style = MaterialTheme.typography.titleMedium,
-                color = Color.White,
+                color = WhiteClassic,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
@@ -351,8 +351,8 @@ fun ArrayElementTypeDialog(
                         .fillMaxWidth()
                         .padding(vertical = 4.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.LightGray,
-                        contentColor = Color.Black
+                        containerColor = ArrayElementTypeDialogContainer,
+                        contentColor = ArrayElementTypeDialogContent
                     )
                 ) {
                     Text(text = type.title)

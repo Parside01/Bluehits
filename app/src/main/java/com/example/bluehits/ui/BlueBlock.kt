@@ -25,13 +25,8 @@ import com.example.interpreter.models.Pin
 import com.example.interpreter.models.Block
 import com.example.interpreter.models.Id
 import kotlin.math.max
+import com.example.bluehits.ui.theme.*
 
-val BlockBodyColor = Color.Gray
-val BlockTitleColor = Color(0xFF1E5F8B)
-val BlockBorderColor = Color(0xFF1A1A1A)
-val BlockShadowColor = Color(0x40000000)
-val BlockTitleTextColor = Color(0xFFCCCCCC)
-val PinTextColor = Color(0xFFFFFFFF)
 
 val MIN_BLOCK_WIDTH_DP = 150.dp
 val MIN_BLOCK_HEIGHT_DP = 80.dp

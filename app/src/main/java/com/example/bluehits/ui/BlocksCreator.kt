@@ -5,9 +5,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LocalTextStyle
@@ -32,6 +34,7 @@ import com.example.interpreter.models.PinManager
 import com.example.interpreter.models.Program
 import com.example.interpreter.models.ScopeBlock
 import com.example.bluehits.R
+import com.example.bluehits.ui.theme.*
 
 class BlocksManager(private val context: Context) {
     private val _uiBlocks = mutableStateListOf<BlueBlock>()
@@ -80,6 +83,16 @@ class BlocksManager(private val context: Context) {
         }
     }
 
+    public fun getPrintBlockValue(uiBlocks: List<BlueBlock>): Any? {
+        uiBlocks.forEach { block ->
+            if (block.title == "Print") {
+                val logicBlock = BlockManager.getBlock(block.id)
+                return logicBlock?.let { notNullBlock -> notNullBlock.inputs[0].getValue() }
+            }
+        }
+        return null
+    }
+
     fun addNewBlock(type: String) {
         when (type) {
             getString(context, R.string.index_block_label), getString(context, R.string.append_block_label), getString(context, R.string.swap_block_label), getString(context, R.string.array_block_label), getString(context, R.string.add_block_label), getString(context, R.string.sub_block_label), getString(context, R.string.greater_block_label) -> {
@@ -126,6 +139,15 @@ class BlocksManager(private val context: Context) {
                 getString(context, R.string.float_block_label) -> BlockManager.createFloatBlock(name)
                 getString(context, R.string.bool_block_label) -> BlockManager.createBoolBlock(name)
                 getString(context, R.string.string_block_label) -> BlockManager.createStringBlock(name)
+                "Array" -> {
+                    when (currentValueBlockType) {
+                        "Int" -> BlockManager.createArrayBlock(name, elementType = Int::class)
+                        "Float" -> BlockManager.createArrayBlock(name, elementType = Float::class)
+                        "Double" -> BlockManager.createArrayBlock(name, elementType = Double::class)
+                        "Long" -> BlockManager.createArrayBlock(name, elementType = Long::class)
+                        else -> throw IllegalStateException("No type selected for array")
+                    }
+                }
                 else -> throw IllegalArgumentException("Unknown function dialog type")
             }
 
@@ -240,12 +262,12 @@ class BlocksManager(private val context: Context) {
         val mainLogicBlock = Program.getMainBlock()
         val mainBlueBlock = BlueBlock(
             id = mainLogicBlock.id,
-            initialX = 0f,
-            initialY = 0f,
-            color = Color.Gray,
+            initialX = 1f,
+            initialY = 1f,
+            color = BlockColor,
             title = mainLogicBlock.name,
             inputPins = mainLogicBlock.inputs,
-            outputPins = mainLogicBlock.outputs,
+            outputPins = mainLogicBlock.outputs.subList(0, mainLogicBlock.outputs.size - 1),
             outBlockPin = mainLogicBlock.outBlockPin,
         )
         _uiBlocks.add(mainBlueBlock)
@@ -321,13 +343,13 @@ fun TypeSelectionDialog(
     Dialog(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier
-                .background(Color.DarkGray, RoundedCornerShape(12.dp))
+                .background(DarkBackground, RoundedCornerShape(12.dp))
                 .padding(16.dp)
         ) {
             Text(
                 text = "Select data type",
                 style = MaterialTheme.typography.titleMedium,
-                color = Color.White,
+                color = WhiteClassic,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
@@ -339,8 +361,8 @@ fun TypeSelectionDialog(
                         .fillMaxWidth()
                         .padding(vertical = 4.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.LightGray,
-                        contentColor = Color.Black
+                        containerColor = TypeDialogButtonContainerColor,
+                        contentColor = TypeDialogButtonContentColor
                     )
                 ) {
                     Text(text = type.title)
@@ -363,12 +385,12 @@ fun FunctionNameDialog(
     Dialog(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier
-                .background(Color.DarkGray, RoundedCornerShape(12.dp))
+                .background(DarkBackground, RoundedCornerShape(12.dp))
                 .padding(16.dp)
         ) {
             Text(
                 text = title,
-                color = Color.White,
+                color = WhiteClassic,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
@@ -378,7 +400,7 @@ fun FunctionNameDialog(
                 onValueChange = { functionName = it },
                 label = { Text(label!!, color = Color.White) },
                 modifier = Modifier.fillMaxWidth(),
-                textStyle = LocalTextStyle.current.copy(color = Color.White),
+                textStyle = LocalTextStyle.current.copy(color = WhiteClassic),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done
                 ),
@@ -395,11 +417,11 @@ fun FunctionNameDialog(
                 ),
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    cursorColor = Color.White,
-                    focusedBorderColor = Color.LightGray,
-                    unfocusedBorderColor = Color.Gray
+                    focusedTextColor = WhiteClassic,
+                    unfocusedTextColor = WhiteClassic,
+                    cursorColor = WhiteClassic,
+                    focusedBorderColor = LightGrayClassic,
+                    unfocusedBorderColor = GrayClassic
                 )
             )
 
@@ -414,7 +436,7 @@ fun FunctionNameDialog(
                     }
                 },
                 shape = RoundedCornerShape(6.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.DarkGray),
+                colors = ButtonDefaults.buttonColors(containerColor = WhiteClassic, contentColor = ContentColorFuntionName),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp)
@@ -435,13 +457,14 @@ fun FunctionSelectionDialog(
     Dialog(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier
-                .background(Color.DarkGray, RoundedCornerShape(12.dp))
+                .background(DarkBackground, RoundedCornerShape(12.dp))
                 .padding(16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             Text(
                 text = "Select function",
                 style = MaterialTheme.typography.titleMedium,
-                color = Color.White,
+                color = WhiteClassic,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
@@ -453,8 +476,8 @@ fun FunctionSelectionDialog(
                         .fillMaxWidth()
                         .padding(vertical = 4.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.LightGray,
-                        contentColor = Color.Black
+                        containerColor = FunctionSelectionContainer,
+                        contentColor = FunctionSelectionContent
                     )
                 ) {
                     Text(text = function)

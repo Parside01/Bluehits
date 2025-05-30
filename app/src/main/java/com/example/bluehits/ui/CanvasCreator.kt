@@ -28,6 +28,7 @@ import com.example.bluehits.ui.editPanel.BlockEditManager
 import com.example.interpreter.blocks.FunctionDefinitionBlock
 import com.example.interpreter.models.Id
 import kotlin.math.sqrt
+import com.example.bluehits.ui.theme.*
 
 @Composable
 fun CreateCanvas(
@@ -45,13 +46,12 @@ fun CreateCanvas(
     var scale by remember { mutableStateOf(1f) }
     var selectedBlock by remember { mutableStateOf<BlueBlock?>(null) }
     val lineCreator = remember { LineCreator() }
-//    val triggerRecomposition = blocksManager.blockUpdated.value
     val density = LocalDensity.current
 
     Canvas(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF212121))
+            .background(CanvasColor)
             .pointerInput(blocks) {
                 awaitEachGesture {
                     val down = awaitFirstDown(requireUnconsumed = false)

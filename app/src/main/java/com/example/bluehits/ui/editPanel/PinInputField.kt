@@ -56,6 +56,7 @@ import androidx.core.content.ContextCompat.getString
 import com.example.bluehits.R
 import kotlinx.coroutines.delay
 import kotlin.reflect.KClass
+import com.example.bluehits.ui.theme.*
 
 
 @Composable
@@ -65,6 +66,7 @@ fun PinInputField(
     value: Any,
     context: Context
 ) {
+    println(filedPin.pin.getType())
     when {
         filedPin.pin.getType() == Int::class -> {
             NumberInputController(
@@ -172,13 +174,13 @@ private fun NumberInputController(
                     onValueChange(currentValue.value)
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White),
+                    containerColor = NumberInputControllerButtonContainer),
                 modifier = Modifier
                     .height(48.dp)
                     .padding(end = 4.dp),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("-", color = Color.DarkGray)
+                Text("-", color = NumberInputControllerMinus)
             }
 
             if (isManualValueInput.value) {
@@ -203,14 +205,14 @@ private fun NumberInputController(
                         .weight(1f)
                         .padding(horizontal = 4.dp),
                     singleLine = true,
-                    textStyle = LocalTextStyle.current.copy(color = Color.White),
+                    textStyle = LocalTextStyle.current.copy(color = WhiteClassic),
                     shape = RoundedCornerShape(8.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Color.White,
-                        focusedBorderColor = Color.LightGray,
-                        unfocusedBorderColor = Color.Gray
+                        focusedTextColor = WhiteClassic,
+                        unfocusedTextColor = WhiteClassic,
+                        cursorColor = WhiteClassic,
+                        focusedBorderColor = LightGrayClassic,
+                        unfocusedBorderColor = GrayClassic
                     )
                 )
             } else {
@@ -219,13 +221,14 @@ private fun NumberInputController(
                         .height(48.dp)
                         .weight(1f)
                         .padding(horizontal = 4.dp)
-                        .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
+                        .border(1.dp, NumberInputControllerBoxBorder, RoundedCornerShape(8.dp))
                         .clickable { isManualValueInput.value = true },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = currentValue.value.toString(),
-                        color = Color.White
+                        text = if (isInt) currentValue.value.toString()
+                        else "%.2f".format(currentValue.value.toDouble()),
+                        color = WhiteClassic
                     )
                 }
             }
@@ -237,19 +240,19 @@ private fun NumberInputController(
                     onValueChange(currentValue.value)
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White),
+                    containerColor = NumberInputControllerButtonContainer),
                 modifier = Modifier
                     .height(48.dp)
                     .padding(start = 4.dp),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text(getString(context, R.string.plus), color = Color.DarkGray)
+                Text(getString(context, R.string.plus), color = NumberInputControllerPlus)
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(getString(context, R.string.step_size), color = Color.White)
+        Text(getString(context, R.string.step_size), color = WhiteClassic)
         Spacer(modifier = Modifier.height(4.dp))
 
         Row(
@@ -262,13 +265,13 @@ private fun NumberInputController(
                     onValueChange(currentValue.value)
                 },
                 colors =  ButtonDefaults.buttonColors(
-                    containerColor = Color.White),
+                    containerColor = NumberInputControllerButtonContainer),
                 modifier = Modifier
                     .height(48.dp)
                     .padding(end = 4.dp),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text(getString(context, R.string.minus), color = Color.DarkGray)
+                Text(getString(context, R.string.minus), color = NumberInputControllerMinus)
             }
 
             if (isManualStepInput.value) {
@@ -295,14 +298,14 @@ private fun NumberInputController(
                         .weight(1f)
                         .padding(horizontal = 4.dp),
                     singleLine = true,
-                    textStyle = LocalTextStyle.current.copy(color = Color.White),
+                    textStyle = LocalTextStyle.current.copy(color = WhiteClassic),
                     shape = RoundedCornerShape(8.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Color.White,
-                        focusedBorderColor = Color.LightGray,
-                        unfocusedBorderColor = Color.Gray
+                        focusedTextColor = WhiteClassic,
+                        unfocusedTextColor = WhiteClassic,
+                        cursorColor = WhiteClassic,
+                        focusedBorderColor = LightGrayClassic,
+                        unfocusedBorderColor = GrayClassic
                     )
                 )
             } else {
@@ -311,14 +314,14 @@ private fun NumberInputController(
                         .height(48.dp)
                         .weight(1f)
                         .padding(horizontal = 4.dp)
-                        .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
+                        .border(1.dp, NumberInputControllerBoxBorder, RoundedCornerShape(8.dp))
                         .clickable { isManualStepInput.value = true },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = if (isInt) step.value.toInt().toString()
-                        else "%.1f".format(step.value),
-                        color = Color.White
+                        else "%.2f".format(step.value.toDouble()),
+                        color = WhiteClassic
                     )
                 }
             }
@@ -330,13 +333,13 @@ private fun NumberInputController(
                     onValueChange(currentValue.value)
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White),
+                    containerColor = NumberInputControllerButtonContainer),
                 modifier = Modifier
                     .height(48.dp)
                     .padding(start = 4.dp),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text(getString(context, R.string.plus), color = Color.DarkGray)
+                Text(getString(context, R.string.plus), color = NumberInputControllerPlus)
             }
         }
     }
@@ -349,14 +352,14 @@ private fun BooleanInputField(
     context: Context
 ) {
     val checked = remember { mutableStateOf(value.toString().toBooleanStrictOrNull() ?: false) }
-    val textColor = Color.Black
+    val textColor = WhiteClassic
     val switchColors = SwitchDefaults.colors(
-        checkedThumbColor = Color.Black,
-        checkedTrackColor = Color.DarkGray,
-        uncheckedThumbColor = Color.White,
-        uncheckedTrackColor = Color.LightGray,
-        checkedBorderColor = Color.Black,
-        uncheckedBorderColor = Color.Gray
+        checkedThumbColor = checkedThumbCol,
+        checkedTrackColor = checkedTrackCol,
+        uncheckedThumbColor = uncheckedThumbCol,
+        uncheckedTrackColor = uncheckedTrackCol,
+        checkedBorderColor = checkedBorderCol,
+        uncheckedBorderColor = uncheckedBorderCol
     )
 
     LaunchedEffect(value) {
@@ -400,14 +403,14 @@ private fun TextInputField(
         },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
-        textStyle = LocalTextStyle.current.copy(color = Color.White),
+        textStyle = LocalTextStyle.current.copy(color = WhiteClassic),
         placeholder = { Text(placeholder) },
         colors = OutlinedTextFieldDefaults.colors(
-            focusedTextColor = Color.White,
-            unfocusedTextColor = Color.White,
-            cursorColor = Color.White,
-            focusedBorderColor = Color.LightGray,
-            unfocusedBorderColor = Color.Gray
+            focusedTextColor = WhiteClassic,
+            unfocusedTextColor = WhiteClassic,
+            cursorColor = WhiteClassic,
+            focusedBorderColor = LightGrayClassic,
+            unfocusedBorderColor = GrayClassic
         )
     )
 }
@@ -500,7 +503,7 @@ fun ArrayInputField(
                 modifier = Modifier
                     .size(30.dp)
                     .clip(RoundedCornerShape(4.dp))
-                    .background(Color(0xFF3A3A3A))
+                    .background(ArrayInputFieldBackground)
                     .clickable {
                         val newList = items.value.toMutableList()
                         newList.add(createDefaultValue())
@@ -509,7 +512,7 @@ fun ArrayInputField(
                     },
                 contentAlignment = Alignment.Center
             ) {
-                Text("+", color = Color.White, fontSize = 20.sp)
+                Text("+", color = WhiteClassic, fontSize = 20.sp)
             }
         }
     }
@@ -528,8 +531,12 @@ fun ArrayInputField(
                 onValueChange(items.value.toList())
             },
             onDismiss = { selectedIndex.value = null },
+            context = context,
             fieldPin = fieldPin,
-            context = context
+            isInt = when (elementType) {
+                Int::class, Long::class -> true
+                else -> false
+            }
         )
     }
 }
@@ -543,19 +550,51 @@ private fun ArrayItemBox(
     elementType: KClass<*>,
     onItemSelected: () -> Unit
 ) {
+    val showDelete = remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .size(30.dp)
             .clip(RoundedCornerShape(4.dp))
-            .background(Color(0xFF424242))
-            .clickable { onItemSelected() },
+            .background(if (showDelete.value) EditItemColor else EditItemColorDelete)
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = {
+                        if (showDelete.value) {
+                            onRemove()
+                            showDelete.value = false
+                        } else {
+                            onItemSelected()
+                        }
+                    },
+                    onLongPress = {
+                        showDelete.value = true
+                    }
+                )
+            },
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = item?.toString()?.takeIf { it.isNotBlank() } ?: "0",
-            color = Color.White,
-            fontSize = 12.sp
+            text = if (showDelete.value) {
+                "×"
+            } else {
+                when {
+                    elementType == Float::class -> "%.2f".format((item as? Float) ?: 0f)
+                    elementType == Double::class -> "%.2f".format((item as? Double) ?: 0.0)
+                    else -> item?.toString()?.takeIf { it.isNotBlank() } ?: "0"
+                }
+            },
+            color = WhiteClassic,
+            fontSize = if (showDelete.value) 18.sp else 12.sp,
+            textAlign = TextAlign.Center
         )
+    }
+
+    LaunchedEffect(showDelete.value) {
+        if (showDelete.value) {
+            delay(2000)
+            showDelete.value = false
+        }
     }
 }
 
@@ -565,8 +604,9 @@ fun EditItemDialog(
     elementType: KClass<*>,
     onValueChange: (Any) -> Unit,
     onDismiss: () -> Unit,
+    context: Context,
     fieldPin: PinEditField,
-    context: Context
+    isInt: Boolean
 ) {
 
     val textValue = remember { mutableStateOf(item?.toString() ?: "") }
@@ -580,13 +620,13 @@ fun EditItemDialog(
     Dialog(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier
-                .background(Color(0xFF424242), RoundedCornerShape(8.dp))
+                .background(EditItemDialogColor, RoundedCornerShape(8.dp))
                 .padding(16.dp)
         ) {
             Text(
                 text = "Edit Item",
                 fontSize = 20.sp,
-                color = Color.White
+                color = WhiteClassic
             )
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -599,7 +639,7 @@ fun EditItemDialog(
                         onValueChange = { newValue ->
                             onValueChange(newValue)
                         },
-                        isInt = true,
+                        isInt = isInt,
                         context = context
                     )
                 }
@@ -611,7 +651,7 @@ fun EditItemDialog(
                         onValueChange = { newValue ->
                             onValueChange(newValue.toFloat())
                         },
-                        isInt = false,
+                        isInt = isInt,
                         context = context
                     )
                 }
@@ -623,7 +663,7 @@ fun EditItemDialog(
                         onValueChange = { newValue ->
                             onValueChange(newValue.toDouble())
                         },
-                        isInt = false,
+                        isInt = isInt,
                         context = context
                     )
                 }
@@ -635,7 +675,7 @@ fun EditItemDialog(
                         onValueChange = { newValue ->
                             onValueChange(newValue.toLong())
                         },
-                        isInt = true,
+                        isInt = isInt,
                         context = context
                     )
                 }
@@ -643,7 +683,7 @@ fun EditItemDialog(
                 Boolean::class -> {
                     val initialValue = item?.toString()?.toBooleanStrictOrNull() ?: false
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(getString(context, R.string.value_label), color = Color.Black)
+                        Text(getString(context, R.string.value_label), color = WhiteClassic)
                         Switch(
                             checked = initialValue,
                             onCheckedChange = { newValue ->
@@ -663,7 +703,7 @@ fun EditItemDialog(
                 }
 
                 else -> {
-                    Text(getString(context, R.string.unsupported_type), color = Color.Black)
+                    Text(getString(context, R.string.unsupported_type), color = WhiteClassic)
                 }
             }
         }

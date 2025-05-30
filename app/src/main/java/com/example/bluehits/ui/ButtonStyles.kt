@@ -16,6 +16,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import kotlin.math.min
+import com.example.bluehits.ui.theme.*
 
 object ButtonStyles {
     data class ButtonStyle(
@@ -41,15 +42,15 @@ object ButtonStyles {
                 .shadow(4.dp, shape = RoundedCornerShape(cornerRadius)),
             shape = RoundedCornerShape(cornerRadius),
             colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = Color.White
+                containerColor = BaseButtonColor
             ),
             contentPadding = PaddingValues(
                 horizontal = buttonWidth * 0.2f,
                 vertical = buttonHeight * 0.1f
             ),
-            border = BorderStroke(1.dp, Color.Black),
+            border = BorderStroke(1.dp, ButtonBorder),
             textStyle = TextStyle(
-                color = Color.Black,
+                color = ButtonStyleTextColor,
                 fontSize = (buttonHeight.value * 0.4f).sp,
                 textAlign = TextAlign.Center
             )
@@ -72,12 +73,12 @@ object ButtonStyles {
                 .shadow(4.dp, shape = RoundedCornerShape(cornerRadius)),
             shape = RoundedCornerShape(cornerRadius),
             colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = Color.DarkGray
+                containerColor = ControlPanelButtonStyleContainer
             ),
             contentPadding = PaddingValues(vertical = 8.dp),
-            border = BorderStroke(1.dp, Color(0xFF888888)),
+            border = BorderStroke(1.dp, ColorForControlPanelButton),
             textStyle = TextStyle(
-                color = Color.White,
+                color = WhiteClassic,
                 fontSize = (buttonHeight.value * 0.4f).coerceAtMost(16f).sp,
                 textAlign = TextAlign.Center
             )

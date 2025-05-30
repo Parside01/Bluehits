@@ -16,6 +16,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,7 +27,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Recycling
+import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -63,7 +72,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.core.content.ContextCompat.getString
 import com.example.bluehits.ui.console.ConsoleBuffer
 import com.example.bluehits.ui.console.ConsoleUI
 import com.example.bluehits.ui.console.ConsoleWriteAdapter
@@ -78,6 +86,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.min
 import com.example.bluehits.R
+import com.example.bluehits.ui.theme.*
 
 @Composable
 fun MainScreen() {
@@ -97,6 +106,7 @@ fun MainScreen() {
     val density = LocalDensity.current
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var successMessage by remember { mutableStateOf<String?>(null) }
+    var isDeleteMode by remember { mutableStateOf(false) }
 
     // Для асинхронного запуска программы.
     var isProgramRunning by remember { mutableStateOf(false) }
@@ -190,7 +200,7 @@ fun MainScreen() {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(MainScreenConstraintLayoutBackground)
             .systemBarsPadding()
             .pointerInput(isConsoleVisible.value || isPanelVisible) {
                 detectTapGestures { tapOffset ->
@@ -203,7 +213,7 @@ fun MainScreen() {
                 }
             }
     ) {
-        val (canvas, panel, addButton, debugButton, runButton, trashButton, clearButton, editPanel, consoleUi, consoleButton) = createRefs()
+        val (canvas, panel, sidePanel, addButton, debugButton, runButton, trashButton, clearButton, editPanel, consoleUi, consoleButton) = createRefs()
 
         Column(
             modifier = Modifier
@@ -248,15 +258,131 @@ fun MainScreen() {
                     }
                 },
                 onBlockClick = { blockId ->
-                    selectedBlockId = blockId
-                    showSettingsDialog = true
-                    BlockEditManager.showEditPanel(blocksManager.uiBlocks.find { it.id == blockId }!!)
+                    if (isDeleteMode) {
+                        blocksManager.uiBlocks.find { it.id == blockId }?.let { block ->
+                            if (block.title != "Main") {
+                                blocksManager.removeBlock(block, connectionManager)
+                            }
+                        }
+                    } else {
+                        selectedBlockId = blockId
+                        showSettingsDialog = true
+                        BlockEditManager.showEditPanel(blocksManager.uiBlocks.find { it.id == blockId }!!)
+                    }
                 },
                 connectionManager = connectionManager,
                 blocksManager = blocksManager,
                 showError = { message -> errorMessage = message },
                 context=context
             )
+        }
+
+        Column(
+            modifier = Modifier
+                .constrainAs(sidePanel) {
+                    end.linkTo(parent.end)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    width = Dimension.value(56.dp)
+                }
+                .zIndex(3f)
+                .background(RightPanelColor)
+                .padding(vertical = 8.dp)
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                IconButton(
+                    onClick = {
+                        runProgram(
+                            blocksManager,
+                            context,
+                            showError = { message -> errorMessage = message },
+                            showSuccess = { message -> successMessage = message },
+                            onProgramStopped = { Program.stop() },
+                            programScope = programScope
+                        )
+                    },
+                    modifier = Modifier
+                        .size(48.dp)
+                        .padding(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PlayArrow,
+                        contentDescription = "Run",
+                        tint = RunIconColor,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+
+                IconButton(
+                    onClick = {
+                        isPanelVisible = !isPanelVisible
+                        isConsoleVisible.value = false
+                    },
+                    modifier = Modifier
+                        .size(48.dp)
+                        .padding(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add",
+                        tint = AddButtonColor,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+
+                IconButton(
+                    onClick = {
+                        isConsoleVisible.value = !isConsoleVisible.value
+                        isPanelVisible = false
+                    },
+                    modifier = Modifier
+                        .size(48.dp)
+                        .padding(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Terminal,
+                        contentDescription = "Console",
+                        tint = ConsoleButtonColor,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
+
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                IconButton(
+                    onClick = { isDeleteMode = !isDeleteMode
+                        if (!isDeleteMode) {
+                            isBlockOverTrash = false
+                        }
+                    },
+                    modifier = Modifier
+                        .size(48.dp)
+                        .padding(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Delete,
+                        contentDescription = "Trash",
+                        tint = if (isDeleteMode) RedClassic else WhiteClassic,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+
+                IconButton(
+                    onClick = { blocksManager.clearAllBlocks() },
+                    modifier = Modifier
+                        .size(48.dp)
+                        .padding(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Recycling,
+                        contentDescription = "Clear",
+                        tint = ClearButtonColor,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
         }
 
         BlockEditPanel(
@@ -293,7 +419,7 @@ fun MainScreen() {
                 blocksManager = blocksManager,
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(color = Color.White)
+                    .background(color = ControlPanelBackground)
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState()),
                 onError = { message -> errorMessage = message },
@@ -456,8 +582,7 @@ fun MainScreen() {
 fun ControlPanel(
     blocksManager: BlocksManager,
     modifier: Modifier = Modifier,
-    onError: (String) -> Unit = {},
-    context: Context
+    onError: (String) -> Unit = {}
 ) {
     Column(
         modifier = modifier,
@@ -526,7 +651,7 @@ fun SuccessNotification(
                 modifier = Modifier
                     .clip(RoundedCornerShape(16.dp))
                     .shadow(8.dp, RoundedCornerShape(16.dp))
-                    .background(Color(0xFF6C6C6C))
+                    .background(SuccessNotificationBackground)
                     .padding(24.dp)
                     .wrapContentSize()
             ) {
@@ -537,7 +662,7 @@ fun SuccessNotification(
                     Text(
                         text = message,
                         style = TextStyle(
-                            color = Color.White,
+                            color = WhiteClassic,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Medium,
                             textAlign = TextAlign.Center
@@ -549,13 +674,13 @@ fun SuccessNotification(
                             .align(Alignment.End)
                             .size(32.dp)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(Color.White.copy(alpha = 0.2f))
+                            .background(SuccessNotificationBoxBackground)
                             .clickable { onDismiss() }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = getString(context, R.string.close_notification),
-                            tint = Color.White,
+                            contentDescription = "Close",
+                            tint = SuccessNotificationIconColor,
                             modifier = Modifier
                                 .size(24.dp)
                                 .align(Alignment.Center)
@@ -592,7 +717,7 @@ fun ErrorNotification(
                 modifier = Modifier
                     .clip(RoundedCornerShape(16.dp))
                     .shadow(8.dp, RoundedCornerShape(16.dp))
-                    .background(Color(0xFFC04D4D))
+                    .background(ErrorNotificationBackground)
                     .padding(24.dp)
                     .wrapContentSize()
             ) {
@@ -603,7 +728,7 @@ fun ErrorNotification(
                     Text(
                         text = message,
                         style = TextStyle(
-                            color = Color.White,
+                            color = ErrorNotificationTextColor,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Medium,
                             textAlign = TextAlign.Center
@@ -615,13 +740,13 @@ fun ErrorNotification(
                             .align(Alignment.End)
                             .size(32.dp)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(Color.White.copy(alpha = 0.2f))
+                            .background(ErrorNotificationBoxBackground)
                             .clickable { onDismiss() }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = getString(context, R.string.close_notification),
-                            tint = Color.White,
+                            tint = ErrorNotificationIconColor,
                             modifier = Modifier
                                 .size(24.dp)
                                 .align(Alignment.Center)

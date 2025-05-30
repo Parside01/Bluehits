@@ -1,6 +1,7 @@
 package com.example.bluehits.ui
 
 import androidx.compose.ui.graphics.Color
+import com.example.bluehits.ui.theme.BlockBodyColor
 import com.example.interpreter.blocks.ArrayBlock
 import com.example.interpreter.blocks.BoolBlock
 import com.example.interpreter.blocks.FloatBlock
