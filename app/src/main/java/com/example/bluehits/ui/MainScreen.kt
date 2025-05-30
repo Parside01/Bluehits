@@ -422,7 +422,7 @@ fun ControlPanel(
             "Bool" to "Bool",
             "Add" to "Add",
             "Sub" to "Sub",
-            "Greator" to "Greator",
+            "Greater" to "Greater",
             "IfElse" to "IfElse",
             "For" to "For",
             "Array" to "Array",

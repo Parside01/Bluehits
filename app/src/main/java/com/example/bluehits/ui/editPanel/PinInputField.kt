@@ -9,6 +9,8 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,11 +23,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -209,7 +213,14 @@ private fun NumberInputController(
                         .padding(horizontal = 4.dp),
                     singleLine = true,
                     textStyle = LocalTextStyle.current.copy(color = Color.White),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        cursorColor = Color.White,
+                        focusedBorderColor = Color.LightGray,
+                        unfocusedBorderColor = Color.Gray
+                    )
                 )
             } else {
                 Box(
@@ -294,7 +305,14 @@ private fun NumberInputController(
                         .padding(horizontal = 4.dp),
                     singleLine = true,
                     textStyle = LocalTextStyle.current.copy(color = Color.White),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        cursorColor = Color.White,
+                        focusedBorderColor = Color.LightGray,
+                        unfocusedBorderColor = Color.Gray
+                    )
                 )
             } else {
                 Box(
@@ -390,10 +408,17 @@ private fun TextInputField(
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
         textStyle = LocalTextStyle.current.copy(color = Color.White),
-        placeholder = { Text(placeholder) }
+        placeholder = { Text(placeholder) },
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedTextColor = Color.White,
+            unfocusedTextColor = Color.White,
+            cursorColor = Color.White,
+            focusedBorderColor = Color.LightGray,
+            unfocusedBorderColor = Color.Gray
+        )
     )
 }
-
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ArrayInputField(
     fieldPin: PinEditField,
@@ -415,6 +440,7 @@ fun ArrayInputField(
     }
 
     val selectedIndex = remember { mutableStateOf<Int?>(null) }
+
 
     fun createDefaultValue(): Any {
         return when (elementType) {
@@ -444,19 +470,14 @@ fun ArrayInputField(
             .fillMaxWidth()
             .padding(8.dp)
     ) {
-        Text(
-            text = "Array<$itemType> ${fieldPin.pin.name}",
-            color = Color.White,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
 
-        Row(
+        FlowRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .horizontalScroll(scrollState)
-                .height(50.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                .horizontalScroll(scrollState),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            maxItemsInEachRow = 9
         ) {
             items.value.forEachIndexed { index, item ->
                 ArrayItemBox(
@@ -497,7 +518,7 @@ fun ArrayInputField(
                         val newList = items.value.toMutableList()
                         newList.add(createDefaultValue())
                         items.value = newList
-                        BlockEditManager.updatePinValue(fieldPin.pin, newList.toTypedArray())  //Где то здесь происходит фигня с сохранением в массив
+                        BlockEditManager.updatePinValue(fieldPin.pin, newList.toTypedArray())
                     },
                 contentAlignment = Alignment.Center
             ) {
@@ -645,50 +666,6 @@ fun EditItemDialog(
                         onValueChange = { textValue.value = it },
                     )
                 }
-
-//                emptyList<Int>()::class -> {
-//                    val initialValue = item?.toString()?.toIntOrNull() ?: 0f
-//                    NumberInputController(
-//                        initialValue = initialValue,
-//                        onValueChange = { newValue ->
-//                            onValueChange(newValue.toInt())
-//                        },
-//                        isInt = true
-//                    )
-//                }
-//
-//                emptyList<Float>()::class -> {
-//                    val initialValue = item?.toString()?.toFloatOrNull() ?: 0f
-//                    NumberInputController(
-//                        initialValue = initialValue,
-//                        onValueChange = { newValue ->
-//                            onValueChange(newValue.toFloat())
-//                        },
-//                        isInt = false
-//                    )
-//                }
-//
-//                emptyList<Double>()::class -> {
-//                    val initialValue = item?.toString()?.toDoubleOrNull() ?: 0f
-//                    NumberInputController(
-//                        initialValue = initialValue,
-//                        onValueChange = { newValue ->
-//                            onValueChange(newValue.toDouble())
-//                        },
-//                        isInt = false
-//                    )
-//                }
-//
-//                emptyList<Long>()::class -> {
-//                    val initialValue = item?.toString()?.toLongOrNull() ?: 0f
-//                    NumberInputController(
-//                        initialValue = initialValue,
-//                        onValueChange = { newValue ->
-//                            onValueChange(newValue.toFloat())
-//                        },
-//                        isInt = true
-//                    )
-//                }
 
                 else -> {
                     Text("Unsupported type", color = Color.Black)

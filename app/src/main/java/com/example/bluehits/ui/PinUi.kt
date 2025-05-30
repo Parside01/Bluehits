@@ -29,7 +29,14 @@ object pinCreator {
         }
     }
 
-    fun DrawScope.drawPin(pin: PinUi) {
+    fun DrawScope.drawPin(pin: PinUi, isSelected: Boolean = false) {
+        val SelectedPinColor = Color(0xFF4285F4)
+        val PinBorderColor = Color.Black
+
+        val borderWidth = if (isSelected) 2.5f else 1.5f
+        val borderColor = if (isSelected) SelectedPinColor else PinBorderColor
+
+
         if (pin.type == InOutPinType.INPUT) {
             drawCircle(
                 color = Color.Green,
@@ -41,7 +48,7 @@ object pinCreator {
                 style = Fill
             )
             drawCircle(
-                color = Color.Black,
+                color = borderColor,
                 radius = 15f,
                 center = Offset(
                     pin.ownOffset.x + pin.parentBlock.x,
@@ -62,16 +69,22 @@ object pinCreator {
             style = Fill
         )
         drawCircle(
-            color = Color.Black,
+            color = borderColor,
             radius = 15f,
             center = Offset(
                 pin.ownOffset.x + pin.parentBlock.x,
                 pin.ownOffset.y + pin.parentBlock.y
             ),
-            style = Stroke(width = 1.5f)
+            style = Stroke(width = borderWidth)
         )
     }
-    fun DrawScope.drawBlockPin(pin : PinUi) {
+    fun DrawScope.drawBlockPin(pin : PinUi, isSelected: Boolean = false) {
+        val SelectedPinColor = Color(0xFF4285F4)
+        val PinBorderColor = Color.Black
+
+        val borderWidth = if (isSelected) 2.5f else 1.5f
+        val borderColor = if (isSelected) SelectedPinColor else PinBorderColor
+
         val size = 20f
         val halfSize = size / 2
 
@@ -85,13 +98,13 @@ object pinCreator {
             style = Fill
         )
         drawRect(
-            color = Color.Black,
+            color = borderColor,
             topLeft = Offset(
                 pin.ownOffset.x + pin.parentBlock.x - halfSize,
                 pin.ownOffset.y + pin.parentBlock.y - halfSize
             ),
             size = Size(size, size),
-            style = Stroke(width = 2f)
+            style = Stroke(width = borderWidth)
         )
     }
 }
