@@ -178,10 +178,10 @@ class BlocksManager {
                     DataType.LONG -> BlockManager.createSwapBlock<Long>()
                 }
                 "Array" -> when (type) {
-                    DataType.INT -> BlockManager.createArrayBlock<Int>()
-                    DataType.FLOAT -> BlockManager.createArrayBlock<Float>()
-                    DataType.DOUBLE -> BlockManager.createArrayBlock<Double>()
-                    DataType.LONG -> BlockManager.createArrayBlock<Long>()
+                    DataType.INT -> BlockManager.createArrayBlock(elementType = Int::class)
+                    DataType.FLOAT -> BlockManager.createArrayBlock(elementType = Float::class)
+                    DataType.DOUBLE -> BlockManager.createArrayBlock(elementType = Double::class)
+                    DataType.LONG -> BlockManager.createArrayBlock(elementType = Long::class)
                 }
                 "Add" -> when (type) {
                     DataType.INT -> BlockManager.createAddBlock(type = Int::class)

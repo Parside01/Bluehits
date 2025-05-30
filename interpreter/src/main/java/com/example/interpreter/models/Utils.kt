@@ -27,6 +27,7 @@ object Utils {
             Id::class.java -> Id("null") as T
             List::class.java -> emptyList<Any>() as T
             Number::class.java -> 0 as T
+            emptyList<T>()::class.java -> emptyList<T>() as T
             else -> throw IllegalArgumentException("Unknown type $type for get default value")
         }
     }

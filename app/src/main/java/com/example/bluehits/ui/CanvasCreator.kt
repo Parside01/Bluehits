@@ -36,7 +36,8 @@ fun CreateCanvas(
     onDrag: (dragAmount: Offset) -> Unit,
     onBlockDrag: (block: BlueBlock, dragAmount: Offset, isDragging: Boolean) -> Unit,
     onBlockClick: (blockId: Id) -> Unit,
-    blocksManager: BlocksManager
+    blocksManager: BlocksManager,
+    showError: (String) -> Unit
 ) {
     var canvasOffset by remember { mutableStateOf(Offset.Zero) }
     var scale by remember { mutableStateOf(1f) }
@@ -127,7 +128,9 @@ fun CreateCanvas(
                 detectTapGestures { offset ->
                     val adjustedOffset = (offset - canvasOffset) / scale
                     UIPinManager.findPinAt(adjustedOffset)?.let { pin ->
-                        connectionManager.handlePinClick(pin) { }
+                        connectionManager.handlePinClick(pin) { message ->
+                            showError(message)
+                        }
                     } ?: run {
                         blocks.firstOrNull { block ->
                             adjustedOffset.x in block.x..(block.x + block.width) &&
