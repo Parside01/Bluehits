@@ -1,5 +1,6 @@
 package com.example.bluehits.ui
 
+import android.content.Context
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.example.interpreter.models.Connection
@@ -12,7 +13,7 @@ object UIConnectionManager {
     var tempPin = mutableStateOf<PinUi?>(null)
     val connections = mutableStateListOf<Pair<PinUi, PinUi>>()
 
-    fun handlePinClick(pin: PinUi, onError: (String) -> Unit = {}) {
+    fun handlePinClick(pin: PinUi,  context: Context, onError: (String) -> Unit = {}) {
         if (pin == tempPin.value) {
             tempPin.value = null
             return

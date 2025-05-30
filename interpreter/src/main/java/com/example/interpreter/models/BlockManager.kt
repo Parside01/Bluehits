@@ -111,7 +111,7 @@ object BlockManager {
     fun <T : Number> createSubBlock(type: KClass<T>): Block {
         return createBlock { id ->
             BinaryOperatorBlock(
-                id, "Add",
+                id, "Sub",
                 { a, b ->
                     when (type) {
                         Int::class -> (a as Int) - (b as Int)

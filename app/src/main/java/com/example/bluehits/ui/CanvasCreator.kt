@@ -1,5 +1,6 @@
 package com.example.bluehits.ui
 
+import android.content.Context
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -37,7 +38,8 @@ fun CreateCanvas(
     onBlockDrag: (block: BlueBlock, dragAmount: Offset, isDragging: Boolean) -> Unit,
     onBlockClick: (blockId: Id) -> Unit,
     blocksManager: BlocksManager,
-    showError: (String) -> Unit
+    showError: (String) -> Unit,
+    context: Context
 ) {
     var canvasOffset by remember { mutableStateOf(Offset.Zero) }
     var scale by remember { mutableStateOf(1f) }
@@ -128,7 +130,7 @@ fun CreateCanvas(
                 detectTapGestures { offset ->
                     val adjustedOffset = (offset - canvasOffset) / scale
                     UIPinManager.findPinAt(adjustedOffset)?.let { pin ->
-                        connectionManager.handlePinClick(pin) { message ->
+                        connectionManager.handlePinClick(pin, context=context) { message ->
                             showError(message)
                         }
                     } ?: run {

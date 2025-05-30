@@ -63,6 +63,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.core.content.ContextCompat.getString
 import com.example.bluehits.ui.console.ConsoleBuffer
 import com.example.bluehits.ui.console.ConsoleUI
 import com.example.bluehits.ui.console.ConsoleWriteAdapter
@@ -76,12 +77,13 @@ import java.io.PrintStream
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.min
+import com.example.bluehits.R
 
 @Composable
 fun MainScreen() {
     val context = LocalContext.current
     val textMeasurer = rememberTextMeasurer()
-    val blocksManager = remember { BlocksManager() }
+    val blocksManager = remember { BlocksManager(context) }
     val connectionManager = remember { UIConnectionManager }
     var isPanelVisible by remember { mutableStateOf(false) }
     var draggedBlock by remember { mutableStateOf<BlueBlock?>(null) }
@@ -104,13 +106,15 @@ fun MainScreen() {
     errorMessage?.let { message ->
         ErrorNotification(
             message = message,
-            onDismiss = { errorMessage = null }
+            onDismiss = { errorMessage = null },
+            context
         )
     }
     successMessage?.let { message ->
         SuccessNotification(
             message = message,
-            onDismiss = { successMessage = null }
+            onDismiss = { successMessage = null },
+            context
         )
     }
 
@@ -147,21 +151,21 @@ fun MainScreen() {
     if (blocksManager.showFunctionNameDialog.value) {
         FunctionNameDialog(
             title = when (blocksManager.currentFunctionDialogType) {
-                "Function def" -> "Define Function"
-                "Function call" -> "Call Function"
-                "Function return" -> "Return From Function"
-                "Int" -> "Enter Int name"
-                "Float" -> "Enter Float name"
-                "Bool" -> "Enter Bool name"
-                "String" -> "Enter String name"
-                else -> "Enter Function Name"
+                getString(context, R.string.function_def_block_label) -> getString(context, R.string.define_function)
+                getString(context, R.string.function_call_block_label) -> getString(context, R.string.call_function)
+                getString(context, R.string.function_return_block_label) -> getString(context, R.string.return_from_function)
+                getString(context, R.string.int_block_label) -> getString(context, R.string.enter_int_name)
+                getString(context, R.string.float_block_label) -> getString(context, R.string.enter_float_name)
+                getString(context, R.string.bool_block_label) -> getString(context, R.string.enter_bool_name)
+                getString(context, R.string.string_block_label) -> getString(context, R.string.enter_string_name)
+                else -> getString(context, R.string.enter_function_name)
             },
             label = when (blocksManager.currentFunctionDialogType) {
-                "Int" -> "Int name"
-                "Float" -> "Float name"
-                "Bool" -> "Bool name"
-                "String" -> "String name"
-                else -> "Function name"
+                getString(context, R.string.int_block_label) -> getString(context, R.string.int_name_label)
+                getString(context, R.string.float_block_label) -> getString(context, R.string.float_name_label)
+                getString(context, R.string.bool_block_label) -> getString(context, R.string.bool_name_label)
+                getString(context, R.string.string_block_label) -> getString(context, R.string.string_name_label)
+                else -> getString(context, R.string.function_name_label)
             },
             onNameEntered = { name ->
                 blocksManager.onFunctionNameEntered(name)
@@ -169,7 +173,8 @@ fun MainScreen() {
             onDismiss = {
                 blocksManager.dismissFunctionNameDialog()
             },
-            onError = { message -> errorMessage = message }
+            onError = { message -> errorMessage = message },
+            context=context
         )
     }
 
@@ -177,7 +182,8 @@ fun MainScreen() {
         FunctionSelectionDialog(
             functions = blocksManager.getAvailableFunctions(),
             onFunctionSelected = { blocksManager.onFunctionSelected(it) },
-            onDismiss = { blocksManager.dismissFunctionSelectionDialog() }
+            onDismiss = { blocksManager.dismissFunctionSelectionDialog() },
+            context=context
         )
     }
 
@@ -233,7 +239,7 @@ fun MainScreen() {
                         }
                     } else {
                         if (isBlockOverTrash) {
-                            if (block.title != "Main") {
+                            if (block.title != getString(context, R.string.main_block_title)) {
                                 draggedBlock?.let { blocksManager.removeBlock(it, connectionManager) }
                             }
                         }
@@ -248,7 +254,8 @@ fun MainScreen() {
                 },
                 connectionManager = connectionManager,
                 blocksManager = blocksManager,
-                showError = { message -> errorMessage = message }
+                showError = { message -> errorMessage = message },
+                context=context
             )
         }
 
@@ -262,7 +269,8 @@ fun MainScreen() {
                     width = Dimension.preferredWrapContent
                     height = Dimension.wrapContent
                 }
-                .zIndex(1f)
+                .zIndex(1f),
+            context = context
         )
 
         AnimatedVisibility(
@@ -288,7 +296,8 @@ fun MainScreen() {
                     .background(color = Color.White)
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState()),
-                onError = { message -> errorMessage = message }
+                onError = { message -> errorMessage = message },
+                context
             )
         }
 
@@ -312,7 +321,7 @@ fun MainScreen() {
         )
 
         StyledButton(
-            text = "Add",
+            text = getString(context, R.string.add_button_text),
             onClick = {
                 isPanelVisible = !isPanelVisible
                 isConsoleVisible.value = false
@@ -328,7 +337,7 @@ fun MainScreen() {
         )
 
         StyledButton(
-            text = "Console",
+            text = getString(context, R.string.console_button_text),
             onClick = {
                 isConsoleVisible.value = !isConsoleVisible.value
                 isPanelVisible = false
@@ -345,7 +354,7 @@ fun MainScreen() {
         )
 
         StyledButton(
-            text = "Debug",
+            text = getString(context, R.string.debug_button_text),
             onClick = {},
             modifier = Modifier
                 .constrainAs(debugButton) {
@@ -358,7 +367,7 @@ fun MainScreen() {
         )
 
         StyledButton(
-            text = if (isProgramRunning) "Running..." else "Run",
+            text = if (isProgramRunning) getString(context, R.string.running_text) else getString(context, R.string.run_button_text),
             onClick = {
                 if (!isProgramRunning) {
                     isProgramRunning = true
@@ -393,7 +402,7 @@ fun MainScreen() {
                 .zIndex(3f)
         )
         StyledButton(
-            text = "Trash",
+            text = getString(context, R.string.trash_button_text),
             onClick = {},
             style = ButtonStyles.baseButtonStyle().copy(
                 colors = ButtonDefaults.outlinedButtonColors(
@@ -423,7 +432,7 @@ fun MainScreen() {
         )
 
         StyledButton(
-            text = "Clear",
+            text = getString(context, R.string.clear_button_text),
             onClick = { blocksManager.clearAllBlocks() },
             style = ButtonStyles.baseButtonStyle().copy(
                 colors = ButtonDefaults.outlinedButtonColors(
@@ -447,31 +456,32 @@ fun MainScreen() {
 fun ControlPanel(
     blocksManager: BlocksManager,
     modifier: Modifier = Modifier,
-    onError: (String) -> Unit = {}
+    onError: (String) -> Unit = {},
+    context: Context
 ) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         val buttons = listOf(
-            "Int" to "Int",
-            "Float" to "Float",
-            "Bool" to "Bool",
-            "Add" to "Add",
-            "Sub" to "Sub",
-            "Greater" to "Greater",
-            "IfElse" to "IfElse",
-            "For" to "For",
-            "Array" to "Array",
-            "String" to "String",
-            "Math" to "Math",
-            "Index" to "Index",
-            "Append" to "Append",
-            "Swap" to "Swap",
-            "Print" to "Print",
-            "Function def" to "Function def",
-            "Function call" to "Function call",
-            "Function return" to "Function return"
+            getString(context, R.string.int_block_label) to getString(context, R.string.int_block_label),
+            getString(context, R.string.float_block_label) to getString(context, R.string.float_block_label),
+            getString(context, R.string.bool_block_label) to getString(context, R.string.bool_block_label),
+            getString(context, R.string.add_block_label) to getString(context, R.string.add_block_label),
+            getString(context, R.string.sub_block_label) to getString(context, R.string.sub_block_label),
+            getString(context, R.string.greater_block_label) to getString(context, R.string.greater_block_label),
+            getString(context, R.string.ifelse_block_label) to getString(context, R.string.ifelse_block_label),
+            getString(context, R.string.for_block_label) to getString(context, R.string.for_block_label),
+            getString(context, R.string.array_block_label) to getString(context, R.string.array_block_label),
+            getString(context, R.string.string_block_label) to getString(context, R.string.string_block_label),
+            getString(context, R.string.math_block_label) to getString(context, R.string.math_block_label),
+            getString(context, R.string.index_block_label) to getString(context, R.string.index_block_label),
+            getString(context, R.string.append_block_label) to getString(context, R.string.append_block_label),
+            getString(context, R.string.swap_block_label) to getString(context, R.string.swap_block_label),
+            getString(context, R.string.print_block_label) to getString(context, R.string.print_block_label),
+            getString(context, R.string.function_def_block_label) to getString(context, R.string.function_def_block_label),
+            getString(context, R.string.function_call_block_label) to getString(context, R.string.function_call_block_label),
+            getString(context, R.string.function_return_block_label) to getString(context, R.string.function_return_block_label)
         )
 
         buttons.forEach { (blockType, label) ->
@@ -482,7 +492,7 @@ fun ControlPanel(
                         blocksManager.addNewBlock(blockType)
                     } catch (e :Exception) {
                         println(e.stackTraceToString())
-                        onError(e.message?:"Error")
+                        onError(e.message?:getString(context, R.string.default_error))
                     }
                 },
                 style = ButtonStyles.controlPanelButtonStyle()
@@ -494,7 +504,8 @@ fun ControlPanel(
 @Composable
 fun SuccessNotification(
     message: String,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    context: Context
 ) {
     var visible by remember { mutableStateOf(true) }
 
@@ -543,7 +554,7 @@ fun SuccessNotification(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Close",
+                            contentDescription = getString(context, R.string.close_notification),
                             tint = Color.White,
                             modifier = Modifier
                                 .size(24.dp)
@@ -559,7 +570,8 @@ fun SuccessNotification(
 @Composable
 fun ErrorNotification(
     message: String,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    context: Context
 ) {
     var visible by remember { mutableStateOf(true) }
 
@@ -608,7 +620,7 @@ fun ErrorNotification(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Close",
+                            contentDescription = getString(context, R.string.close_notification),
                             tint = Color.White,
                             modifier = Modifier
                                 .size(24.dp)
@@ -630,12 +642,12 @@ fun runProgram(
     programScope: kotlinx.coroutines.CoroutineScope
 ) {
     if (blocksManager.uiBlocks.size <= 1) {
-        showError("Программа пуста: добавьте блоки и соединения")
+        showError(getString(context, R.string.error_empty_program))
         onProgramStopped()
         return
     }
-    if (blocksManager.uiBlocks.none { it.title == "Main" }) {
-        showError("Ошибка: блок Main не найден")
+    if (blocksManager.uiBlocks.none { it.title == getString(context, R.string.main_block_title) }) {
+        showError(getString(context, R.string.error_no_main))
         onProgramStopped()
         return
     }
@@ -644,7 +656,7 @@ fun runProgram(
             Program.run()
         } catch (e: Exception) {
             if (e !is CancellationException) {
-                showError("Ошибка при выполнении программы: ${e.message}")
+                showError("${getString(context, R.string.error_no_main)}: ${e.message}")
                 onProgramStopped()
             }
         } finally {

@@ -11,16 +11,6 @@ import com.example.interpreter.blocks.IntBlock
 import com.example.interpreter.models.Block
 
 object BlockAdapter {
-    private val colorMapping = mapOf(
-        "Int" to Color(0xFF4CAF50),
-        "Bool" to Color(0xFF9C27B0),
-        "Add" to Color(0xFF2196F3),
-        "Print" to Color(0xFF488185),
-        "Sub" to Color(0xFF404747),
-        "IfElse" to Color(0xFFe3b202),
-        "For" to Color (0xFFc93c20)
-    )
-
     fun wrapLogicBlock(logicBlock: Block, centerX: Float = 0f, centerY: Float = 0f): BlueBlock {
         val title = when (logicBlock) {
             is FunctionDefinitionBlock -> "def ${logicBlock.getFunctionName()}"

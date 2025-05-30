@@ -1,5 +1,6 @@
 package com.example.bluehits.ui.editPanel
 
+import android.content.Context
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
@@ -38,6 +39,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
+import androidx.core.content.ContextCompat.getString
 import com.example.bluehits.ui.BlueBlock
 import com.example.bluehits.ui.BlocksManager
 import com.example.bluehits.ui.DataType
@@ -47,6 +49,7 @@ import com.example.interpreter.models.FunctionManager
 import com.example.interpreter.models.Id
 import com.example.interpreter.models.Pin
 import com.example.interpreter.models.PinManager
+import com.example.bluehits.R
 
 @Immutable
 data class PinEditField(
@@ -68,7 +71,8 @@ data class BlockEditState(
 @Composable
 fun BlockEditPanel(
     modifier: Modifier = Modifier,
-    blocksManager: BlocksManager
+    blocksManager: BlocksManager,
+    context: Context
 ) {
     val state = BlockEditManager.editState ?: return
     val transition = updateTransition(targetState = state.isVisible, label = "editPanelTransition")
@@ -109,7 +113,7 @@ fun BlockEditPanel(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Text(
-                        text = "Change pins",
+                        text = getString(context, R.string.change_pins),
                         style = MaterialTheme.typography.titleMedium,
                         color = Color.White
                     )
@@ -124,7 +128,7 @@ fun BlockEditPanel(
                                 contentColor = Color.Black
                             )
                         ) {
-                            Text("+ Add new pin", color = Color.White)
+                            Text(getString(context, R.string.add_new_pin), color = Color.White)
                         }
                     }
 
@@ -134,7 +138,8 @@ fun BlockEditPanel(
                                 fieldPin = field,
                                 onValueChange = { newValue ->
                                     BlockEditManager.updatePinValue(field.pin, newValue)
-                                }
+                                },
+                                context = context
                             )
                         }
                     }
@@ -153,7 +158,8 @@ fun BlockEditPanel(
                 onArrayTypeSelected = {
                     showTypeDialog = false
                     showArrayTypeDialog = true
-                }
+                },
+                context=context
             )
         }
 
@@ -167,7 +173,8 @@ fun BlockEditPanel(
                 onDismiss = {
                     showArrayTypeDialog = false
                     showTypeDialog = true
-                }
+                },
+                context=context
             )
         }
 
@@ -179,17 +186,17 @@ fun BlockEditPanel(
                         selectedType.startsWith("Array<") -> {
                             val elementType = selectedType.removePrefix("Array<").removeSuffix(">")
                             when (elementType) {
-                                "Int" -> PinManager.createPinArray(pinName, ownId = state.blockId, elementType = Int::class)
-                                "Float" -> PinManager.createPinArray(pinName, ownId = state.blockId, elementType = Float::class)
-                                "Double" -> PinManager.createPinArray(pinName, ownId = state.blockId, elementType = Double::class)
-                                "Long" -> PinManager.createPinArray(pinName, ownId = state.blockId, elementType = Long::class)
+                                getString(context, R.string.int_block_label) -> PinManager.createPinArray(pinName, ownId = state.blockId, elementType = Int::class)
+                                getString(context, R.string.float_block_label) -> PinManager.createPinArray(pinName, ownId = state.blockId, elementType = Float::class)
+                                getString(context, R.string.double_block_label) -> PinManager.createPinArray(pinName, ownId = state.blockId, elementType = Double::class)
+                                getString(context, R.string.long_block_label) -> PinManager.createPinArray(pinName, ownId = state.blockId, elementType = Long::class)
                                 else -> PinManager.createPinArray(pinName, ownId = state.blockId, elementType = Any::class)
                             }
                         }
-                        selectedType == "Int" -> PinManager.createPinInt(pinName, ownId = state.blockId)
-                        selectedType == "Float" -> PinManager.createPinFloat(pinName, ownId = state.blockId)
-                        selectedType == "String" -> PinManager.createPinString(pinName, ownId = state.blockId)
-                        selectedType == "Boolean" -> PinManager.createPinBool(pinName, ownId = state.blockId)
+                        selectedType == getString(context, R.string.int_block_label) -> PinManager.createPinInt(pinName, ownId = state.blockId)
+                        selectedType == getString(context, R.string.float_block_label) -> PinManager.createPinFloat(pinName, ownId = state.blockId)
+                        selectedType == getString(context, R.string.string_block_label) -> PinManager.createPinString(pinName, ownId = state.blockId)
+                        selectedType == getString(context, R.string.bool_block_label) -> PinManager.createPinBool(pinName, ownId = state.blockId)
                         else -> PinManager.createPinAny(pinName, ownId = state.blockId)
                     }
 
@@ -218,7 +225,8 @@ fun BlockEditPanel(
                     BlockEditManager.showEditPanel(newBlock)
                     showNameDialog = false
                     showTypeDialog = false
-                }
+                },
+                context=context
             )
         }
     }
@@ -228,7 +236,8 @@ fun BlockEditPanel(
 fun EditPinTypeDialog(
     onDismiss: () -> Unit,
     onConfirm: (String) -> Unit,
-    onArrayTypeSelected: () -> Unit
+    onArrayTypeSelected: () -> Unit,
+    context: Context
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Column(
@@ -238,15 +247,15 @@ fun EditPinTypeDialog(
                 .verticalScroll(rememberScrollState())
         ) {
             Text(
-                text = "Choose pin type",
+                text = getString(context, R.string.choose_pin_type),
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.White,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-            listOf("Int", "Float", "String", "Boolean", "Array", "Any").forEach { type ->
+            listOf(getString(context, R.string.int_block_label), getString(context, R.string.float_block_label), getString(context, R.string.string_block_label), "Boolean", getString(context, R.string.array_block_label), "Any").forEach { type ->
                 Button(
-                    onClick = { if (type == "Array") {
+                    onClick = { if (type == getString(context, R.string.array_block_label)) {
                         onArrayTypeSelected()
                     } else {
                         onConfirm(type)
@@ -270,9 +279,10 @@ fun EditPinTypeDialog(
 @Composable
 fun EditPinNameDialog(
     onDismiss: () -> Unit,
-    onConfirm: (String) -> Unit
+    onConfirm: (String) -> Unit,
+    context: Context
 ) {
-    var pinName by remember { mutableStateOf("NewPin") }
+    var pinName by remember { mutableStateOf(getString(context, R.string.new_pin_default_name)) }
 
     Dialog(onDismissRequest = onDismiss) {
         Column(
@@ -307,7 +317,7 @@ fun EditPinNameDialog(
                     .fillMaxWidth()
                     .padding(top = 16.dp)
             ) {
-                Text("Create")
+                Text(getString(context, R.string.create_button_text))
             }
         }
     }
@@ -316,7 +326,8 @@ fun EditPinNameDialog(
 @Composable
 fun ArrayElementTypeDialog(
     onTypeSelected: (DataType) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    context: Context
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Column(
@@ -326,7 +337,7 @@ fun ArrayElementTypeDialog(
                 .verticalScroll(rememberScrollState())
         ) {
             Text(
-                text = "Select array element type",
+                text = getString(context, R.string.select_array_elem_type),
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.White,
                 modifier = Modifier.padding(bottom = 16.dp)
