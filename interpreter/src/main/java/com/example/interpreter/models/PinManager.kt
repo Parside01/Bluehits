@@ -13,7 +13,7 @@ object PinManager {
 
     fun getPin(id: Id) = pinRegistry[id.string()]
 
-    private fun <T : Pin> createPinInternal(createPinFunc: (Id) -> T): T {
+    fun <T : Pin> createPinInternal(createPinFunc: (Id) -> T): T {
         val id = generateId()
         val pin = createPinFunc(id)
         pinRegistry[id.string()] = pin
@@ -28,10 +28,11 @@ object PinManager {
         name: String,
         type: KClass<T>,
         value: T = Utils.getDefaultValue(type.java),
-        ownId: Id = Utils.getDefaultValue(Id::class.java)
+        ownId: Id = Utils.getDefaultValue(Id::class.java),
+        elementType: KClass<*>? = null
     ): TPin<T> {
         return createPinInternal { id ->
-            TPin(id, ownId, name, Utils.getDefaultValue(type.java), value)
+            TPin(id, ownId, name, Utils.getDefaultValue(type.java), value, elementType = elementType)
         }
     }
 
@@ -47,8 +48,13 @@ object PinManager {
         return createPinInternal { id -> TPin(id, ownId, name, Any(), value) }
     }
 
-    fun <T> createPinArray(name: String, value: List<T> = emptyList(), ownId: Id = Utils.getDefaultValue(Id::class.java)): TPin<List<T>> {
-        return createPinInternal { id -> TPin(id, ownId, name, emptyList(), value) }
+    fun <T : Any> createPinArray(
+        name: String,
+        value: List<T> = emptyList(),
+        ownId: Id = Utils.getDefaultValue(Id::class.java),
+        elementType: KClass<T>
+    ): TPin<List<T>> {
+        return createPinInternal { id -> TPin(id, ownId, name, emptyList(), value, elementType = elementType) }
     }
 
     fun createPinBool(name: String, value: Boolean = false, ownId: Id = Utils.getDefaultValue(Id::class.java)): TPin<Boolean> {
@@ -69,18 +75,20 @@ object PinManager {
         val originalOwnId = pinToCopy.ownId
         val originalValue = pinToCopy.getValue()
         val originalKClass = pinToCopy.getType()
+        val originalElementType = pinToCopy.getElementType()
 
         @Suppress("UNCHECKED_CAST")
         fun <S : Any> createTypedCopy(
             name: String,
             kClass: KClass<S>,
             value: Any?,
-            ownId: Id
+            ownId: Id,
+            elementType: KClass<*>
         ): TPin<S> {
             return if (value != null) {
-                createPin(name = name, type = kClass, value = value as S, ownId = ownId)
+                createPin(name = name, type = kClass, value = value as S, ownId = ownId, elementType=elementType)
             } else {
-                createPin(name = name, type = kClass, ownId = ownId)
+                createPin(name = name, type = kClass, ownId = ownId, elementType = elementType)
             }
         }
 
@@ -88,7 +96,8 @@ object PinManager {
             name = originalName,
             kClass = originalKClass as KClass<out Any>,
             value = originalValue,
-            ownId = ownId
+            ownId = ownId,
+            elementType = originalElementType
         )
     }
 }

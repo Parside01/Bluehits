@@ -12,8 +12,8 @@ class AppendBlock <T: Any>(
 ) : Block(
     id,
     "Append",
-    mutableListOf(PinManager.createPinArray<T>("arr", ownId = id), PinManager.createPinAny("value", ownId = id)),
-    mutableListOf(PinManager.createPinArray<T>("new", ownId = id)),
+    mutableListOf(PinManager.createPinArray("arr", ownId = id, elementType = type), PinManager.createPinAny("value", ownId = id)),
+    mutableListOf(PinManager.createPinArray("new", ownId = id, elementType = type)),
 ) {
     override fun execute(): ExecutionState {
         val array = inputs.first().getValue() as List<*>
