@@ -168,7 +168,8 @@ fun MainScreen() {
             },
             onDismiss = {
                 blocksManager.dismissFunctionNameDialog()
-            }
+            },
+            onError = { message -> errorMessage = message }
         )
     }
 
@@ -312,8 +313,10 @@ fun MainScreen() {
 
         StyledButton(
             text = "Add",
-            onClick = {isPanelVisible = !isPanelVisible
-                isConsoleVisible.value = false},
+            onClick = {
+                isPanelVisible = !isPanelVisible
+                isConsoleVisible.value = false
+            },
             modifier = Modifier
                 .constrainAs(addButton) {
                     end.linkTo(parent.end, margin = baseDimension * 0.05f)
@@ -326,8 +329,10 @@ fun MainScreen() {
 
         StyledButton(
             text = "Console",
-            onClick = { isConsoleVisible.value = !isConsoleVisible.value
-                isPanelVisible = false },
+            onClick = {
+                isConsoleVisible.value = !isConsoleVisible.value
+                isPanelVisible = false
+            },
             modifier = Modifier
                 .constrainAs(consoleButton) {
                     end.linkTo(addButton.start, margin = baseDimension * 0.02f)
@@ -473,10 +478,11 @@ fun ControlPanel(
             StyledButton(
                 text = label,
                 {
-                    when (blockType) {
-                        "Function def", "Function call", "Function return" ->
-                            blocksManager.addNewBlock(blockType)
-                        else -> blocksManager.addNewBlock(blockType)
+                    try {
+                        blocksManager.addNewBlock(blockType)
+                    } catch (e :Exception) {
+                        println(e.stackTraceToString())
+                        onError(e.message?:"Error")
                     }
                 },
                 style = ButtonStyles.controlPanelButtonStyle()
@@ -484,6 +490,7 @@ fun ControlPanel(
         }
     }
 }
+
 @Composable
 fun SuccessNotification(
     message: String,
@@ -548,6 +555,7 @@ fun SuccessNotification(
         }
     }
 }
+
 @Composable
 fun ErrorNotification(
     message: String,

@@ -86,12 +86,12 @@ class BlocksManager {
 
             "Function def" -> showFunctionNameDialog("Function def")
             "Function call" -> {
-                currentFunctionSelectionType = "call"
+                currentFunctionSelectionType = "Call"
                 _showFunctionSelectionDialog.value = true
             }
 
             "Function return" -> {
-                currentFunctionSelectionType = "return"
+                currentFunctionSelectionType = "Return"
                 _showFunctionSelectionDialog.value = true
             }
 
@@ -352,10 +352,10 @@ fun FunctionNameDialog(
     title: String,
     label: String = "Function name",
     onNameEntered: (String) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onError: (String) -> Unit = {}
 ) {
     var functionName by remember { mutableStateOf("") }
-
     Dialog(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier
@@ -380,8 +380,12 @@ fun FunctionNameDialog(
                 ),
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        if (functionName.isNotBlank()) {
-                            onNameEntered(functionName)
+                        try {
+                            if (functionName.isNotBlank()) {
+                                onNameEntered(functionName)
+                            }
+                        } catch (e: Exception) {
+                            onError(e.message?:"Error")
                         }
                     }
                 ),
@@ -397,8 +401,12 @@ fun FunctionNameDialog(
 
             Button(
                 onClick = {
-                    if (functionName.isNotBlank()) {
-                        onNameEntered(functionName)
+                    try {
+                        if (functionName.isNotBlank()) {
+                            onNameEntered(functionName)
+                        }
+                    } catch (e: Exception) {
+                        onError(e.message?:"Error")
                     }
                 },
                 shape = RoundedCornerShape(6.dp),
