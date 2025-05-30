@@ -55,7 +55,6 @@ class BlocksManager {
         if (index != -1) {
             _uiBlocks[index].inputPins = newBlock.inputPins
             _uiBlocks[index].outputPins = newBlock.outputPins
-            println("update")
             _blockUpdated.value = !_blockUpdated.value
         }
     }
