@@ -14,8 +14,8 @@ class LineCreator {
         val endPoint =
             Offset(pin2.parentBlock.x + pin2.ownOffset.x, pin2.parentBlock.y + pin2.ownOffset.y)
 
-        val controlPoint1 = lerp(startPoint, endPoint, 0.7f) - Offset(100f, 0f)
-        val controlPoint2 = lerp(startPoint, endPoint, 0.3f) + Offset(100f, 0f)
+        val controlPoint1 = lerp(startPoint, endPoint, 0.3f) - Offset(100f, 0f)
+        val controlPoint2 = lerp(startPoint, endPoint, 0.7f) + Offset(100f, 0f)
 
         val path = Path().apply {
             moveTo(startPoint.x, startPoint.y)
@@ -25,6 +25,6 @@ class LineCreator {
                 endPoint.x, endPoint.y
             )
         }
-        drawPath(path, color = Color.White, style = Stroke(width = 3f))
+        drawPath(path, color = Color.White, style = Stroke(width = 5f))
     }
 }
