@@ -85,6 +85,7 @@ import java.io.PrintStream
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.min
+import com.example.bluehits.ui.theme.*
 
 @Composable
 fun MainScreen() {
@@ -196,7 +197,7 @@ fun MainScreen() {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(MainScreenConstraintLayoutBackground)
             .systemBarsPadding()
             .pointerInput(isConsoleVisible.value || isPanelVisible) {
                 detectTapGestures { tapOffset ->
@@ -281,7 +282,7 @@ fun MainScreen() {
                     width = Dimension.value(56.dp)
                 }
                 .zIndex(3f)
-                .background(Color(0xFF292525))
+                .background(RightPanelColor)
                 .padding(vertical = 8.dp)
                 .fillMaxHeight(),
             verticalArrangement = Arrangement.SpaceBetween
@@ -305,7 +306,7 @@ fun MainScreen() {
                     Icon(
                         imageVector = Icons.Default.PlayArrow,
                         contentDescription = "Run",
-                        tint = Color.Green,
+                        tint = RunIconColor,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -322,7 +323,7 @@ fun MainScreen() {
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = "Add",
-                        tint = Color.White,
+                        tint = AddButtonColor,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -339,7 +340,7 @@ fun MainScreen() {
                     Icon(
                         imageVector = Icons.Filled.Terminal,
                         contentDescription = "Console",
-                        tint = Color.White,
+                        tint = ConsoleButtonColor,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -359,7 +360,7 @@ fun MainScreen() {
                     Icon(
                         imageVector = Icons.Filled.Delete,
                         contentDescription = "Trash",
-                        tint = if (isDeleteMode) Color.Red else Color.White,
+                        tint = if (isDeleteMode) RedClassic else WhiteClassic,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -373,7 +374,7 @@ fun MainScreen() {
                     Icon(
                         imageVector = Icons.Default.Recycling,
                         contentDescription = "Clear",
-                        tint = Color.Red,
+                        tint = ClearButtonColor,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -413,7 +414,7 @@ fun MainScreen() {
                 blocksManager = blocksManager,
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(color = Color.White)
+                    .background(color = ControlPanelBackground)
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState()),
                 onError = { message -> errorMessage = message }
@@ -513,7 +514,7 @@ fun SuccessNotification(
                 modifier = Modifier
                     .clip(RoundedCornerShape(16.dp))
                     .shadow(8.dp, RoundedCornerShape(16.dp))
-                    .background(Color(0xFF6C6C6C))
+                    .background(SuccessNotificationBackground)
                     .padding(24.dp)
                     .wrapContentSize()
             ) {
@@ -524,7 +525,7 @@ fun SuccessNotification(
                     Text(
                         text = message,
                         style = TextStyle(
-                            color = Color.White,
+                            color = WhiteClassic,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Medium,
                             textAlign = TextAlign.Center
@@ -536,13 +537,13 @@ fun SuccessNotification(
                             .align(Alignment.End)
                             .size(32.dp)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(Color.White.copy(alpha = 0.2f))
+                            .background(SuccessNotificationBoxBackground)
                             .clickable { onDismiss() }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = Color.White,
+                            tint = SuccessNotificationIconColor,
                             modifier = Modifier
                                 .size(24.dp)
                                 .align(Alignment.Center)
@@ -578,7 +579,7 @@ fun ErrorNotification(
                 modifier = Modifier
                     .clip(RoundedCornerShape(16.dp))
                     .shadow(8.dp, RoundedCornerShape(16.dp))
-                    .background(Color(0xFFC04D4D))
+                    .background(ErrorNotificationBackground)
                     .padding(24.dp)
                     .wrapContentSize()
             ) {
@@ -589,7 +590,7 @@ fun ErrorNotification(
                     Text(
                         text = message,
                         style = TextStyle(
-                            color = Color.White,
+                            color = ErrorNotificationTextColor,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Medium,
                             textAlign = TextAlign.Center
@@ -601,13 +602,13 @@ fun ErrorNotification(
                             .align(Alignment.End)
                             .size(32.dp)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(Color.White.copy(alpha = 0.2f))
+                            .background(ErrorNotificationBoxBackground)
                             .clickable { onDismiss() }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = Color.White,
+                            tint = ErrorNotificationIconColor,
                             modifier = Modifier
                                 .size(24.dp)
                                 .align(Alignment.Center)

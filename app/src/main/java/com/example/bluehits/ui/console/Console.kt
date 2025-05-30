@@ -21,6 +21,8 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.bluehits.ui.theme.ConsoleBackgroundColor
+import com.example.bluehits.ui.theme.WhiteClassic
 import java.io.Writer
 
 class ConsoleBuffer {
@@ -82,8 +84,8 @@ fun ConsoleUI(
         }
     }
     val cornerRadius = 8.dp
-    val backgroundColor = Color.Gray
-    val textColor = Color.White
+    val backgroundColor = ConsoleBackgroundColor
+    val textColor = WhiteClassic
     val shadowElevation = 4.dp
     val padding = 16.dp
     Surface(

@@ -31,6 +31,7 @@ import com.example.interpreter.models.Id
 import com.example.interpreter.models.PinManager
 import com.example.interpreter.models.Program
 import com.example.interpreter.models.ScopeBlock
+import com.example.bluehits.ui.theme.*
 
 class BlocksManager {
     private val _uiBlocks = mutableStateListOf<BlueBlock>()
@@ -272,7 +273,7 @@ class BlocksManager {
             id = mainLogicBlock.id,
             initialX = 1f,
             initialY = 1f,
-            color = Color.Gray,
+            color = BlockColor,
             title = mainLogicBlock.name,
             inputPins = mainLogicBlock.inputs,
             outputPins = mainLogicBlock.outputs.subList(0, mainLogicBlock.outputs.size - 1),
@@ -351,13 +352,13 @@ fun TypeSelectionDialog(
     Dialog(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier
-                .background(Color.DarkGray, RoundedCornerShape(12.dp))
+                .background(DarkBackground, RoundedCornerShape(12.dp))
                 .padding(16.dp)
         ) {
             Text(
                 text = "Select data type",
                 style = MaterialTheme.typography.titleMedium,
-                color = Color.White,
+                color = WhiteClassic,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
@@ -369,8 +370,8 @@ fun TypeSelectionDialog(
                         .fillMaxWidth()
                         .padding(vertical = 4.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.LightGray,
-                        contentColor = Color.Black
+                        containerColor = TypeDialogButtonContainerColor,
+                        contentColor = TypeDialogButtonContentColor
                     )
                 ) {
                     Text(text = type.title)
@@ -392,12 +393,12 @@ fun FunctionNameDialog(
     Dialog(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier
-                .background(Color.DarkGray, RoundedCornerShape(12.dp))
+                .background(DarkBackground, RoundedCornerShape(12.dp))
                 .padding(16.dp)
         ) {
             Text(
                 text = title,
-                color = Color.White,
+                color = WhiteClassic,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
@@ -405,9 +406,9 @@ fun FunctionNameDialog(
             OutlinedTextField(
                 value = functionName,
                 onValueChange = { functionName = it },
-                label = { Text(label, color = Color.White) },
+                label = { Text(label, color = WhiteClassic) },
                 modifier = Modifier.fillMaxWidth(),
-                textStyle = LocalTextStyle.current.copy(color = Color.White),
+                textStyle = LocalTextStyle.current.copy(color = WhiteClassic),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done
                 ),
@@ -424,11 +425,11 @@ fun FunctionNameDialog(
                 ),
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    cursorColor = Color.White,
-                    focusedBorderColor = Color.LightGray,
-                    unfocusedBorderColor = Color.Gray
+                    focusedTextColor = WhiteClassic,
+                    unfocusedTextColor = WhiteClassic,
+                    cursorColor = WhiteClassic,
+                    focusedBorderColor = LightGrayClassic,
+                    unfocusedBorderColor = GrayClassic
                 )
             )
 
@@ -443,7 +444,7 @@ fun FunctionNameDialog(
                     }
                 },
                 shape = RoundedCornerShape(6.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.DarkGray),
+                colors = ButtonDefaults.buttonColors(containerColor = WhiteClassic, contentColor = ContentColorFuntionName),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp)
@@ -463,14 +464,14 @@ fun FunctionSelectionDialog(
     Dialog(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier
-                .background(Color.DarkGray, RoundedCornerShape(12.dp))
+                .background(DarkBackground, RoundedCornerShape(12.dp))
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
             Text(
                 text = "Select function",
                 style = MaterialTheme.typography.titleMedium,
-                color = Color.White,
+                color = WhiteClassic,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
@@ -482,8 +483,8 @@ fun FunctionSelectionDialog(
                         .fillMaxWidth()
                         .padding(vertical = 4.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.LightGray,
-                        contentColor = Color.Black
+                        containerColor = FunctionSelectionContainer,
+                        contentColor = FunctionSelectionContent
                     )
                 ) {
                     Text(text = function)

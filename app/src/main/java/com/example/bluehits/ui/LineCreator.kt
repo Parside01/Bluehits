@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx. compose. ui. graphics. Path
+import com.example.bluehits.ui.theme.BezierLineColor
 
 class LineCreator {
     fun DrawScope.drawBezierCurve(pin1: PinUi, pin2 : PinUi) {
@@ -25,6 +26,6 @@ class LineCreator {
                 endPoint.x, endPoint.y
             )
         }
-        drawPath(path, color = Color.White, style = Stroke(width = 5f))
+        drawPath(path, color = BezierLineColor, style = Stroke(width = 5f))
     }
 }
