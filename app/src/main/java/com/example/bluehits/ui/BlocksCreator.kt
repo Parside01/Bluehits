@@ -60,14 +60,6 @@ class BlocksManager {
         }
     }
 
-    private var screenWidthPx by mutableStateOf(0f)
-    private var screenHeightPx by mutableStateOf(0f)
-
-    fun updateScreenSize(width: Float, height: Float) {
-        screenWidthPx = width
-        screenHeightPx = height
-    }
-
     public fun getPrintBlockValue(uiBlocks: List<BlueBlock>): Any? {
         uiBlocks.forEach { block ->
             if (block.title == "Print") {
