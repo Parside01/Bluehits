@@ -180,7 +180,8 @@ fun MainScreen() {
             },
             onDismiss = {
                 blocksManager.dismissFunctionNameDialog()
-            }
+            },
+            onError = { message -> errorMessage = message }
         )
     }
 
@@ -475,10 +476,11 @@ fun ControlPanel(
             StyledButton(
                 text = label,
                 {
-                    when (blockType) {
-                        "Function def", "Function call", "Function return" ->
-                            blocksManager.addNewBlock(blockType)
-                        else -> blocksManager.addNewBlock(blockType)
+                    try {
+                        blocksManager.addNewBlock(blockType)
+                    } catch (e :Exception) {
+                        println(e.stackTraceToString())
+                        onError(e.message?:"Error")
                     }
                 },
                 style = ButtonStyles.controlPanelButtonStyle()
@@ -486,6 +488,7 @@ fun ControlPanel(
         }
     }
 }
+
 @Composable
 fun SuccessNotification(
     message: String,
@@ -550,6 +553,7 @@ fun SuccessNotification(
         }
     }
 }
+
 @Composable
 fun ErrorNotification(
     message: String,
