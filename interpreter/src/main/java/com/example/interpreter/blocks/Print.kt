@@ -16,6 +16,7 @@ class PrintBlock internal constructor(
     mutableListOf()
 ) {
     override fun execute(): ExecutionState {
+
         inputs.forEach { input ->
             writer.write("${input.getStringValue()}\n")
             writer.flush()

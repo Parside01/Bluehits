@@ -5,14 +5,29 @@ import kotlin.collections.forEach
 
 object Program {
     private var mainBlock: MainBlock = BlockManager.createMainBlock()
+    @Volatile var isRunning: Boolean = false
+        private set
+    @Volatile var shouldStop: Boolean = false
 
     fun getMainBlock(): Block {
         return mainBlock
     }
 
-    fun run() {
+    fun stop() {
+        shouldStop = true
+        ContextManager.getAllContexts().forEach { context -> context.rollback() }
+    }
+
+    suspend fun run() {
+        isRunning = true
+        shouldStop = false
         prebuild()
-        ContextManager.getContext(mainBlock.id)!!.execute()
+        try {
+            ContextManager.getContext(mainBlock.id)?.execute()
+        } finally {
+            isRunning = false
+            shouldStop = false
+        }
     }
 
     fun prebuild() {
