@@ -1,6 +1,8 @@
 package com.example.interpreter.models
 
 import kotlin.reflect.KClass
+import kotlin.reflect.KType
+import kotlin.reflect.typeOf
 
 
 // TODO: Может надо на жавовский KClass переписать.
@@ -38,7 +40,8 @@ class TPin<T>(
     val ownId: Id,
     val name: String,
     private val zeroValue: T,
-    initValue: T? = null
+    initValue: T? = null,
+    private val elementType: KClass<*>? = null
 ) {
     private var value: T? = initValue
     private var type: KClass<*> = zeroValue!!::class
@@ -70,7 +73,17 @@ class TPin<T>(
 
     // Молимся чтобы ничего не крашнулось.
     fun getType(): KClass<*> {
+        if (elementType != null) {
+            val type = emptyList<T>()::class
+            return type
+        }
         return type
+    }
+
+    // Чисто для контейнеров
+    fun getElementType(): KClass<*> {
+        if (elementType == null) return Any::class
+        return elementType
     }
 
     fun isPinSet() = isSet

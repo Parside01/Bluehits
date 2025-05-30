@@ -12,7 +12,7 @@ class IndexBlock<T: Any> (
     type: KClass<T>,
 ) : Block(id,
     "Index",
-    mutableListOf(PinManager.createPinArray<T>("arr", ownId = id), PinManager.createPinInt("index", ownId = id, value = 0)),
+    mutableListOf(PinManager.createPinArray("arr", ownId = id, elementType = type), PinManager.createPinInt("index", ownId = id, value = 0)),
     mutableListOf(PinManager.createPin("value", ownId = id, type = type))
 ) {
     override fun execute(): ExecutionState {
@@ -40,10 +40,10 @@ class SwapBlock<T:Any> (
 ) : Block(id,
     "Swap",
     mutableListOf(
-        PinManager.createPinArray<T>("arr", ownId = id),
+        PinManager.createPinArray<T>("arr", ownId = id, elementType = type),
         PinManager.createPinInt("i", ownId = id, value = 0),
         PinManager.createPinInt("i", ownId = id, value = 0)),
-    mutableListOf(PinManager.createPinArray<T>("new", ownId = id))
+    mutableListOf(PinManager.createPinArray<T>("new", ownId = id, elementType = type))
 ) {
     override fun execute(): ExecutionState {
         val array = inputs.first().getValue() as List<*>
