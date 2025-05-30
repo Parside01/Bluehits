@@ -77,7 +77,7 @@ class Context internal constructor(
 
     private fun findContextBlocks(currBlock: Id) {
         if (!ContextManager.attachBlockToContext(currBlock, this)) {
-            throw RuntimeException("Only one context can contain each block. Block ${currBlock.string()}")
+            throw BlockException("Only one context can contain each block.", currBlock)
         }
         if (blockIds.contains(currBlock)) {
             return

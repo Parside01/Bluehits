@@ -19,6 +19,10 @@ abstract class Block internal constructor(
         return "Block(id=$id, name=$name, inputs=$inputs, outputs=$outputs)"
     }
 
+    fun onException(message: String) {
+        throw BlockException(message, id)
+    }
+
     open fun rollback() {}
 }
 
@@ -29,6 +33,11 @@ abstract class ScopeBlock internal constructor(
     outputs: MutableList<Pin> = mutableListOf()
 ) : Block(id, name, inputs, outputs) {}
 
+class BlockException(
+    message: String,
+    val id: Id,
+    cause: Throwable? = null
+) : RuntimeException(message, cause)
 
 enum class ExecutionState {
     RUNNING, // Означает, что нужно запустить блок еще раз.
