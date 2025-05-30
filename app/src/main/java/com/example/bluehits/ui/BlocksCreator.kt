@@ -161,9 +161,9 @@ class BlocksManager(private val context: Context) {
         _showFunctionSelectionDialog.value = false
         currentFunctionSelectionType?.let { type ->
             val logicBlock = when (type) {
-                "call" -> BlockManager.createFunctionCalledBlock(functionName)
-                "return" -> BlockManager.createFunctionReturnBlock(functionName)
-                else -> throw IllegalArgumentException("Unknown function selection type")
+                getString(context, R.string.function_call_name_prefix) -> BlockManager.createFunctionCalledBlock(functionName)
+                getString(context, R.string.function_return_name_prefix) -> BlockManager.createFunctionReturnBlock(functionName)
+                else -> throw IllegalArgumentException("Unknown function selection type: ${type}")
             }
 
             val centerX = screenWidthPx

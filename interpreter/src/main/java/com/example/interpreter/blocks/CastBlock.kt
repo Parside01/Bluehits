@@ -5,11 +5,12 @@ import com.example.interpreter.models.ExecutionState
 import com.example.interpreter.models.Id
 import com.example.interpreter.models.PinManager
 import kotlin.reflect.KClass
+import kotlin.reflect.cast
 
-class CastBlock <F: Any, T: Any>(
+class CastBlock<F : Any, T : Any>(
     id: Id,
-    fromType: KClass<F>,
-    toType: KClass<T>,
+    val fromType: KClass<F>,
+    val toType: KClass<T>,
 ) : Block(
     id,
     "Cast",
@@ -17,8 +18,12 @@ class CastBlock <F: Any, T: Any>(
     mutableListOf(PinManager.createPin("to", ownId = id, type = toType)),
 ) {
     override fun execute(): ExecutionState {
-        val value = inputs.first().getValue() as F
-        outputs[0].setValue(value as T)
+        val rawValue: Any? = inputs.first().getValue()
+
+        val valueAsF: F = fromType.cast(rawValue)
+        val valueAsT: T = toType.cast(valueAsF)
+
+        outputs[0].setValue(valueAsT)
         return ExecutionState.COMPLETED
     }
 }
