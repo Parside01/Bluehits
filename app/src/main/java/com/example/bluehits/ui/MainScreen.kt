@@ -158,6 +158,7 @@ fun MainScreen() {
             }
         )
     }
+    CastTypeDialogs(blocksManager)
 
     if (blocksManager.showFunctionNameDialog.value) {
         FunctionNameDialog(
@@ -478,7 +479,8 @@ fun ControlPanel(
             getString(context, R.string.print_block_label) to getString(context, R.string.print_block_label),
             getString(context, R.string.function_def_block_label) to getString(context, R.string.function_def_block_label),
             getString(context, R.string.function_call_block_label) to getString(context, R.string.function_call_block_label),
-            getString(context, R.string.function_return_block_label) to getString(context, R.string.function_return_block_label)
+            getString(context, R.string.function_return_block_label) to getString(context, R.string.function_return_block_label),
+            "Cast" to "Cast"
         )
 
         buttons.forEach { (blockType, label) ->

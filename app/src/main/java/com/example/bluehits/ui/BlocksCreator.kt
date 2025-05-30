@@ -35,6 +35,7 @@ import com.example.interpreter.models.Program
 import com.example.interpreter.models.ScopeBlock
 import com.example.bluehits.R
 import com.example.bluehits.ui.theme.*
+import kotlin.reflect.KClass
 
 class BlocksManager(private val context: Context) {
     private val _uiBlocks = mutableStateListOf<BlueBlock>()
@@ -54,6 +55,14 @@ class BlocksManager(private val context: Context) {
     private var _showFunctionSelectionDialog = mutableStateOf(false)
     val showFunctionSelectionDialog: State<Boolean> get() = _showFunctionSelectionDialog
     private var currentFunctionSelectionType: String? = null
+
+    private val _showCastFromDialog = mutableStateOf(false)
+    val showCastFromDialog: State<Boolean> get() = _showCastFromDialog
+
+    private val _showCastToDialog = mutableStateOf(false)
+    val showCastToDialog: State<Boolean> get() = _showCastToDialog
+
+    private var castFromType: KClass<*>? = null
 
     fun getAvailableFunctions(): List<String> {
         return _uiBlocks
@@ -83,16 +92,6 @@ class BlocksManager(private val context: Context) {
         }
     }
 
-    public fun getPrintBlockValue(uiBlocks: List<BlueBlock>): Any? {
-        uiBlocks.forEach { block ->
-            if (block.title == "Print") {
-                val logicBlock = BlockManager.getBlock(block.id)
-                return logicBlock?.let { notNullBlock -> notNullBlock.inputs[0].getValue() }
-            }
-        }
-        return null
-    }
-
     fun addNewBlock(type: String) {
         when (type) {
             getString(context, R.string.index_block_label), getString(context, R.string.append_block_label), getString(context, R.string.swap_block_label), getString(context, R.string.array_block_label), getString(context, R.string.add_block_label), getString(context, R.string.sub_block_label), getString(context, R.string.greater_block_label) -> {
@@ -115,8 +114,51 @@ class BlocksManager(private val context: Context) {
             getString(context, R.string.float_block_label) -> showFunctionNameDialog(getString(context, R.string.float_block_label))
             getString(context, R.string.bool_block_label) -> showFunctionNameDialog(getString(context, R.string.bool_block_label))
             getString(context, R.string.string_block_label) -> showFunctionNameDialog(getString(context, R.string.string_block_label))
+            "Cast" -> {
+                _showCastFromDialog.value = true
+            }
+            "Int" -> showFunctionNameDialog("Int")
+            "Float" -> showFunctionNameDialog("Float")
+            "Bool" -> showFunctionNameDialog("Bool")
+            "String" -> showFunctionNameDialog("String")
             else -> createBlockWithoutType(type)
         }
+    }
+
+    fun onCastFromTypeSelected(type: DataType) {
+        castFromType = when (type) {
+            DataType.INT -> Int::class
+            DataType.FLOAT -> Float::class
+            DataType.DOUBLE -> Double::class
+            DataType.LONG -> Long::class
+        }
+        _showCastFromDialog.value = false
+        _showCastToDialog.value = true
+    }
+
+    fun onCastToTypeSelected(type: DataType) {
+        _showCastToDialog.value = false
+
+        val toType = when (type) {
+            DataType.INT -> Int::class
+            DataType.FLOAT -> Float::class
+            DataType.DOUBLE -> Double::class
+            DataType.LONG -> Long::class
+        }
+
+        castFromType?.let { fromType ->
+            val logicBlock = BlockManager.createCastBlock(fromType, toType)
+            val centerX = screenWidthPx
+            val centerY = screenHeightPx
+            _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock, centerX, centerY))
+        }
+        castFromType = null
+    }
+
+    fun dismissCastDialogs() {
+        _showCastFromDialog.value = false
+        _showCastToDialog.value = false
+        castFromType = null
     }
 
     private var _showFunctionNameDialog = mutableStateOf(false)
@@ -264,7 +306,7 @@ class BlocksManager(private val context: Context) {
             id = mainLogicBlock.id,
             initialX = 1f,
             initialY = 1f,
-            color = BlockColor,
+            color = BlockBodyColor,
             title = mainLogicBlock.name,
             inputPins = mainLogicBlock.inputs,
             outputPins = mainLogicBlock.outputs.subList(0, mainLogicBlock.outputs.size - 1),
@@ -436,7 +478,7 @@ fun FunctionNameDialog(
                     }
                 },
                 shape = RoundedCornerShape(6.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = WhiteClassic, contentColor = ContentColorFuntionName),
+                colors = ButtonDefaults.buttonColors(containerColor = WhiteClassic, contentColor = ContentColorFunctionName),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp)
@@ -481,6 +523,77 @@ fun FunctionSelectionDialog(
                     )
                 ) {
                     Text(text = function)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CastTypeDialogs(
+    blocksManager: BlocksManager
+) {
+    if (blocksManager.showCastFromDialog.value) {
+        Dialog(onDismissRequest = { blocksManager.dismissCastDialogs() }) {
+            Column(
+                modifier = Modifier
+                    .background(DarkBackground, RoundedCornerShape(12.dp))
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = "Select source type",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = WhiteClassic,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                DataType.values().forEach { type ->
+                    Button(
+                        onClick = { blocksManager.onCastFromTypeSelected(type) },
+                        shape = RoundedCornerShape(6.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = TypeDialogButtonContainerColor,
+                            contentColor = TypeDialogButtonContentColor
+                        )
+                    ) {
+                        Text(text = type.title)
+                    }
+                }
+            }
+        }
+    }
+
+    if (blocksManager.showCastToDialog.value) {
+        Dialog(onDismissRequest = { blocksManager.dismissCastDialogs() }) {
+            Column(
+                modifier = Modifier
+                    .background(DarkBackground, RoundedCornerShape(12.dp))
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = "Select target type",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = WhiteClassic,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                DataType.values().forEach { type ->
+                    Button(
+                        onClick = { blocksManager.onCastToTypeSelected(type) },
+                        shape = RoundedCornerShape(6.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = TypeDialogButtonContainerColor,
+                            contentColor = TypeDialogButtonContentColor
+                        )
+                    ) {
+                        Text(text = type.title)
+                    }
                 }
             }
         }
