@@ -11,6 +11,17 @@ object ContextManager {
     // Это надо для иерархии контекстов.
     private val ctxParents = mutableMapOf<String, String>();
 
+
+    // Тут лежит блок : контекст, к которому он принадлежит.
+    private val attachedBlocks = mutableMapOf<Id, Context>();
+    internal fun attachBlockToContext(id: Id, ctx: Context): Boolean {
+        if (attachedBlocks.containsKey(id)) {
+            return false
+        }
+        attachedBlocks[id] = ctx
+        return true
+    }
+
     internal fun getAllContexts() : List<Context> {
         return contextRegistry.values.toList()
     }
@@ -65,6 +76,9 @@ class Context internal constructor(
     }
 
     private fun findContextBlocks(currBlock: Id) {
+        if (!ContextManager.attachBlockToContext(currBlock, this)) {
+            throw RuntimeException("Only one context can contain each block. Block ${currBlock.string()}")
+        }
         if (blockIds.contains(currBlock)) {
             return
         }

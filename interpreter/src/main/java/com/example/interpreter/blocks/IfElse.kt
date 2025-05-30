@@ -5,10 +5,11 @@ import com.example.interpreter.models.ExecutionState
 import com.example.interpreter.models.Id
 import com.example.interpreter.models.Pin
 import com.example.interpreter.models.PinManager
+import com.example.interpreter.models.ScopeBlock
 
 class IfElseBlock(
     id: Id,
-) : Block(
+) : ScopeBlock(
     id,
     "IfElse",
     mutableListOf(PinManager.createPinBool("a", ownId = id)),
