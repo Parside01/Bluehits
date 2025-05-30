@@ -268,12 +268,12 @@ class BlocksManager {
         val mainLogicBlock = Program.getMainBlock()
         val mainBlueBlock = BlueBlock(
             id = mainLogicBlock.id,
-            initialX = 0f,
-            initialY = 0f,
+            initialX = 1f,
+            initialY = 1f,
             color = Color.Gray,
             title = mainLogicBlock.name,
             inputPins = mainLogicBlock.inputs,
-            outputPins = mainLogicBlock.outputs,
+            outputPins = mainLogicBlock.outputs.subList(0, mainLogicBlock.outputs.size - 1),
             outBlockPin = mainLogicBlock.outBlockPin,
         )
         _uiBlocks.add(mainBlueBlock)

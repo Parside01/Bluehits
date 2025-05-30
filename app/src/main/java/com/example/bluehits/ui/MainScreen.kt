@@ -292,7 +292,9 @@ fun MainScreen() {
                             blocksManager,
                             context,
                             showError = { message -> errorMessage = message },
-                            showSuccess = { message -> successMessage = message }
+                            showSuccess = { message -> successMessage = message },
+                            onProgramStopped = { Program.stop() },
+                            programScope = programScope
                         )
                     },
                     modifier = Modifier
@@ -362,7 +364,7 @@ fun MainScreen() {
                 }
 
                 IconButton(
-                    onClick = { blocksManager.clearAllBlocks(connectionManager) },
+                    onClick = { blocksManager.clearAllBlocks() },
                     modifier = Modifier
                         .size(48.dp)
                         .padding(8.dp)
