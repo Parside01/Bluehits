@@ -5,6 +5,7 @@ import com.example.interpreter.blocks.ArrayBlock
 import com.example.interpreter.blocks.BinaryLogicOperatorBlock
 import com.example.interpreter.blocks.BinaryOperatorBlock
 import com.example.interpreter.blocks.BoolBlock
+import com.example.interpreter.blocks.CastBlock
 import com.example.interpreter.blocks.FloatBlock
 import com.example.interpreter.blocks.ForBlock
 import com.example.interpreter.blocks.FunctionCallBlock
@@ -111,7 +112,7 @@ object BlockManager {
     fun <T : Number> createSubBlock(type: KClass<T>): Block {
         return createBlock { id ->
             BinaryOperatorBlock(
-                id, "Add",
+                id, "Sub",
                 { a, b ->
                     when (type) {
                         Int::class -> (a as Int) - (b as Int)
@@ -179,12 +180,16 @@ object BlockManager {
         return block
     }
 
+    fun <F:Any, T:Any> createCastBlock(typeFrom: KClass<F>, typeTo: KClass<in T>): Block {
+        return createBlock { id -> CastBlock(id, typeFrom, typeTo) }
+    }
+
     fun <T : Any> createArrayBlock(
         varName: String = "Array",
         value: List<T> = emptyList(),
         elementType: KClass<T>,
     ): Block {
-        val block = createBlock { id -> ArrayBlock<T>(id, value as List<T>, varName, elementType = elementType) }
+        val block = createBlock { id -> ArrayBlock(id, value as List<T>, varName, elementType = elementType) }
 
         val blockState = VariableManager.getOrCreateVarState(varName, value as List<T>, List::class)
         block.setVarState(blockState as VarState<List<T>>)

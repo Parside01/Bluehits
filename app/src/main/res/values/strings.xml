@@ -1,3 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Bluehits</string>
+    <string name="int_name_label">Int name</string>
+    <string name="float_name_label">Float name</string>
+    <string name="bool_name_label">Bool name</string>
+    <string name="string_name_label">String name</string>
+    <string name="function_name_label">Function name</string>
+    <string name="define_function">Define Function</string>
+    <string name="call_function">Call Function</string>
+    <string name="return_from_function">Return From Function</string>
+    <string name="enter_int_name">Enter Int name</string>
+    <string name="enter_float_name">Enter Float name</string>
+    <string name="enter_bool_name">Enter Bool name</string>
+    <string name="enter_string_name">Enter String name</string>
+    <string name="enter_function_name">Enter Function Name</string>
+    <string name="main_block_title">Main</string>
+    <string name="add_button_text">Add</string>
+    <string name="console_button_text">Console</string>
+    <string name="debug_button_text">Debug</string>
+    <string name="running_text">Running...</string>
+    <string name="run_button_text">Run</string>
+    <string name="trash_button_text">Trash</string>
+    <string name="clear_button_text">Clear</string>
+    <string name="int_block_label">Int</string>
+    <string name="float_block_label">Float</string>
+    <string name="bool_block_label">Bool</string>
+    <string name="double_block_label">Double</string>
+    <string name="long_block_label">Long</string>
+    <string name="add_block_label">Add</string>
+    <string name="sub_block_label">Sub</string>
+    <string name="greater_block_label">Greater</string>
+    <string name="ifelse_block_label">IfElse</string>
+    <string name="for_block_label">For</string>
+    <string name="array_block_label">Array</string>
+    <string name="string_block_label">String</string>
+    <string name="math_block_label">Math</string>
+    <string name="index_block_label">Index</string>
+    <string name="append_block_label">Append</string>
+    <string name="swap_block_label">Swap</string>
+    <string name="print_block_label">Print</string>
+    <string name="function_def_block_label">Function def</string>
+    <string name="function_call_block_label">Function call</string>
+    <string name="function_call_name_prefix">Call</string>
+    <string name="function_return_name_prefix">Return</string>
+    <string name="function_return_block_label">Function return</string>
+    <string name="close_notification">Close</string>
+    <string name="default_error">Error</string>
+
+    <string name="error_empty_program">Error: empty program</string>
+    <string name="error_no_main">Error: no main block</string>
+    <string name="error_runtime">Runtime error</string>
+
+    <string name="change_pins">Change pins</string>
+    <string name="add_new_pin">+ Add new pin</string>
+    <string name="choose_pin_type">Choose pin type</string>
+    <string name="create_button_text">Create</string>
+    <string name="new_pin_default_name">NewPin</string>
+    <string name="select_array_elem_type">Select array element type</string>
+
+    <string name="minus">-</string>
+    <string name="plus">+</string>
+    <string name="step_size">Step size:</string>
+    <string name="true_text">True</string>
+    <string name="false_text">False</string>
+    <string name="enter_value">Enter value</string>
+    <string name="edit_item">Edit Item</string>
+    <string name="value_label">Value: </string>
+
+    <string name="unsupported_type">Unsupported type</string>
 </resources>

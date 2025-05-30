@@ -1,5 +1,6 @@
 package com.example.bluehits.ui.editPanel
 
+import android.content.Context
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -31,7 +32,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchColors
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
@@ -52,6 +52,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.core.content.ContextCompat.getString
+import com.example.bluehits.R
 import kotlinx.coroutines.delay
 import kotlin.reflect.KClass
 import com.example.bluehits.ui.theme.*
@@ -62,6 +64,7 @@ fun PinInputField(
     filedPin: PinEditField,
     onValueChange: (Any) -> Unit,
     value: Any,
+    context: Context
 ) {
     println(filedPin.pin.getType())
     when {
@@ -69,7 +72,8 @@ fun PinInputField(
             NumberInputController(
                 initialValue = value.toString().toIntOrNull() ?: 0,
                 onValueChange = onValueChange,
-                isInt = true
+                isInt = true,
+                context = context
             )
         }
 
@@ -77,7 +81,8 @@ fun PinInputField(
             NumberInputController(
                 initialValue = value.toString().toFloatOrNull() ?: 0f,
                 onValueChange = onValueChange,
-                isInt = false
+                isInt = false,
+                context = context
             )
         }
 
@@ -85,7 +90,8 @@ fun PinInputField(
             NumberInputController(
                 initialValue = value.toString().toDoubleOrNull() ?: 0f,
                 onValueChange = onValueChange,
-                isInt = false
+                isInt = false,
+                context = context
             )
         }
 
@@ -93,21 +99,25 @@ fun PinInputField(
             NumberInputController(
                 initialValue = value.toString().toLongOrNull() ?: 0,
                 onValueChange = onValueChange,
-                isInt = true
+                isInt = true,
+                context = context
             )
         }
 
         filedPin.pin.getType() == Boolean::class -> {
             BooleanInputField(
                 value = value,
-                onValueChange = onValueChange
+                onValueChange = onValueChange,
+                context = context
             )
         }
 
         filedPin.pin.getType() == String::class -> {
             TextInputField(
                 value = value,
-                onValueChange = onValueChange
+                onValueChange = onValueChange,
+                context = context,
+                placeholder = getString(context, R.string.greater_block_label)
             )
         }
 
@@ -116,7 +126,8 @@ fun PinInputField(
             ArrayInputField(
                 fieldPin = filedPin,
                 onValueChange = onValueChange,
-                value = value
+                value = value,
+                context = context
             )
         }
 
@@ -124,7 +135,8 @@ fun PinInputField(
             TextInputField(
                 value = value,
                 onValueChange = onValueChange,
-                placeholder = "Enter ${filedPin.pin.getType().simpleName} value"
+                placeholder = "Enter ${filedPin.pin.getType().simpleName} value",
+                context = context
             )
         }
     }
@@ -134,7 +146,8 @@ fun PinInputField(
 private fun NumberInputController(
     initialValue: Number,
     onValueChange: (Number) -> Unit,
-    isInt: Boolean
+    isInt: Boolean,
+    context: Context
 ) {
     val intValue = remember { mutableIntStateOf(initialValue.toInt()) }
     val floatValue = remember { mutableStateOf(initialValue.toFloat()) }
@@ -233,13 +246,13 @@ private fun NumberInputController(
                     .padding(start = 4.dp),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("+", color = NumberInputControllerPlus)
+                Text(getString(context, R.string.plus), color = NumberInputControllerPlus)
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text("Step size:", color = WhiteClassic)
+        Text(getString(context, R.string.step_size), color = WhiteClassic)
         Spacer(modifier = Modifier.height(4.dp))
 
         Row(
@@ -258,7 +271,7 @@ private fun NumberInputController(
                     .padding(end = 4.dp),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("-", color = NumberInputControllerMinus)
+                Text(getString(context, R.string.minus), color = NumberInputControllerMinus)
             }
 
             if (isManualStepInput.value) {
@@ -326,7 +339,7 @@ private fun NumberInputController(
                     .padding(start = 4.dp),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("+", color = NumberInputControllerPlus)
+                Text(getString(context, R.string.plus), color = NumberInputControllerPlus)
             }
         }
     }
@@ -335,7 +348,8 @@ private fun NumberInputController(
 @Composable
 private fun BooleanInputField(
     value: Any,
-    onValueChange: (Any) -> Unit
+    onValueChange: (Any) -> Unit,
+    context: Context
 ) {
     val checked = remember { mutableStateOf(value.toString().toBooleanStrictOrNull() ?: false) }
     val textColor = WhiteClassic
@@ -365,7 +379,7 @@ private fun BooleanInputField(
             colors = switchColors,
         )
         Text(
-            if (checked.value) "True" else "False",
+            if (checked.value) getString(context, R.string.true_text) else getString(context, R.string.false_text),
             color = textColor,
             modifier = Modifier.padding(start = 8.dp)
         )
@@ -376,7 +390,8 @@ private fun BooleanInputField(
 private fun TextInputField(
     value: Any,
     onValueChange: (String) -> Unit,
-    placeholder: String = "Enter value"
+    placeholder: String = "Enter value",
+    context: Context
 ) {
     val textState = remember { mutableStateOf(value.toString()) }
 
@@ -404,7 +419,8 @@ private fun TextInputField(
 fun ArrayInputField(
     fieldPin: PinEditField,
     onValueChange: (Any) -> Unit,
-    value: Any
+    value: Any,
+    context: Context
 ) {
     val initialList = remember {
         (value as? Array<*>)?.toList() ?: emptyList()
@@ -515,6 +531,7 @@ fun ArrayInputField(
                 onValueChange(items.value.toList())
             },
             onDismiss = { selectedIndex.value = null },
+            context = context,
             fieldPin = fieldPin,
             isInt = when (elementType) {
                 Int::class, Long::class -> true
@@ -587,6 +604,7 @@ fun EditItemDialog(
     elementType: KClass<*>,
     onValueChange: (Any) -> Unit,
     onDismiss: () -> Unit,
+    context: Context,
     fieldPin: PinEditField,
     isInt: Boolean
 ) {
@@ -621,7 +639,8 @@ fun EditItemDialog(
                         onValueChange = { newValue ->
                             onValueChange(newValue)
                         },
-                        isInt = isInt
+                        isInt = isInt,
+                        context = context
                     )
                 }
 
@@ -632,7 +651,8 @@ fun EditItemDialog(
                         onValueChange = { newValue ->
                             onValueChange(newValue.toFloat())
                         },
-                        isInt = isInt
+                        isInt = isInt,
+                        context = context
                     )
                 }
 
@@ -643,7 +663,8 @@ fun EditItemDialog(
                         onValueChange = { newValue ->
                             onValueChange(newValue.toDouble())
                         },
-                        isInt = isInt
+                        isInt = isInt,
+                        context = context
                     )
                 }
 
@@ -654,14 +675,15 @@ fun EditItemDialog(
                         onValueChange = { newValue ->
                             onValueChange(newValue.toLong())
                         },
-                        isInt = isInt
+                        isInt = isInt,
+                        context = context
                     )
                 }
 
                 Boolean::class -> {
                     val initialValue = item?.toString()?.toBooleanStrictOrNull() ?: false
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Value: ", color = WhiteClassic)
+                        Text(getString(context, R.string.value_label), color = WhiteClassic)
                         Switch(
                             checked = initialValue,
                             onCheckedChange = { newValue ->
@@ -674,12 +696,14 @@ fun EditItemDialog(
                 String::class -> {
                     TextInputField(
                         value = item?.toString() ?: "",
-                        onValueChange = { textValue.value = it }
+                        onValueChange = { textValue.value = it },
+                        context = context,
+                        placeholder = getString(context, R.string.greater_block_label)
                     )
                 }
 
                 else -> {
-                    Text("Unsupported type", color = WhiteClassic)
+                    Text(getString(context, R.string.unsupported_type), color = WhiteClassic)
                 }
             }
         }
