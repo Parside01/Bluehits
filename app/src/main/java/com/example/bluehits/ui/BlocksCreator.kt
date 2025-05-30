@@ -4,9 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LocalTextStyle
@@ -21,11 +23,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.example.interpreter.blocks.FunctionPartBlock
 import com.example.interpreter.models.BlockManager
 import com.example.interpreter.models.ConnectionManager
+import com.example.interpreter.models.FunctionManager
 import com.example.interpreter.models.Id
 import com.example.interpreter.models.PinManager
 import com.example.interpreter.models.Program
+import com.example.interpreter.models.ScopeBlock
+import com.example.bluehits.ui.theme.*
 
 class BlocksManager {
     private val _uiBlocks = mutableStateListOf<BlueBlock>()
@@ -92,11 +98,11 @@ class BlocksManager {
             }
             "Function def" -> showFunctionNameDialog("Function def")
             "Function call" -> {
-                currentFunctionSelectionType = "call"
+                currentFunctionSelectionType = "Call"
                 _showFunctionSelectionDialog.value = true
             }
             "Function return" -> {
-                currentFunctionSelectionType = "return"
+                currentFunctionSelectionType = "Return"
                 _showFunctionSelectionDialog.value = true
             }
             "Int" -> showFunctionNameDialog("Int")
@@ -127,6 +133,15 @@ class BlocksManager {
                 "Float" -> BlockManager.createFloatBlock(name)
                 "Bool" -> BlockManager.createBoolBlock(name)
                 "String" -> BlockManager.createStringBlock(name)
+                "Array" -> {
+                    when (currentValueBlockType) {
+                        "Int" -> BlockManager.createArrayBlock(name, elementType = Int::class)
+                        "Float" -> BlockManager.createArrayBlock(name, elementType = Float::class)
+                        "Double" -> BlockManager.createArrayBlock(name, elementType = Double::class)
+                        "Long" -> BlockManager.createArrayBlock(name, elementType = Long::class)
+                        else -> throw IllegalStateException("No type selected for array")
+                    }
+                }
                 else -> throw IllegalArgumentException("Unknown function dialog type")
             }
 
@@ -158,54 +173,76 @@ class BlocksManager {
     fun onTypeSelected(type: DataType) {
         _showTypeDialog.value = false
         currentBlockType?.let { blockType ->
-            val logicBlock = when (blockType) {
-                "Index" -> when (type) {
-                    DataType.INT -> BlockManager.createIndexBlock<Int>()
-                    DataType.FLOAT -> BlockManager.createIndexBlock<Float>()
-                    DataType.DOUBLE -> BlockManager.createIndexBlock<Double>()
-                    DataType.LONG -> BlockManager.createIndexBlock<Long>()
+            when (blockType) {
+                "Array" -> {
+                    currentValueBlockType = type.title
+                    showFunctionNameDialog("Array")
                 }
-                "Append" -> when (type) {
-                    DataType.INT -> BlockManager.createAppendBlock<Int>()
-                    DataType.FLOAT -> BlockManager.createAppendBlock<Float>()
-                    DataType.DOUBLE -> BlockManager.createAppendBlock<Double>()
-                    DataType.LONG -> BlockManager.createAppendBlock<Long>()
+
+                else -> {
+                    val logicBlock = when (blockType) {
+                        "Index" -> when (type) {
+                            DataType.INT -> BlockManager.createIndexBlock<Int>()
+                            DataType.FLOAT -> BlockManager.createIndexBlock<Float>()
+                            DataType.DOUBLE -> BlockManager.createIndexBlock<Double>()
+                            DataType.LONG -> BlockManager.createIndexBlock<Long>()
+                        }
+
+                        "Append" -> when (type) {
+                            DataType.INT -> BlockManager.createAppendBlock<Int>()
+                            DataType.FLOAT -> BlockManager.createAppendBlock<Float>()
+                            DataType.DOUBLE -> BlockManager.createAppendBlock<Double>()
+                            DataType.LONG -> BlockManager.createAppendBlock<Long>()
+                        }
+
+                        "Swap" -> when (type) {
+                            DataType.INT -> BlockManager.createSwapBlock<Int>()
+                            DataType.FLOAT -> BlockManager.createSwapBlock<Float>()
+                            DataType.DOUBLE -> BlockManager.createSwapBlock<Double>()
+                            DataType.LONG -> BlockManager.createSwapBlock<Long>()
+                        }
+
+                        "Array" -> when (type) {
+                            DataType.INT -> BlockManager.createArrayBlock(elementType = Int::class)
+                            DataType.FLOAT -> BlockManager.createArrayBlock(elementType = Float::class)
+                            DataType.DOUBLE -> BlockManager.createArrayBlock(elementType = Double::class)
+                            DataType.LONG -> BlockManager.createArrayBlock(elementType = Long::class)
+                        }
+
+                        "Add" -> when (type) {
+                            DataType.INT -> BlockManager.createAddBlock(type = Int::class)
+                            DataType.FLOAT -> BlockManager.createAddBlock(type = Float::class)
+                            DataType.DOUBLE -> BlockManager.createAddBlock(type = Double::class)
+                            DataType.LONG -> BlockManager.createAddBlock(type = Long::class)
+                        }
+
+                        "Sub" -> when (type) {
+                            DataType.INT -> BlockManager.createSubBlock(type = Int::class)
+                            DataType.FLOAT -> BlockManager.createSubBlock(type = Float::class)
+                            DataType.DOUBLE -> BlockManager.createSubBlock(type = Double::class)
+                            DataType.LONG -> BlockManager.createSubBlock(type = Long::class)
+                        }
+
+                        "Greater" -> when (type) {
+                            DataType.INT -> BlockManager.createGreaterBlock(type = Int::class)
+                            DataType.FLOAT -> BlockManager.createGreaterBlock(type = Float::class)
+                            DataType.DOUBLE -> BlockManager.createGreaterBlock(type = Double::class)
+                            DataType.LONG -> BlockManager.createGreaterBlock(type = Long::class)
+                        }
+
+                        else -> throw IllegalArgumentException("Unsupported type")
+                    }
+                    val centerX = screenWidthPx
+                    val centerY = screenHeightPx
+                    _uiBlocks.add(
+                        BlockAdapter.wrapLogicBlock(
+                            logicBlock,
+                            centerX = centerX,
+                            centerY = centerY
+                        )
+                    )
                 }
-                "Swap" -> when (type) {
-                    DataType.INT -> BlockManager.createSwapBlock<Int>()
-                    DataType.FLOAT -> BlockManager.createSwapBlock<Float>()
-                    DataType.DOUBLE -> BlockManager.createSwapBlock<Double>()
-                    DataType.LONG -> BlockManager.createSwapBlock<Long>()
-                }
-                "Array" -> when (type) {
-                    DataType.INT -> BlockManager.createArrayBlock(elementType = Int::class)
-                    DataType.FLOAT -> BlockManager.createArrayBlock(elementType = Float::class)
-                    DataType.DOUBLE -> BlockManager.createArrayBlock(elementType = Double::class)
-                    DataType.LONG -> BlockManager.createArrayBlock(elementType = Long::class)
-                }
-                "Add" -> when (type) {
-                    DataType.INT -> BlockManager.createAddBlock(type = Int::class)
-                    DataType.FLOAT -> BlockManager.createAddBlock(type = Float::class)
-                    DataType.DOUBLE -> BlockManager.createAddBlock(type = Double::class)
-                    DataType.LONG -> BlockManager.createAddBlock(type = Long::class)
-                }
-                "Sub" ->  when (type) {
-                    DataType.INT -> BlockManager.createSubBlock(type = Int::class)
-                    DataType.FLOAT -> BlockManager.createSubBlock(type = Float::class)
-                    DataType.DOUBLE -> BlockManager.createSubBlock(type = Double::class)
-                    DataType.LONG -> BlockManager.createSubBlock(type = Long::class)
-                }
-                "Greater" ->  when (type) {
-                    DataType.INT -> BlockManager.createGreaterBlock(type = Int::class)
-                    DataType.FLOAT -> BlockManager.createGreaterBlock(type = Float::class)
-                    DataType.DOUBLE -> BlockManager.createGreaterBlock(type = Double::class)
-                    DataType.LONG -> BlockManager.createGreaterBlock(type = Long::class)
-                }
-                else -> throw IllegalArgumentException("Unsupported type")
             }
-            val centerX = screenWidthPx
-            val centerY = screenHeightPx
-            _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock, centerX = centerX, centerY = centerY))
         }
     }
 
@@ -234,12 +271,12 @@ class BlocksManager {
         val mainLogicBlock = Program.getMainBlock()
         val mainBlueBlock = BlueBlock(
             id = mainLogicBlock.id,
-            initialX = 0f,
-            initialY = 0f,
-            color = Color.Gray,
+            initialX = 1f,
+            initialY = 1f,
+            color = BlockColor,
             title = mainLogicBlock.name,
             inputPins = mainLogicBlock.inputs,
-            outputPins = mainLogicBlock.outputs,
+            outputPins = mainLogicBlock.outputs.subList(0, mainLogicBlock.outputs.size - 1),
             outBlockPin = mainLogicBlock.outBlockPin,
         )
         _uiBlocks.add(mainBlueBlock)
@@ -271,30 +308,37 @@ class BlocksManager {
             pinIds.contains(pin1.id) || pinIds.contains(pin2.id)
         }
         UIPinManager.clearPinsForBlock(block)
+
+        val functionName = (block.logicBlock as? FunctionPartBlock)?.getFunctionName()
+        functionName?.let {
+            removeFunction(functionName)
+        }
+
         _uiBlocks.remove(block)
     }
 
-    fun clearAllBlocks(connectionManager: UIConnectionManager) {
+    private fun removeFunction(funcName: String) {
+        val info = FunctionManager.getFunctionInfo(funcName)
+        if (info == null) return
+        // Важная фигня так как иначе может зайти в беск. рекурсию.
+        FunctionManager.removeFunction(funcName)
+
+        val idToDelete = mutableListOf<Id>()
+        idToDelete.add(info.definitionBlock.id)
+        info.callBlocks.forEach { block -> idToDelete.add(block.id) }
+        info.returnBlocks.forEach { block -> idToDelete.add(block.id) }
+        idToDelete.forEach { id ->
+            val block = _uiBlocks.firstOrNull { it.id == id }
+            block?.let {
+                removeBlock(block, UIConnectionManager)
+            }
+        }
+    }
+
+    fun clearAllBlocks() {
         _uiBlocks.toList().forEach { block ->
             if (block.title != "Main") {
-                val pinIds = mutableListOf<Id>()
-                if (block.inBlockPin != null) {
-                    pinIds.add(block.inBlockPin.id)
-                }
-                block.inputPins.forEach { pinIds.add(it.id) }
-                block.outputPins.forEach { pinIds.add(it.id) }
-                pinIds.forEach { pinId ->
-                    PinManager.getPin(pinId)?.let { pin ->
-                        ConnectionManager.getPinConnections(pin).forEach { connection ->
-                            ConnectionManager.disconnect(connection.id.string())
-                        }
-                    }
-                }
-                connectionManager.connections.removeAll { (pin1, pin2) ->
-                    pinIds.contains(pin1.id) || pinIds.contains(pin2.id)
-                }
-                UIPinManager.clearPinsForBlock(block)
-                _uiBlocks.remove(block)
+                removeBlock(block, UIConnectionManager)
             }
         }
     }
@@ -308,13 +352,13 @@ fun TypeSelectionDialog(
     Dialog(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier
-                .background(Color.DarkGray, RoundedCornerShape(12.dp))
+                .background(DarkBackground, RoundedCornerShape(12.dp))
                 .padding(16.dp)
         ) {
             Text(
                 text = "Select data type",
                 style = MaterialTheme.typography.titleMedium,
-                color = Color.White,
+                color = WhiteClassic,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
@@ -326,8 +370,8 @@ fun TypeSelectionDialog(
                         .fillMaxWidth()
                         .padding(vertical = 4.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.LightGray,
-                        contentColor = Color.Black
+                        containerColor = TypeDialogButtonContainerColor,
+                        contentColor = TypeDialogButtonContentColor
                     )
                 ) {
                     Text(text = type.title)
@@ -342,19 +386,19 @@ fun FunctionNameDialog(
     title: String,
     label: String = "Function name",
     onNameEntered: (String) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onError: (String) -> Unit = {}
 ) {
     var functionName by remember { mutableStateOf("") }
-
     Dialog(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier
-                .background(Color.DarkGray, RoundedCornerShape(12.dp))
+                .background(DarkBackground, RoundedCornerShape(12.dp))
                 .padding(16.dp)
         ) {
             Text(
                 text = title,
-                color = Color.White,
+                color = WhiteClassic,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
@@ -362,37 +406,45 @@ fun FunctionNameDialog(
             OutlinedTextField(
                 value = functionName,
                 onValueChange = { functionName = it },
-                label = { Text(label, color = Color.White) },
+                label = { Text(label, color = WhiteClassic) },
                 modifier = Modifier.fillMaxWidth(),
-                textStyle = LocalTextStyle.current.copy(color = Color.White),
+                textStyle = LocalTextStyle.current.copy(color = WhiteClassic),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        if (functionName.isNotBlank()) {
-                            onNameEntered(functionName)
+                        try {
+                            if (functionName.isNotBlank()) {
+                                onNameEntered(functionName)
+                            }
+                        } catch (e: Exception) {
+                            onError(e.message?:"Error")
                         }
                     }
                 ),
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    cursorColor = Color.White,
-                    focusedBorderColor = Color.LightGray,
-                    unfocusedBorderColor = Color.Gray
+                    focusedTextColor = WhiteClassic,
+                    unfocusedTextColor = WhiteClassic,
+                    cursorColor = WhiteClassic,
+                    focusedBorderColor = LightGrayClassic,
+                    unfocusedBorderColor = GrayClassic
                 )
             )
 
             Button(
                 onClick = {
-                    if (functionName.isNotBlank()) {
-                        onNameEntered(functionName)
+                    try {
+                        if (functionName.isNotBlank()) {
+                            onNameEntered(functionName)
+                        }
+                    } catch (e: Exception) {
+                        onError(e.message?:"Error")
                     }
                 },
                 shape = RoundedCornerShape(6.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.DarkGray),
+                colors = ButtonDefaults.buttonColors(containerColor = WhiteClassic, contentColor = ContentColorFuntionName),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp)
@@ -412,13 +464,14 @@ fun FunctionSelectionDialog(
     Dialog(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier
-                .background(Color.DarkGray, RoundedCornerShape(12.dp))
+                .background(DarkBackground, RoundedCornerShape(12.dp))
                 .padding(16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             Text(
                 text = "Select function",
                 style = MaterialTheme.typography.titleMedium,
-                color = Color.White,
+                color = WhiteClassic,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
@@ -430,8 +483,8 @@ fun FunctionSelectionDialog(
                         .fillMaxWidth()
                         .padding(vertical = 4.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.LightGray,
-                        contentColor = Color.Black
+                        containerColor = FunctionSelectionContainer,
+                        contentColor = FunctionSelectionContent
                     )
                 ) {
                     Text(text = function)

@@ -23,25 +23,24 @@ object UIConnectionManager {
             return
         }
 
-        if (pin.type == tempPin!!.value!!.type) {
-            onError("Нельзя соединить пины одного типа: оба ${pin.type}")
+        if (pin.type == tempPin.value!!.type) {
             tempPin.value = pin
             return
         }
 
         try {
-            if (pin.type == InOutPinType.INPUT && tempPin!!.value!!.type == InOutPinType.OUTPUT) {
-                val connectionId = connect(tempPin!!.value!!.id, pin.id)
+            if (pin.type == InOutPinType.INPUT && tempPin.value!!.type == InOutPinType.OUTPUT) {
+                val connectionId = connect(tempPin.value!!.id, pin.id)
                 if (connectionId != null) {
                     connections.add(Pair(pin, tempPin!!.value!!))
                 } else {
                     onError("Не удалось создать соединение между пинами")
                 }
                 tempPin.value = null
-            } else if (pin.type == InOutPinType.OUTPUT && tempPin!!.value!!.type == InOutPinType.INPUT) {
-                val connectionId = connect(pin.id, tempPin!!.value!!.id)
+            } else if (pin.type == InOutPinType.OUTPUT && tempPin.value!!.type == InOutPinType.INPUT) {
+                val connectionId = connect(pin.id, tempPin.value!!.id)
                 if (connectionId != null) {
-                    connections.add(Pair(tempPin!!.value!!, pin))
+                    connections.add(Pair(tempPin.value!!, pin))
                 } else {
                     onError("Не удалось создать соединение между пинами")
                 }
@@ -54,7 +53,7 @@ object UIConnectionManager {
             tempPin.value = null
         }
     }
-    fun getSelectedPinId(): Id? = tempPin?.value!!.id
+    fun getSelectedPinId(): Id? = tempPin.value!!.id
 
     private fun connect(fromId: Id, toId: Id): Id? {
         val fromPin = PinManager.getPin(fromId)

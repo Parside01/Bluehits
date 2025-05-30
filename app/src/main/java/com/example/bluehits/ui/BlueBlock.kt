@@ -25,13 +25,8 @@ import com.example.interpreter.models.Pin
 import com.example.interpreter.models.Block
 import com.example.interpreter.models.Id
 import kotlin.math.max
+import com.example.bluehits.ui.theme.*
 
-val BlockBodyColor = Color.Gray
-val BlockTitleColor = Color(0xFF1E5F8B)
-val BlockBorderColor = Color(0xFF1A1A1A)
-val BlockShadowColor = Color(0x40000000)
-val BlockTitleTextColor = Color(0xFFCCCCCC)
-val PinTextColor = Color(0xFFFFFFFF)
 
 val MIN_BLOCK_WIDTH_DP = 150.dp
 val MIN_BLOCK_HEIGHT_DP = 80.dp
@@ -90,14 +85,14 @@ class BlueBlock(
     var outputPins: MutableList<Pin> = mutableListOf(),
     val inBlockPin: Pin? = null,
     val outBlockPin: Pin? = null,
-    val functionName: String? = null
+    val functionName: String? = null,
+    var logicBlock: Block? = null
 ) {
     var width by mutableStateOf(0f)
     var height by mutableStateOf(0f)
 
     var x by mutableStateOf(initialX)
     var y by mutableStateOf(initialY)
-    var logicBlock: Block? = null
 
     val layout: BlockLayout
         get() = BlockLayout(width, height)

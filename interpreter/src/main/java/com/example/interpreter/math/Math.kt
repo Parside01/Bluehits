@@ -13,11 +13,11 @@ object MathInterpreter {
     )
 
     fun parse(expression: String): Expression {
-        val expressionTokens = infixToRPN(expression)
-        return buildExpressionTree(expressionTokens)
+        val expressionTokens = parseTokens(expression)
+        return build(expressionTokens)
     }
 
-    private fun infixToRPN(expression: String): List<String> {
+    private fun parseTokens(expression: String): List<String> {
         val output = mutableListOf<String>()
         val operators = Stack<Char>()
         var i = 0
@@ -67,7 +67,7 @@ object MathInterpreter {
         return output
     }
 
-    private fun buildExpressionTree(tokens: List<String>): Expression {
+    private fun build(tokens: List<String>): Expression {
         val stack = Stack<Expression>()
 
         for (token in tokens) {

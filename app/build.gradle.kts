@@ -64,6 +64,7 @@ dependencies {
     implementation("androidx.compose.runtime:runtime:1.7.0")
     implementation("androidx.compose.material3:material3:1.2.1")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+    implementation ("androidx.compose.material:material-icons-extended:1.0.1")
     implementation(project(":interpreter"))
     implementation(libs.androidx.room.runtime.android)
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
