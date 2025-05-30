@@ -558,7 +558,15 @@ private fun ArrayItemBox(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = if (showDelete.value) "×" else item?.toString()?.takeIf { it.isNotBlank() } ?: "0",
+            text = if (showDelete.value) {
+                "×"
+            } else {
+                when {
+                    elementType == Float::class -> "%.2f".format((item as? Float) ?: 0f)
+                    elementType == Double::class -> "%.2f".format((item as? Double) ?: 0.0)
+                    else -> item?.toString()?.takeIf { it.isNotBlank() } ?: "0"
+                }
+            },
             color = WhiteClassic,
             fontSize = if (showDelete.value) 18.sp else 12.sp,
             textAlign = TextAlign.Center
