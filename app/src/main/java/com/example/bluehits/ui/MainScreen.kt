@@ -164,6 +164,14 @@ fun MainScreen() {
         )
     }
 
+    if (blocksManager.showFunctionSelectionDialog.value) {
+        FunctionSelectionDialog(
+            functions = blocksManager.getAvailableFunctions(),
+            onFunctionSelected = { blocksManager.onFunctionSelected(it) },
+            onDismiss = { blocksManager.dismissFunctionSelectionDialog() }
+        )
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
