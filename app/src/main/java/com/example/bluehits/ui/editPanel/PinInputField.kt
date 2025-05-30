@@ -532,19 +532,43 @@ private fun ArrayItemBox(
     elementType: KClass<*>,
     onItemSelected: () -> Unit
 ) {
+    val showDelete = remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .size(30.dp)
             .clip(RoundedCornerShape(4.dp))
-            .background(Color(0xFF424242))
-            .clickable { onItemSelected() },
+            .background(if (showDelete.value) Color(0xFFD32F2F) else Color(0xFF424242))
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = {
+                        if (showDelete.value) {
+                            onRemove()
+                            showDelete.value = false
+                        } else {
+                            onItemSelected()
+                        }
+                    },
+                    onLongPress = {
+                        showDelete.value = true
+                    }
+                )
+            },
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = item?.toString()?.takeIf { it.isNotBlank() } ?: "0",
+            text = if (showDelete.value) "×" else item?.toString()?.takeIf { it.isNotBlank() } ?: "0",
             color = Color.White,
-            fontSize = 12.sp
+            fontSize = if (showDelete.value) 18.sp else 12.sp,
+            textAlign = TextAlign.Center
         )
+    }
+
+    LaunchedEffect(showDelete.value) {
+        if (showDelete.value) {
+            delay(2000)
+            showDelete.value = false
+        }
     }
 }
 
