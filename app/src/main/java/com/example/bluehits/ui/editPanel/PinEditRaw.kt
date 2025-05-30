@@ -1,5 +1,6 @@
 package com.example.bluehits.ui.editPanel
 
+import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.ui.Alignment
@@ -21,7 +22,8 @@ import com.example.bluehits.ui.theme.*
 @Composable
 fun PinEditRow(
     fieldPin: PinEditField,
-    onValueChange: (Any) -> Unit
+    onValueChange: (Any) -> Unit,
+    context: Context
 ) {
     val currentValue = fieldPin.pin.getValue()
     val typeColorMap = mapOf(
@@ -69,6 +71,6 @@ fun PinEditRow(
         PinInputField(filedPin = fieldPin, onValueChange = { newValue ->
             onValueChange(newValue)
             BlockEditManager.updatePinValue(fieldPin.pin, newValue)
-        }, value = currentValue)
+        }, value = currentValue, context = context)
     }
 }

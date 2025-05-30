@@ -1,5 +1,6 @@
 package com.example.bluehits.ui
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.core.content.ContextCompat.getString
 import com.example.interpreter.blocks.FunctionPartBlock
 import com.example.interpreter.models.BlockManager
 import com.example.interpreter.models.ConnectionManager
@@ -31,9 +33,10 @@ import com.example.interpreter.models.Id
 import com.example.interpreter.models.PinManager
 import com.example.interpreter.models.Program
 import com.example.interpreter.models.ScopeBlock
+import com.example.bluehits.R
 import com.example.bluehits.ui.theme.*
 
-class BlocksManager {
+class BlocksManager(private val context: Context) {
     private val _uiBlocks = mutableStateListOf<BlueBlock>()
     val uiBlocks: List<BlueBlock> get() = _uiBlocks
     private var _showTypeDialog = mutableStateOf(false)
@@ -92,23 +95,26 @@ class BlocksManager {
 
     fun addNewBlock(type: String) {
         when (type) {
-            "Index", "Append", "Swap", "Array", "Add", "Sub", "Greater" -> {
+            getString(context, R.string.index_block_label), getString(context, R.string.append_block_label), getString(context, R.string.swap_block_label), getString(context, R.string.array_block_label), getString(context, R.string.add_block_label), getString(context, R.string.sub_block_label), getString(context, R.string.greater_block_label) -> {
                 currentBlockType = type
                 _showTypeDialog.value = true
             }
-            "Function def" -> showFunctionNameDialog("Function def")
-            "Function call" -> {
-                currentFunctionSelectionType = "Call"
+
+            getString(context, R.string.function_def_block_label) -> showFunctionNameDialog(getString(context, R.string.function_def_block_label))
+            getString(context, R.string.function_call_block_label) -> {
+                currentFunctionSelectionType = getString(context, R.string.function_call_name_prefix)
                 _showFunctionSelectionDialog.value = true
             }
-            "Function return" -> {
-                currentFunctionSelectionType = "Return"
+
+            getString(context, R.string.function_return_block_label) -> {
+                currentFunctionSelectionType = getString(context, R.string.function_return_name_prefix)
                 _showFunctionSelectionDialog.value = true
             }
-            "Int" -> showFunctionNameDialog("Int")
-            "Float" -> showFunctionNameDialog("Float")
-            "Bool" -> showFunctionNameDialog("Bool")
-            "String" -> showFunctionNameDialog("String")
+
+            getString(context, R.string.int_block_label) -> showFunctionNameDialog(getString(context, R.string.int_block_label))
+            getString(context, R.string.float_block_label) -> showFunctionNameDialog(getString(context, R.string.float_block_label))
+            getString(context, R.string.bool_block_label) -> showFunctionNameDialog(getString(context, R.string.bool_block_label))
+            getString(context, R.string.string_block_label) -> showFunctionNameDialog(getString(context, R.string.string_block_label))
             else -> createBlockWithoutType(type)
         }
     }
@@ -126,13 +132,13 @@ class BlocksManager {
         _showFunctionNameDialog.value = false
         currentFunctionDialogType?.let { dialogType ->
             val logicBlock = when (dialogType) {
-                "Function def" -> BlockManager.createFunctionDefinitionBlock(name)
-                "Function call" -> BlockManager.createFunctionCalledBlock(name)
-                "Function return" -> BlockManager.createFunctionReturnBlock(name)
-                "Int" -> BlockManager.createIntBlock(name)
-                "Float" -> BlockManager.createFloatBlock(name)
-                "Bool" -> BlockManager.createBoolBlock(name)
-                "String" -> BlockManager.createStringBlock(name)
+                getString(context, R.string.function_def_block_label) -> BlockManager.createFunctionDefinitionBlock(name)
+                getString(context, R.string.function_call_block_label) -> BlockManager.createFunctionCalledBlock(name)
+                getString(context, R.string.function_return_block_label) -> BlockManager.createFunctionReturnBlock(name)
+                getString(context, R.string.int_block_label) -> BlockManager.createIntBlock(name)
+                getString(context, R.string.float_block_label) -> BlockManager.createFloatBlock(name)
+                getString(context, R.string.bool_block_label) -> BlockManager.createBoolBlock(name)
+                getString(context, R.string.string_block_label) -> BlockManager.createStringBlock(name)
                 "Array" -> {
                     when (currentValueBlockType) {
                         "Int" -> BlockManager.createArrayBlock(name, elementType = Int::class)
@@ -155,9 +161,9 @@ class BlocksManager {
         _showFunctionSelectionDialog.value = false
         currentFunctionSelectionType?.let { type ->
             val logicBlock = when (type) {
-                "call" -> BlockManager.createFunctionCalledBlock(functionName)
-                "return" -> BlockManager.createFunctionReturnBlock(functionName)
-                else -> throw IllegalArgumentException("Unknown function selection type")
+                getString(context, R.string.function_call_name_prefix) -> BlockManager.createFunctionCalledBlock(functionName)
+                getString(context, R.string.function_return_name_prefix) -> BlockManager.createFunctionReturnBlock(functionName)
+                else -> throw IllegalArgumentException("Unknown function selection type: ${type}")
             }
 
             val centerX = screenWidthPx
@@ -173,86 +179,71 @@ class BlocksManager {
     fun onTypeSelected(type: DataType) {
         _showTypeDialog.value = false
         currentBlockType?.let { blockType ->
-            when (blockType) {
-                "Array" -> {
-                    currentValueBlockType = type.title
-                    showFunctionNameDialog("Array")
+            val logicBlock = when (blockType) {
+                getString(context, R.string.index_block_label) -> when (type) {
+                    DataType.INT -> BlockManager.createIndexBlock<Int>()
+                    DataType.FLOAT -> BlockManager.createIndexBlock<Float>()
+                    DataType.DOUBLE -> BlockManager.createIndexBlock<Double>()
+                    DataType.LONG -> BlockManager.createIndexBlock<Long>()
                 }
 
-                else -> {
-                    val logicBlock = when (blockType) {
-                        "Index" -> when (type) {
-                            DataType.INT -> BlockManager.createIndexBlock<Int>()
-                            DataType.FLOAT -> BlockManager.createIndexBlock<Float>()
-                            DataType.DOUBLE -> BlockManager.createIndexBlock<Double>()
-                            DataType.LONG -> BlockManager.createIndexBlock<Long>()
-                        }
-
-                        "Append" -> when (type) {
-                            DataType.INT -> BlockManager.createAppendBlock<Int>()
-                            DataType.FLOAT -> BlockManager.createAppendBlock<Float>()
-                            DataType.DOUBLE -> BlockManager.createAppendBlock<Double>()
-                            DataType.LONG -> BlockManager.createAppendBlock<Long>()
-                        }
-
-                        "Swap" -> when (type) {
-                            DataType.INT -> BlockManager.createSwapBlock<Int>()
-                            DataType.FLOAT -> BlockManager.createSwapBlock<Float>()
-                            DataType.DOUBLE -> BlockManager.createSwapBlock<Double>()
-                            DataType.LONG -> BlockManager.createSwapBlock<Long>()
-                        }
-
-                        "Array" -> when (type) {
-                            DataType.INT -> BlockManager.createArrayBlock(elementType = Int::class)
-                            DataType.FLOAT -> BlockManager.createArrayBlock(elementType = Float::class)
-                            DataType.DOUBLE -> BlockManager.createArrayBlock(elementType = Double::class)
-                            DataType.LONG -> BlockManager.createArrayBlock(elementType = Long::class)
-                        }
-
-                        "Add" -> when (type) {
-                            DataType.INT -> BlockManager.createAddBlock(type = Int::class)
-                            DataType.FLOAT -> BlockManager.createAddBlock(type = Float::class)
-                            DataType.DOUBLE -> BlockManager.createAddBlock(type = Double::class)
-                            DataType.LONG -> BlockManager.createAddBlock(type = Long::class)
-                        }
-
-                        "Sub" -> when (type) {
-                            DataType.INT -> BlockManager.createSubBlock(type = Int::class)
-                            DataType.FLOAT -> BlockManager.createSubBlock(type = Float::class)
-                            DataType.DOUBLE -> BlockManager.createSubBlock(type = Double::class)
-                            DataType.LONG -> BlockManager.createSubBlock(type = Long::class)
-                        }
-
-                        "Greater" -> when (type) {
-                            DataType.INT -> BlockManager.createGreaterBlock(type = Int::class)
-                            DataType.FLOAT -> BlockManager.createGreaterBlock(type = Float::class)
-                            DataType.DOUBLE -> BlockManager.createGreaterBlock(type = Double::class)
-                            DataType.LONG -> BlockManager.createGreaterBlock(type = Long::class)
-                        }
-
-                        else -> throw IllegalArgumentException("Unsupported type")
-                    }
-                    val centerX = screenWidthPx
-                    val centerY = screenHeightPx
-                    _uiBlocks.add(
-                        BlockAdapter.wrapLogicBlock(
-                            logicBlock,
-                            centerX = centerX,
-                            centerY = centerY
-                        )
-                    )
+                getString(context, R.string.append_block_label) -> when (type) {
+                    DataType.INT -> BlockManager.createAppendBlock<Int>()
+                    DataType.FLOAT -> BlockManager.createAppendBlock<Float>()
+                    DataType.DOUBLE -> BlockManager.createAppendBlock<Double>()
+                    DataType.LONG -> BlockManager.createAppendBlock<Long>()
                 }
+
+                getString(context, R.string.swap_block_label) -> when (type) {
+                    DataType.INT -> BlockManager.createSwapBlock<Int>()
+                    DataType.FLOAT -> BlockManager.createSwapBlock<Float>()
+                    DataType.DOUBLE -> BlockManager.createSwapBlock<Double>()
+                    DataType.LONG -> BlockManager.createSwapBlock<Long>()
+                }
+
+                getString(context, R.string.array_block_label) -> when (type) {
+                    DataType.INT -> BlockManager.createArrayBlock(elementType = Int::class)
+                    DataType.FLOAT -> BlockManager.createArrayBlock(elementType = Float::class)
+                    DataType.DOUBLE -> BlockManager.createArrayBlock(elementType = Double::class)
+                    DataType.LONG -> BlockManager.createArrayBlock(elementType = Long::class)
+                }
+
+                getString(context, R.string.add_block_label) -> when (type) {
+                    DataType.INT -> BlockManager.createAddBlock(type = Int::class)
+                    DataType.FLOAT -> BlockManager.createAddBlock(type = Float::class)
+                    DataType.DOUBLE -> BlockManager.createAddBlock(type = Double::class)
+                    DataType.LONG -> BlockManager.createAddBlock(type = Long::class)
+                }
+
+                getString(context, R.string.sub_block_label) -> when (type) {
+                    DataType.INT -> BlockManager.createSubBlock(type = Int::class)
+                    DataType.FLOAT -> BlockManager.createSubBlock(type = Float::class)
+                    DataType.DOUBLE -> BlockManager.createSubBlock(type = Double::class)
+                    DataType.LONG -> BlockManager.createSubBlock(type = Long::class)
+                }
+
+                getString(context, R.string.greater_block_label) -> when (type) {
+                    DataType.INT -> BlockManager.createGreaterBlock(type = Int::class)
+                    DataType.FLOAT -> BlockManager.createGreaterBlock(type = Float::class)
+                    DataType.DOUBLE -> BlockManager.createGreaterBlock(type = Double::class)
+                    DataType.LONG -> BlockManager.createGreaterBlock(type = Long::class)
+                }
+
+                else -> throw IllegalArgumentException(getString(context, R.string.unsupported_type))
             }
+            val centerX = screenWidthPx
+            val centerY = screenHeightPx
+            _uiBlocks.add(BlockAdapter.wrapLogicBlock(logicBlock, centerX = centerX, centerY = centerY))
         }
     }
 
     private fun createBlockWithoutType(type: String) {
         val logicBlock = when (type) {
-            "For" -> BlockManager.createForBlock()
-            "Print" -> BlockManager.createPrintBlock()
-            "IfElse" -> BlockManager.createIfElseBlock()
-            "Math" -> BlockManager.createMathBlock()
-            else -> throw IllegalArgumentException("Unsupported type")
+            getString(context, R.string.for_block_label) -> BlockManager.createForBlock()
+            getString(context, R.string.print_block_label) -> BlockManager.createPrintBlock()
+            getString(context, R.string.ifelse_block_label) -> BlockManager.createIfElseBlock()
+            getString(context, R.string.math_block_label) -> BlockManager.createMathBlock()
+            else -> throw IllegalArgumentException(getString(context, R.string.unsupported_type))
         }
         val centerX = screenWidthPx
         val centerY = screenHeightPx
@@ -337,7 +328,7 @@ class BlocksManager {
 
     fun clearAllBlocks() {
         _uiBlocks.toList().forEach { block ->
-            if (block.title != "Main") {
+            if (block.title != getString(context, R.string.main_block_title)) {
                 removeBlock(block, UIConnectionManager)
             }
         }
@@ -384,10 +375,11 @@ fun TypeSelectionDialog(
 @Composable
 fun FunctionNameDialog(
     title: String,
-    label: String = "Function name",
+    label: String? = "Function name",
     onNameEntered: (String) -> Unit,
     onDismiss: () -> Unit,
-    onError: (String) -> Unit = {}
+    onError: (String) -> Unit = {},
+    context: Context
 ) {
     var functionName by remember { mutableStateOf("") }
     Dialog(onDismissRequest = onDismiss) {
@@ -406,7 +398,7 @@ fun FunctionNameDialog(
             OutlinedTextField(
                 value = functionName,
                 onValueChange = { functionName = it },
-                label = { Text(label, color = WhiteClassic) },
+                label = { Text(label!!, color = Color.White) },
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = LocalTextStyle.current.copy(color = WhiteClassic),
                 keyboardOptions = KeyboardOptions(
@@ -419,7 +411,7 @@ fun FunctionNameDialog(
                                 onNameEntered(functionName)
                             }
                         } catch (e: Exception) {
-                            onError(e.message?:"Error")
+                            onError(e.message?:getString(context, R.string.default_error))
                         }
                     }
                 ),
@@ -440,7 +432,7 @@ fun FunctionNameDialog(
                             onNameEntered(functionName)
                         }
                     } catch (e: Exception) {
-                        onError(e.message?:"Error")
+                        onError(e.message?:getString(context, R.string.default_error))
                     }
                 },
                 shape = RoundedCornerShape(6.dp),
@@ -459,7 +451,8 @@ fun FunctionNameDialog(
 fun FunctionSelectionDialog(
     functions: List<String>,
     onFunctionSelected: (String) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    context: Context
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Column(
