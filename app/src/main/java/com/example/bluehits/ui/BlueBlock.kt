@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bluehits.ui.pinCreator.drawBlockPin
 import com.example.bluehits.ui.pinCreator.drawPin
+import com.example.interpreter.blocks.FunctionDefinitionBlock
 import com.example.interpreter.models.Pin
 import com.example.interpreter.models.Block
 import com.example.interpreter.models.Id
