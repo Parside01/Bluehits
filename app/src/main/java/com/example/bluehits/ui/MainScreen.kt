@@ -46,6 +46,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -79,8 +80,10 @@ import com.example.bluehits.ui.editPanel.BlockEditManager
 import com.example.bluehits.ui.editPanel.BlockEditPanel
 import com.example.interpreter.models.Id
 import com.example.interpreter.models.Program
+import kotlinx.coroutines.CancellationException
 import java.io.PrintStream
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.min
 
 @Composable
@@ -88,7 +91,7 @@ fun MainScreen() {
     val context = LocalContext.current
     val textMeasurer = rememberTextMeasurer()
     val blocksManager = remember { BlocksManager() }
-    val connectionManager = remember { UIConnectionManager() }
+    val connectionManager = remember { UIConnectionManager }
     var isPanelVisible by remember { mutableStateOf(false) }
     var draggedBlock by remember { mutableStateOf<BlueBlock?>(null) }
     var trashBounds by remember { mutableStateOf<Rect?>(null) }
@@ -102,6 +105,11 @@ fun MainScreen() {
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var successMessage by remember { mutableStateOf<String?>(null) }
     var isDeleteMode by remember { mutableStateOf(false) }
+
+    // Для асинхронного запуска программы.
+    var isProgramRunning by remember { mutableStateOf(false) }
+    val programScope = rememberCoroutineScope()
+    var programJob by remember { mutableStateOf<kotlinx.coroutines.Job?>(null) }
 
     errorMessage?.let { message ->
         ErrorNotification(
@@ -259,6 +267,7 @@ fun MainScreen() {
                 },
                 connectionManager = connectionManager,
                 blocksManager = blocksManager,
+                showError = { message -> errorMessage = message }
             )
         }
 
@@ -608,21 +617,30 @@ fun runProgram(
     blocksManager: BlocksManager,
     context: Context,
     showError: (String) -> Unit,
-    showSuccess: (String) -> Unit
+    showSuccess: (String) -> Unit,
+    onProgramStopped: () -> Unit,
+    programScope: kotlinx.coroutines.CoroutineScope
 ) {
     if (blocksManager.uiBlocks.size <= 1) {
         showError("Программа пуста: добавьте блоки и соединения")
+        onProgramStopped()
         return
     }
     if (blocksManager.uiBlocks.none { it.title == "Main" }) {
         showError("Ошибка: блок Main не найден")
+        onProgramStopped()
         return
     }
-    try {
-        Program.run()
-        val printValue = blocksManager.getPrintBlockValue(blocksManager.uiBlocks)
-        showSuccess("Вывод: ${printValue ?: "не определено"}")
-    } catch (e: Exception) {
-        showError("Ошибка при выполнении программы: ${e.message}")
+    programScope.launch {
+        try {
+            Program.run()
+        } catch (e: Exception) {
+            if (e !is CancellationException) {
+                showError("Ошибка при выполнении программы: ${e.message}")
+                onProgramStopped()
+            }
+        } finally {
+            onProgramStopped()
+        }
     }
 }

@@ -76,15 +76,14 @@ class FunctionReturnBlock(
 ) {
     private var executionState: ExecutionState = ExecutionState.WAITING
 
+    fun setExecutionState(state: ExecutionState) {
+        executionState = state
+    }
     fun getExecutionState() = executionState
 
     override fun execute(): ExecutionState {
         executionState = ExecutionState.COMPLETED
         return ExecutionState.COMPLETED
-    }
-
-    override fun rollback() {
-        executionState = ExecutionState.WAITING
     }
 
     override fun getFunctionName(): String {

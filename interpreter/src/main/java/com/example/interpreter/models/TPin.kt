@@ -73,10 +73,6 @@ class TPin<T>(
 
     // Молимся чтобы ничего не крашнулось.
     fun getType(): KClass<*> {
-        if (elementType != null) {
-            val type = emptyList<T>()::class
-            return type
-        }
         return type
     }
 

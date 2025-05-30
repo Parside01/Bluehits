@@ -21,11 +21,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.example.interpreter.blocks.FunctionPartBlock
 import com.example.interpreter.models.BlockManager
 import com.example.interpreter.models.ConnectionManager
+import com.example.interpreter.models.FunctionManager
 import com.example.interpreter.models.Id
 import com.example.interpreter.models.PinManager
 import com.example.interpreter.models.Program
+import com.example.interpreter.models.ScopeBlock
 
 class BlocksManager {
     private val _uiBlocks = mutableStateListOf<BlueBlock>()
@@ -302,30 +305,37 @@ class BlocksManager {
             pinIds.contains(pin1.id) || pinIds.contains(pin2.id)
         }
         UIPinManager.clearPinsForBlock(block)
+
+        val functionName = (block.logicBlock as? FunctionPartBlock)?.getFunctionName()
+        functionName?.let {
+            removeFunction(functionName)
+        }
+
         _uiBlocks.remove(block)
     }
 
-    fun clearAllBlocks(connectionManager: UIConnectionManager) {
+    private fun removeFunction(funcName: String) {
+        val info = FunctionManager.getFunctionInfo(funcName)
+        if (info == null) return
+        // Важная фигня так как иначе может зайти в беск. рекурсию.
+        FunctionManager.removeFunction(funcName)
+
+        val idToDelete = mutableListOf<Id>()
+        idToDelete.add(info.definitionBlock.id)
+        info.callBlocks.forEach { block -> idToDelete.add(block.id) }
+        info.returnBlocks.forEach { block -> idToDelete.add(block.id) }
+        idToDelete.forEach { id ->
+            val block = _uiBlocks.firstOrNull { it.id == id }
+            block?.let {
+                removeBlock(block, UIConnectionManager)
+            }
+        }
+    }
+
+    fun clearAllBlocks() {
         _uiBlocks.toList().forEach { block ->
             if (block.title != "Main") {
-                val pinIds = mutableListOf<Id>()
-                if (block.inBlockPin != null) {
-                    pinIds.add(block.inBlockPin.id)
-                }
-                block.inputPins.forEach { pinIds.add(it.id) }
-                block.outputPins.forEach { pinIds.add(it.id) }
-                pinIds.forEach { pinId ->
-                    PinManager.getPin(pinId)?.let { pin ->
-                        ConnectionManager.getPinConnections(pin).forEach { connection ->
-                            ConnectionManager.disconnect(connection.id.string())
-                        }
-                    }
-                }
-                connectionManager.connections.removeAll { (pin1, pin2) ->
-                    pinIds.contains(pin1.id) || pinIds.contains(pin2.id)
-                }
-                UIPinManager.clearPinsForBlock(block)
-                _uiBlocks.remove(block)
+                removeBlock(block, UIConnectionManager)
             }
         }
     }

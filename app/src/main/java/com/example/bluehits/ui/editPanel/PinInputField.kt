@@ -430,12 +430,12 @@ fun ArrayInputField(
     val transition = updateTransition(targetState = state.isVisible, label = "editPanelTransition")
 
     LaunchedEffect(value) {
-        items.value = (value as? Array<*>)?.toList() ?: emptyList()
+        items.value = (value as? List<*>)?.toList() ?: emptyList()
     }
 
     LaunchedEffect(items.value) {
-        BlockEditManager.updatePinValue(fieldPin.pin, items.value.toTypedArray())
-        onValueChange(items.value.toTypedArray())
+        BlockEditManager.updatePinValue(fieldPin.pin, items.value.toList())
+        onValueChange(items.value.toList())
     }
 
     Column(
@@ -466,15 +466,15 @@ fun ArrayInputField(
                             else -> newValue
                         }
                         items.value = newList
-                        BlockEditManager.updatePinValue(fieldPin.pin, newList.toTypedArray())
-                        onValueChange(newList.toTypedArray())
+                        BlockEditManager.updatePinValue(fieldPin.pin, newList.toList())
+                        onValueChange(newList.toList())
                     },
                     onRemove = {
                         val newList = items.value.toMutableList()
                         newList.removeAt(index)
                         items.value = newList
-                        BlockEditManager.updatePinValue(fieldPin.pin, newList.toTypedArray())
-                        onValueChange(newList.toTypedArray())
+                        BlockEditManager.updatePinValue(fieldPin.pin, newList.toList())
+                        onValueChange(newList.toList())
                     },
                     fieldPin = fieldPin,
                     elementType = elementType,
@@ -491,7 +491,7 @@ fun ArrayInputField(
                         val newList = items.value.toMutableList()
                         newList.add(createDefaultValue())
                         items.value = newList
-                        BlockEditManager.updatePinValue(fieldPin.pin, newList.toTypedArray())
+                        BlockEditManager.updatePinValue(fieldPin.pin, newList.toList())
                     },
                 contentAlignment = Alignment.Center
             ) {
@@ -510,8 +510,8 @@ fun ArrayInputField(
                     set(index, newValue)
                 }
                 items.value = newList
-                BlockEditManager.updatePinValue(fieldPin.pin, items.value.toTypedArray())
-                onValueChange(items.value.toTypedArray())
+                BlockEditManager.updatePinValue(fieldPin.pin, items.value.toList())
+                onValueChange(items.value.toList())
             },
             onDismiss = { selectedIndex.value = null },
             fieldPin = fieldPin,

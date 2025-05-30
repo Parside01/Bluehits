@@ -178,7 +178,6 @@ fun BlockEditPanel(
                     val pin = when {
                         selectedType.startsWith("Array<") -> {
                             val elementType = selectedType.removePrefix("Array<").removeSuffix(">")
-                            println(elementType)
                             when (elementType) {
                                 "Int" -> PinManager.createPinArray(pinName, ownId = state.blockId, elementType = Int::class)
                                 "Float" -> PinManager.createPinArray(pinName, ownId = state.blockId, elementType = Float::class)

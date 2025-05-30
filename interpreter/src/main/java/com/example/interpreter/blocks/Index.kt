@@ -40,9 +40,9 @@ class SwapBlock<T:Any> (
 ) : Block(id,
     "Swap",
     mutableListOf(
-        PinManager.createPinArray<T>("arr", ownId = id, elementType = type),
+        PinManager.createPinArray("arr", ownId = id, elementType = type),
         PinManager.createPinInt("i", ownId = id, value = 0),
-        PinManager.createPinInt("i", ownId = id, value = 0)),
+        PinManager.createPinInt("j", ownId = id, value = 0)),
     mutableListOf(PinManager.createPinArray<T>("new", ownId = id, elementType = type))
 ) {
     override fun execute(): ExecutionState {

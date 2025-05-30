@@ -90,14 +90,14 @@ class BlueBlock(
     var outputPins: MutableList<Pin> = mutableListOf(),
     val inBlockPin: Pin? = null,
     val outBlockPin: Pin? = null,
-    val functionName: String? = null
+    val functionName: String? = null,
+    var logicBlock: Block? = null
 ) {
     var width by mutableStateOf(0f)
     var height by mutableStateOf(0f)
 
     var x by mutableStateOf(initialX)
     var y by mutableStateOf(initialY)
-    var logicBlock: Block? = null
 
     val layout: BlockLayout
         get() = BlockLayout(width, height)
@@ -300,43 +300,43 @@ fun DrawScope.drawPins(
     val pinRadius = PIN_RADIUS_DP.toPx()
     val textPadding = PIN_TEXT_PADDING_DP.toPx()
 
-    if (blockPin != null  && pinsCoordinates.isNotEmpty()) {
+    if (blockPin != null && pinsCoordinates.isNotEmpty()) {
         val firstPin = pinCreator.createPin(
             pinsCoordinates[0],
             block,
             type,
             blockPin
         )
-        drawBlockPin(firstPin, isSelected = firstPin.id == selectedPinId)
+        if (blockPin.getValue() is Id) {
+            drawBlockPin(firstPin, isSelected = firstPin.id == selectedPinId)
+        } else {
+            drawPin(firstPin, isSelected = firstPin.id == selectedPinId)
+        }
 
-        if (block.inBlockPin != null) {
-            val pinName = block.inBlockPin.name
+        if (blockPin.name.isNotEmpty()) {
+            val textStyle = TextStyle(
+                color = PinTextColor,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Normal
+            )
+            val textLayout = textMeasurer.measure(
+                text = blockPin.name,
+                style = textStyle
+            )
 
-            if (pinName.isNotEmpty()) {
-                val textStyle = TextStyle(
-                    color = PinTextColor,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Normal
-                )
-                val textLayout = textMeasurer.measure(
-                    text = pinName,
-                    style = textStyle
-                )
+            val textX: Float
+            val textY: Float = pinsCoordinates[0].y - textLayout.size.height / 2
 
-                val textX: Float
-                val textY: Float = pinsCoordinates[0].y - textLayout.size.height / 2
-
-                if (type == InOutPinType.INPUT) {
-                    textX = pinsCoordinates[0].x + pinRadius + textPadding
-                } else {
-                    textX = pinsCoordinates[0].x - pinRadius - textPadding - textLayout.size.width
-                }
-
-                drawText(
-                    textLayoutResult = textLayout,
-                    topLeft = Offset(block.x + textX, block.y + textY)
-                )
+            if (type == InOutPinType.INPUT) {
+                textX = pinsCoordinates[0].x + pinRadius + textPadding
+            } else {
+                textX = pinsCoordinates[0].x - pinRadius - textPadding - textLayout.size.width
             }
+
+            drawText(
+                textLayoutResult = textLayout,
+                topLeft = Offset(block.x + textX, block.y + textY)
+            )
         }
     }
 
@@ -348,7 +348,11 @@ fun DrawScope.drawPins(
                 type,
                 logicPins[i]
             )
-            drawPin(pin, isSelected = pin.id == selectedPinId)
+            if (logicPins[i].getValue() is Id) {
+                drawBlockPin(pin, isSelected = pin.id == selectedPinId)
+            } else {
+                drawPin(pin, isSelected = pin.id == selectedPinId)
+            }
 
             val pinName = logicPins[i].name
             if (pinName.isNotEmpty()) {

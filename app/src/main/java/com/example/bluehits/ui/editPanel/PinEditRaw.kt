@@ -15,9 +15,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-
+import com.example.bluehits.ui.theme.*
 
 @Composable
 fun PinEditRow(
@@ -25,9 +24,20 @@ fun PinEditRow(
     onValueChange: (Any) -> Unit
 ) {
     val currentValue = fieldPin.pin.getValue()
+    val typeColorMap = mapOf(
+        Int::class to PinInt,
+        String::class to PinString,
+        Boolean::class to PinBoolean,
+        Float::class to PinFloat,
+        Double::class to PinDouble,
+        Long::class to PinLong,
+        Any::class to PinAny,
+        List::class to PinList
+    )
+    val pinColor = typeColorMap[fieldPin.pin.getType()] ?: PinAny
 
     Column {
-        Row (
+        Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -35,15 +45,12 @@ fun PinEditRow(
                 modifier = Modifier
                     .size(24.dp)
                     .background(
-                        color = when {
-                            fieldPin.isInput -> Color.Green
-                            else -> Color.Red
-                        },
+                        color = pinColor,
                         shape = CircleShape
                     )
                     .border(
                         width = 1.5.dp,
-                        color = Color.Black,
+                        color = PinBorder,
                         shape = CircleShape
                     )
             )
@@ -52,7 +59,7 @@ fun PinEditRow(
 
             Text(
                 text = fieldPin.pin.name,
-                color = Color.White,
+                color = BlockPin,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -62,6 +69,6 @@ fun PinEditRow(
         PinInputField(filedPin = fieldPin, onValueChange = { newValue ->
             onValueChange(newValue)
             BlockEditManager.updatePinValue(fieldPin.pin, newValue)
-        }, value=currentValue)
+        }, value = currentValue)
     }
 }

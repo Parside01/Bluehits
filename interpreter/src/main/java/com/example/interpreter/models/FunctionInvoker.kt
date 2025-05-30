@@ -8,7 +8,6 @@ internal object FunctionInvoker {
 
         arguments.forEach { (arg, value) ->
             definitionBlock.pinByName(arg)?.setValue(value)
-            println(definitionBlock.outputs)
         }
 
         // TODO: Вынести этот блок кода в ContextManager
@@ -28,9 +27,15 @@ internal object FunctionInvoker {
         val returnBlock = functionInfo.returnBlocks.firstOrNull { block ->
             block.getExecutionState() == ExecutionState.COMPLETED
         }
+
         returnBlock?.inputs?.forEach { res ->
             returnValues[res.name] = res.getValue()
         }
+
+        functionInfo.returnBlocks.forEach { returnBlock ->
+            returnBlock.setExecutionState(ExecutionState.WAITING)
+        }
+
         return returnValues
     }
 }

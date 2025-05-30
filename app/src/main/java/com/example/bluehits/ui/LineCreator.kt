@@ -17,7 +17,7 @@ class LineCreator {
         val controlPoint1 = lerp(startPoint, endPoint, 0.7f) - Offset(100f, 0f)
         val controlPoint2 = lerp(startPoint, endPoint, 0.3f) + Offset(100f, 0f)
 
-        val path = androidx.compose.ui.graphics.Path().apply {
+        val path = Path().apply {
             moveTo(startPoint.x, startPoint.y)
             cubicTo(
                 controlPoint1.x, controlPoint1.y,

@@ -48,6 +48,7 @@ object BlockAdapter {
                 is FunctionReturnBlock -> null
                 else -> logicBlock.outBlockPin
             },
+            logicBlock = logicBlock,
             functionName = when (logicBlock) {
                 is FunctionDefinitionBlock -> logicBlock.getFunctionName()
                 is FunctionCallBlock -> logicBlock.getFunctionName()

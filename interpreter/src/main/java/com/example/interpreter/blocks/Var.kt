@@ -106,7 +106,6 @@ class ArrayBlock<T:Any> internal constructor(
         if (!::varState.isInitialized) {
             throw IllegalStateException("ArrayBlock '${name}' (ID: ${id.string()}) not initialized.")
         }
-
         val inputValue = setPin.getValue()
         varState.setValue(inputValue as List<T>)
         getPin.setValue(inputValue)

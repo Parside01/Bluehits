@@ -24,6 +24,7 @@ import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextMeasurer
 import com.example.bluehits.ui.editPanel.BlockEditManager
+import com.example.interpreter.blocks.FunctionDefinitionBlock
 import com.example.interpreter.models.Id
 import kotlin.math.sqrt
 
@@ -35,13 +36,14 @@ fun CreateCanvas(
     onDrag: (dragAmount: Offset) -> Unit,
     onBlockDrag: (block: BlueBlock, dragAmount: Offset, isDragging: Boolean) -> Unit,
     onBlockClick: (blockId: Id) -> Unit,
-    blocksManager: BlocksManager
+    blocksManager: BlocksManager,
+    showError: (String) -> Unit
 ) {
     var canvasOffset by remember { mutableStateOf(Offset.Zero) }
     var scale by remember { mutableStateOf(1f) }
     var selectedBlock by remember { mutableStateOf<BlueBlock?>(null) }
     val lineCreator = remember { LineCreator() }
-    val triggerRecomposition = blocksManager.blockUpdated.value
+//    val triggerRecomposition = blocksManager.blockUpdated.value
     val density = LocalDensity.current
 
     Canvas(
@@ -126,13 +128,15 @@ fun CreateCanvas(
                 detectTapGestures { offset ->
                     val adjustedOffset = (offset - canvasOffset) / scale
                     UIPinManager.findPinAt(adjustedOffset)?.let { pin ->
-                        connectionManager.handlePinClick(pin) { }
+                        connectionManager.handlePinClick(pin) { message ->
+                            showError(message)
+                        }
                     } ?: run {
                         blocks.firstOrNull { block ->
                             adjustedOffset.x in block.x..(block.x + block.width) &&
                                     adjustedOffset.y in block.y..(block.y + block.height)
                         }?.let { clickedBlock ->
-                            if (clickedBlock.title.startsWith("def ")) {
+                            if (clickedBlock.logicBlock is FunctionDefinitionBlock) {
                                 BlockEditManager.showEditPanel(clickedBlock)
                             } else {
                                 onBlockClick(clickedBlock.id)
