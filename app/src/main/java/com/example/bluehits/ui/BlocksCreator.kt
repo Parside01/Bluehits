@@ -309,7 +309,6 @@ class BlocksManager {
                 removeBlock(block, UIConnectionManager)
             }
         }
-        println(idToDelete)
     }
 
     fun clearAllBlocks() {
