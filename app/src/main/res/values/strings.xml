@@ -29,6 +29,9 @@
     <string name="long_block_label">Long</string>
     <string name="add_block_label">Add</string>
     <string name="sub_block_label">Sub</string>
+    <string name="multi_block_label">Multi</string>
+    <string name="div_block_label">Div</string>
+    <string name="mod_block_label">Mod</string>
     <string name="greater_block_label">Greater</string>
     <string name="ifelse_block_label">IfElse</string>
     <string name="for_block_label">For</string>

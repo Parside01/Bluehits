@@ -94,7 +94,8 @@ class BlocksManager(private val context: Context) {
 
     fun addNewBlock(type: String) {
         when (type) {
-            getString(context, R.string.index_block_label), getString(context, R.string.append_block_label), getString(context, R.string.swap_block_label), getString(context, R.string.array_block_label), getString(context, R.string.add_block_label), getString(context, R.string.sub_block_label), getString(context, R.string.greater_block_label) -> {
+            getString(context, R.string.index_block_label), getString(context, R.string.append_block_label), getString(context, R.string.swap_block_label), getString(context, R.string.array_block_label), getString(context, R.string.add_block_label),
+            getString(context, R.string.sub_block_label), getString(context, R.string.multi_block_label), getString(context, R.string.div_block_label), getString(context, R.string.mod_block_label),  getString(context, R.string.greater_block_label) -> {
                 currentBlockType = type
                 _showTypeDialog.value = true
             }
@@ -262,6 +263,27 @@ class BlocksManager(private val context: Context) {
                     DataType.FLOAT -> BlockManager.createSubBlock(type = Float::class)
                     DataType.DOUBLE -> BlockManager.createSubBlock(type = Double::class)
                     DataType.LONG -> BlockManager.createSubBlock(type = Long::class)
+                }
+
+                getString(context, R.string.multi_block_label) -> when (type) {
+                    DataType.INT -> BlockManager.createMulBlock(type = Int::class)
+                    DataType.FLOAT -> BlockManager.createMulBlock(type = Float::class)
+                    DataType.DOUBLE -> BlockManager.createMulBlock(type = Double::class)
+                    DataType.LONG -> BlockManager.createMulBlock(type = Long::class)
+                }
+
+                getString(context, R.string.div_block_label) -> when (type) {
+                    DataType.INT -> BlockManager.createDivBlock(type = Int::class)
+                    DataType.FLOAT -> BlockManager.createDivBlock(type = Float::class)
+                    DataType.DOUBLE -> BlockManager.createDivBlock(type = Double::class)
+                    DataType.LONG -> BlockManager.createDivBlock(type = Long::class)
+                }
+
+                getString(context, R.string.mod_block_label) -> when (type) {
+                    DataType.INT -> BlockManager.createModBlock(type = Int::class)
+                    DataType.FLOAT -> BlockManager.createModBlock(type = Float::class)
+                    DataType.DOUBLE -> BlockManager.createModBlock(type = Double::class)
+                    DataType.LONG -> BlockManager.createModBlock(type = Long::class)
                 }
 
                 getString(context, R.string.greater_block_label) -> when (type) {

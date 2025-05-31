@@ -215,10 +215,10 @@ object BlockManager {
                 { a, b ->
                     if (b.toDouble() == 0.0) throw ArithmeticException("Division by zero")
                     when (type) {
-                        Int::class -> (a as Int) / (b as Int)
-                        Double::class -> (a as Double) / (b as Double)
-                        Float::class -> (a as Float) / (b as Float)
-                        Long::class -> (a as Long) / (b as Long)
+                        Int::class -> (a as Int) % (b as Int)
+                        Double::class -> (a as Double) % (b as Double)
+                        Float::class -> (a as Float) % (b as Float)
+                        Long::class -> (a as Long) % (b as Long)
                         else -> throw IllegalArgumentException("Unsupported type for mod: $type")
                     } as T
                 },
