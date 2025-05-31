@@ -33,6 +33,10 @@
     <string name="div_block_label">Div</string>
     <string name="mod_block_label">Mod</string>
     <string name="greater_block_label">Greater</string>
+    <string name="less_block_label">Less</string>
+    <string name="greaterOrEqual_block_label">GreaterOrEqual</string>
+    <string name="lessOrEqual_block_label">LessOrEqual</string>
+    <string name="equal_block_label">Equal</string>
     <string name="ifelse_block_label">IfElse</string>
     <string name="for_block_label">For</string>
     <string name="array_block_label">Array</string>
@@ -48,6 +52,7 @@
     <string name="function_call_name_prefix">Call</string>
     <string name="function_return_name_prefix">Return</string>
     <string name="function_return_block_label">Function return</string>
+    <string name="cast_block_label">Cast </string>
     <string name="close_notification">Close</string>
     <string name="default_error">Error</string>
 

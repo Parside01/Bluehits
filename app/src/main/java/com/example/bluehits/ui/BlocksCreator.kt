@@ -95,7 +95,8 @@ class BlocksManager(private val context: Context) {
     fun addNewBlock(type: String) {
         when (type) {
             getString(context, R.string.index_block_label), getString(context, R.string.append_block_label), getString(context, R.string.swap_block_label), getString(context, R.string.len_block_label), getString(context, R.string.array_block_label), getString(context, R.string.add_block_label),
-            getString(context, R.string.sub_block_label), getString(context, R.string.multi_block_label), getString(context, R.string.div_block_label), getString(context, R.string.mod_block_label),  getString(context, R.string.greater_block_label) -> {
+            getString(context, R.string.sub_block_label), getString(context, R.string.multi_block_label), getString(context, R.string.div_block_label), getString(context, R.string.mod_block_label),  getString(context, R.string.greater_block_label),
+            getString(context, R.string.less_block_label), getString(context, R.string.greaterOrEqual_block_label), getString(context, R.string.lessOrEqual_block_label), getString(context, R.string.equal_block_label)-> {
                 currentBlockType = type
                 _showTypeDialog.value = true
             }
@@ -115,7 +116,7 @@ class BlocksManager(private val context: Context) {
             getString(context, R.string.float_block_label) -> showFunctionNameDialog(getString(context, R.string.float_block_label))
             getString(context, R.string.bool_block_label) -> showFunctionNameDialog(getString(context, R.string.bool_block_label))
             getString(context, R.string.string_block_label) -> showFunctionNameDialog(getString(context, R.string.string_block_label))
-            "Cast" -> {
+            getString(context, R.string.cast_block_label) -> {
                 _showCastFromDialog.value = true
             }
             "Int" -> showFunctionNameDialog("Int")
@@ -298,6 +299,34 @@ class BlocksManager(private val context: Context) {
                     DataType.FLOAT -> BlockManager.createGreaterBlock(type = Float::class)
                     DataType.DOUBLE -> BlockManager.createGreaterBlock(type = Double::class)
                     DataType.LONG -> BlockManager.createGreaterBlock(type = Long::class)
+                }
+
+                getString(context, R.string.less_block_label) -> when (type) {
+                    DataType.INT -> BlockManager.createLessBlock(type = Int::class)
+                    DataType.FLOAT -> BlockManager.createLessBlock(type = Float::class)
+                    DataType.DOUBLE -> BlockManager.createLessBlock(type = Double::class)
+                    DataType.LONG -> BlockManager.createLessBlock(type = Long::class)
+                }
+
+                getString(context, R.string.greaterOrEqual_block_label) -> when (type) {
+                    DataType.INT -> BlockManager.createGreaterOrEqualBlock(type = Int::class)
+                    DataType.FLOAT -> BlockManager.createGreaterOrEqualBlock(type = Float::class)
+                    DataType.DOUBLE -> BlockManager.createGreaterOrEqualBlock(type = Double::class)
+                    DataType.LONG -> BlockManager.createGreaterOrEqualBlock(type = Long::class)
+                }
+
+                getString(context, R.string.lessOrEqual_block_label) -> when (type) {
+                    DataType.INT -> BlockManager.createLessOrEqualBlock(type = Int::class)
+                    DataType.FLOAT -> BlockManager.createLessOrEqualBlock(type = Float::class)
+                    DataType.DOUBLE -> BlockManager.createLessOrEqualBlock(type = Double::class)
+                    DataType.LONG -> BlockManager.createLessOrEqualBlock(type = Long::class)
+                }
+
+                getString(context, R.string.equal_block_label) -> when (type) {
+                    DataType.INT -> BlockManager.createEqualBlock(type = Int::class)
+                    DataType.FLOAT -> BlockManager.createEqualBlock(type = Float::class)
+                    DataType.DOUBLE -> BlockManager.createEqualBlock(type = Double::class)
+                    DataType.LONG -> BlockManager.createEqualBlock(type = Long::class)
                 }
 
                 else -> throw IllegalArgumentException(getString(context, R.string.unsupported_type))

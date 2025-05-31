@@ -471,6 +471,10 @@ fun ControlPanel(
             getString(context, R.string.div_block_label) to getString(context, R.string.div_block_label),
             getString(context, R.string.mod_block_label) to getString(context, R.string.mod_block_label),
             getString(context, R.string.greater_block_label) to getString(context, R.string.greater_block_label),
+            getString(context, R.string.less_block_label) to getString(context, R.string.less_block_label),
+            getString(context, R.string.greaterOrEqual_block_label) to getString(context, R.string.greaterOrEqual_block_label),
+            getString(context, R.string.lessOrEqual_block_label) to getString(context, R.string.lessOrEqual_block_label),
+            getString(context, R.string.equal_block_label) to getString(context, R.string.equal_block_label),
             getString(context, R.string.ifelse_block_label) to getString(context, R.string.ifelse_block_label),
             getString(context, R.string.for_block_label) to getString(context, R.string.for_block_label),
             getString(context, R.string.array_block_label) to getString(context, R.string.array_block_label),
@@ -484,7 +488,7 @@ fun ControlPanel(
             getString(context, R.string.function_def_block_label) to getString(context, R.string.function_def_block_label),
             getString(context, R.string.function_call_block_label) to getString(context, R.string.function_call_block_label),
             getString(context, R.string.function_return_block_label) to getString(context, R.string.function_return_block_label),
-            "Cast" to "Cast"
+            getString(context, R.string.cast_block_label) to getString(context, R.string.cast_block_label),
         )
 
         buttons.forEach { (blockType, label) ->
