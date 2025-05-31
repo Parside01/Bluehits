@@ -23,3 +23,19 @@ class AppendBlock <T: Any>(
         return ExecutionState.COMPLETED
     }
 }
+
+class LenBlock <T: Any>(
+    id: Id,
+    type: KClass<T>
+) : Block(
+    id,
+    "Len",
+    mutableListOf(PinManager.createPinArray("arr", ownId = id, elementType = type)),
+    mutableListOf(PinManager.createPinInt("len", ownId = id)),
+) {
+    override fun execute(): ExecutionState {
+        val array = inputs.first().getValue() as List<*>
+        outputs[0].setValue(array.size)
+        return ExecutionState.COMPLETED
+    }
+}
