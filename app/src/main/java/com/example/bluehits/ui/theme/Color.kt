@@ -25,18 +25,20 @@ val SelectedPin = Color(0xFFFFFFFF)
 val BlockPin = Color(0xFFF5F6F5)
 val PinTextColor = Color(0xFFFFFFFF)
 
-val BlockBodyColor = Color(0xFF3216B0)
-val BlockTitleColor = Color(0xFF1B0773)
-val BlockBorderColor = Color(0xFF3D2D84)
+val BlockBodyColor = Color(0xFF788792)
+val BlockTitleColor = Color(0xFF647582)
+val BlockBorderColor = Color(0xFF647582)
 val BlockShadowColor = Color(0x40000000)
-val BlockTitleTextColor = Color(0xFFCCCCCC)
+val BlockTitleTextColor = Color(0xFFe6e6e5)
+
+val BezierLineColor = Color(0xFFd7dbde)
 
 val CanvasColor = Color(0xFF212121)
-val ConsoleBackgroundColor = Color(0xFF303030)
+val ConsoleBackgroundColor = Color(0xFF2b3032)
 val RightPanelColor = Color(0xFF292525)
-val ControlPanelBackground = Color.White
-val ControlPanelButtonStyleContainer = Color.DarkGray
-val ColorForControlPanelButton = Color(0xFF888888)
+val ControlPanelBackground = Color(0xFF2b3032)
+val ControlPanelButtonStyleContainer = Color(0xFF42494d)
+val ColorForControlPanelButton = Color(0xFF42494d)
 val MainScreenConstraintLayoutBackground = Color.Black
 
 val BlockEditPanelSurface = Color(0xFF333333)
@@ -63,8 +65,6 @@ val FunctionSelectionContent = Color.Black
 val BaseButtonColor = Color.White
 val ButtonBorder = Color.Black
 val ButtonStyleTextColor = Color.Black
-
-val BezierLineColor = Color(0xFF8370D8)
 
 val RunIconColor = Color.Green
 val AddButtonColor = Color.White
