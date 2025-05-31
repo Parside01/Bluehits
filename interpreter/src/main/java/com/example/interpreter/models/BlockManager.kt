@@ -14,6 +14,7 @@ import com.example.interpreter.blocks.FunctionReturnBlock
 import com.example.interpreter.blocks.IfElseBlock
 import com.example.interpreter.blocks.IndexBlock
 import com.example.interpreter.blocks.IntBlock
+import com.example.interpreter.blocks.LenBlock
 import com.example.interpreter.blocks.MainBlock
 import com.example.interpreter.blocks.MathBlock
 import com.example.interpreter.blocks.PrintBlock
@@ -71,13 +72,86 @@ object BlockManager {
                         Double::class -> (a as Double) > (b as Double)
                         Float::class -> (a as Float) > (b as Float)
                         Long::class -> (a as Long) > (b as Long)
-                        else -> throw IllegalArgumentException("Unsupported type for add: $type")
+                        else -> throw IllegalArgumentException("Unsupported type for greater: $type")
                     }
                 },
                 type = type
             )
         }
     }
+
+    fun <T : Number> createLessBlock(type: KClass<T>): Block {
+        return createBlock { id ->
+            BinaryLogicOperatorBlock(
+                id, "<",
+                { a, b ->
+                    when (type) {
+                        Int::class -> (a as Int) < (b as Int)
+                        Double::class -> (a as Double) < (b as Double)
+                        Float::class -> (a as Float) < (b as Float)
+                        Long::class -> (a as Long) < (b as Long)
+                        else -> throw IllegalArgumentException("Unsupported type for less: $type")
+                    }
+                },
+                type = type
+            )
+        }
+    }
+
+    fun <T : Number> createGreaterOrEqualBlock(type: KClass<T>): Block {
+        return createBlock { id ->
+            BinaryLogicOperatorBlock(
+                id, ">=",
+                { a, b ->
+                    when (type) {
+                        Int::class -> (a as Int) >= (b as Int)
+                        Double::class -> (a as Double) >= (b as Double)
+                        Float::class -> (a as Float) >= (b as Float)
+                        Long::class -> (a as Long) >= (b as Long)
+                        else -> throw IllegalArgumentException("Unsupported type for greater or equal: $type")
+                    }
+                },
+                type = type
+            )
+        }
+    }
+
+    fun <T : Number> createLessOrEqualBlock(type: KClass<T>): Block {
+        return createBlock { id ->
+            BinaryLogicOperatorBlock(
+                id, "<=",
+                { a, b ->
+                    when (type) {
+                        Int::class -> (a as Int) <= (b as Int)
+                        Double::class -> (a as Double) <= (b as Double)
+                        Float::class -> (a as Float) <= (b as Float)
+                        Long::class -> (a as Long) <= (b as Long)
+                        else -> throw IllegalArgumentException("Unsupported type for less: $type")
+                    }
+                },
+                type = type
+            )
+        }
+    }
+
+    fun <T : Number> createEqualBlock(type: KClass<T>): Block {
+        return createBlock { id ->
+            BinaryLogicOperatorBlock(
+                id, "==",
+                { a, b ->
+                    when (type) {
+                        Int::class -> (a as Int) == (b as Int)
+                        Double::class -> (a as Double) == (b as Double)
+                        Float::class -> (a as Float) == (b as Float)
+                        Long::class -> (a as Long) == (b as Long)
+                        else -> throw IllegalArgumentException("Unsupported type for less: $type")
+                    }
+                },
+                type = type
+            )
+        }
+    }
+
 
     fun <T : Number> createAddBlock(type: KClass<T>): Block {
         return createBlock { id ->
@@ -97,6 +171,64 @@ object BlockManager {
         }
     }
 
+    fun <T : Number> createMulBlock(type: KClass<T>): Block {
+        return createBlock { id ->
+            BinaryOperatorBlock(
+                id, "Multi",
+                { a, b ->
+                    when (type) {
+                        Int::class -> (a as Int) * (b as Int)
+                        Double::class -> (a as Double) * (b as Double)
+                        Float::class -> (a as Float) * (b as Float)
+                        Long::class -> (a as Long) * (b as Long)
+                        else -> throw IllegalArgumentException("Unsupported type for multiply: $type")
+                    } as T
+                },
+                type = type
+            )
+        }
+    }
+
+    fun <T : Number> createDivBlock(type: KClass<T>): Block {
+        return createBlock { id ->
+            BinaryOperatorBlock(
+                id, "Div",
+                { a, b ->
+                    if (b.toDouble() == 0.0) throw ArithmeticException("Division by zero")
+                    when (type) {
+                        Int::class -> (a as Int) / (b as Int)
+                        Double::class -> (a as Double) / (b as Double)
+                        Float::class -> (a as Float) / (b as Float)
+                        Long::class -> (a as Long) / (b as Long)
+                        else -> throw IllegalArgumentException("Unsupported type for divide: $type")
+                    } as T
+                },
+                type = type
+            )
+        }
+    }
+
+    fun <T : Number> createModBlock(type: KClass<T>): Block {
+        return createBlock { id ->
+            BinaryOperatorBlock(
+                id, "Mod",
+                { a, b ->
+                    if (b.toDouble() == 0.0) throw ArithmeticException("Division by zero")
+                    when (type) {
+                        Int::class -> (a as Int) / (b as Int)
+                        Double::class -> (a as Double) / (b as Double)
+                        Float::class -> (a as Float) / (b as Float)
+                        Long::class -> (a as Long) / (b as Long)
+                        else -> throw IllegalArgumentException("Unsupported type for mod: $type")
+                    } as T
+                },
+                type = type
+            )
+        }
+    }
+
+
+
     inline fun <reified T : Any> createSwapBlock(): Block {
         return createBlock { id -> SwapBlock(id, T::class) }
     }
@@ -107,6 +239,10 @@ object BlockManager {
 
     inline fun <reified T : Any> createAppendBlock(): Block {
         return createBlock { id -> AppendBlock(id, T::class) }
+    }
+
+    inline fun <reified T : Any> createLenBlock(): Block {
+        return createBlock { id -> LenBlock(id, T::class) }
     }
 
     fun <T : Number> createSubBlock(type: KClass<T>): Block {
