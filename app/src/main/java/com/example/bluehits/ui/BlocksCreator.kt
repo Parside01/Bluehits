@@ -94,7 +94,7 @@ class BlocksManager(private val context: Context) {
 
     fun addNewBlock(type: String) {
         when (type) {
-            getString(context, R.string.index_block_label), getString(context, R.string.append_block_label), getString(context, R.string.swap_block_label), getString(context, R.string.array_block_label), getString(context, R.string.add_block_label),
+            getString(context, R.string.index_block_label), getString(context, R.string.append_block_label), getString(context, R.string.swap_block_label), getString(context, R.string.len_block_label), getString(context, R.string.array_block_label), getString(context, R.string.add_block_label),
             getString(context, R.string.sub_block_label), getString(context, R.string.multi_block_label), getString(context, R.string.div_block_label), getString(context, R.string.mod_block_label),  getString(context, R.string.greater_block_label) -> {
                 currentBlockType = type
                 _showTypeDialog.value = true
@@ -242,6 +242,13 @@ class BlocksManager(private val context: Context) {
                     DataType.FLOAT -> BlockManager.createSwapBlock<Float>()
                     DataType.DOUBLE -> BlockManager.createSwapBlock<Double>()
                     DataType.LONG -> BlockManager.createSwapBlock<Long>()
+                }
+
+                getString(context, R.string.len_block_label) -> when (type) {
+                    DataType.INT -> BlockManager.createLenBlock<Int>()
+                    DataType.FLOAT -> BlockManager.createLenBlock<Float>()
+                    DataType.DOUBLE -> BlockManager.createLenBlock<Double>()
+                    DataType.LONG -> BlockManager.createLenBlock<Long>()
                 }
 
                 getString(context, R.string.array_block_label) -> when (type) {

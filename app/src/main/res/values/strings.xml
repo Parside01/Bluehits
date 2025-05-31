@@ -41,6 +41,7 @@
     <string name="index_block_label">Index</string>
     <string name="append_block_label">Append</string>
     <string name="swap_block_label">Swap</string>
+    <string name="len_block_label">Length</string>
     <string name="print_block_label">Print</string>
     <string name="function_def_block_label">Function def</string>
     <string name="function_call_block_label">Function call</string>

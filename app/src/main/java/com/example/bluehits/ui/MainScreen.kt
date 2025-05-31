@@ -478,6 +478,7 @@ fun ControlPanel(
             getString(context, R.string.math_block_label) to getString(context, R.string.math_block_label),
             getString(context, R.string.index_block_label) to getString(context, R.string.index_block_label),
             getString(context, R.string.append_block_label) to getString(context, R.string.append_block_label),
+            getString(context, R.string.len_block_label) to getString(context, R.string.len_block_label),
             getString(context, R.string.swap_block_label) to getString(context, R.string.swap_block_label),
             getString(context, R.string.print_block_label) to getString(context, R.string.print_block_label),
             getString(context, R.string.function_def_block_label) to getString(context, R.string.function_def_block_label),
