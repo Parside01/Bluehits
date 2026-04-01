@@ -15,7 +15,7 @@ object ContextManager {
     // Тут лежит блок : контекст, к которому он принадлежит.
     private val attachedBlocks = mutableMapOf<Id, Context>();
     internal fun attachBlockToContext(id: Id, ctx: Context): Boolean {
-        if (attachedBlocks.containsKey(id)) {
+        if (attachedBlocks.containsKey(id) && attachedBlocks[id] != ctx) {
             return false
         }
         attachedBlocks[id] = ctx

@@ -158,6 +158,7 @@ fun MainScreen() {
             }
         )
     }
+    CastTypeDialogs(blocksManager)
 
     if (blocksManager.showFunctionNameDialog.value) {
         FunctionNameDialog(
@@ -466,7 +467,14 @@ fun ControlPanel(
             getString(context, R.string.bool_block_label) to getString(context, R.string.bool_block_label),
             getString(context, R.string.add_block_label) to getString(context, R.string.add_block_label),
             getString(context, R.string.sub_block_label) to getString(context, R.string.sub_block_label),
+            getString(context, R.string.multi_block_label) to getString(context, R.string.multi_block_label),
+            getString(context, R.string.div_block_label) to getString(context, R.string.div_block_label),
+            getString(context, R.string.mod_block_label) to getString(context, R.string.mod_block_label),
             getString(context, R.string.greater_block_label) to getString(context, R.string.greater_block_label),
+            getString(context, R.string.less_block_label) to getString(context, R.string.less_block_label),
+            getString(context, R.string.greaterOrEqual_block_label) to getString(context, R.string.greaterOrEqual_block_label),
+            getString(context, R.string.lessOrEqual_block_label) to getString(context, R.string.lessOrEqual_block_label),
+            getString(context, R.string.equal_block_label) to getString(context, R.string.equal_block_label),
             getString(context, R.string.ifelse_block_label) to getString(context, R.string.ifelse_block_label),
             getString(context, R.string.for_block_label) to getString(context, R.string.for_block_label),
             getString(context, R.string.array_block_label) to getString(context, R.string.array_block_label),
@@ -474,11 +482,13 @@ fun ControlPanel(
             getString(context, R.string.math_block_label) to getString(context, R.string.math_block_label),
             getString(context, R.string.index_block_label) to getString(context, R.string.index_block_label),
             getString(context, R.string.append_block_label) to getString(context, R.string.append_block_label),
+            getString(context, R.string.len_block_label) to getString(context, R.string.len_block_label),
             getString(context, R.string.swap_block_label) to getString(context, R.string.swap_block_label),
             getString(context, R.string.print_block_label) to getString(context, R.string.print_block_label),
             getString(context, R.string.function_def_block_label) to getString(context, R.string.function_def_block_label),
             getString(context, R.string.function_call_block_label) to getString(context, R.string.function_call_block_label),
-            getString(context, R.string.function_return_block_label) to getString(context, R.string.function_return_block_label)
+            getString(context, R.string.function_return_block_label) to getString(context, R.string.function_return_block_label),
+            getString(context, R.string.cast_block_label) to getString(context, R.string.cast_block_label),
         )
 
         buttons.forEach { (blockType, label) ->

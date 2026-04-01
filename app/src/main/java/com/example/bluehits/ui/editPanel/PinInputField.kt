@@ -66,7 +66,6 @@ fun PinInputField(
     value: Any,
     context: Context
 ) {
-    println(filedPin.pin.getType())
     when {
         filedPin.pin.getType() == Int::class -> {
             NumberInputController(

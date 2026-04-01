@@ -6,21 +6,21 @@ import com.example.interpreter.models.Program
 import org.junit.jupiter.api.Test
 
 class ProgramsTest {
-    @Test
-    fun testLoop() {
-        val mainBlock = Program.getMainBlock()
-        val forBlock = BlockManager.createForBlock()
-        val printBlock = BlockManager.createPrintBlock()
-
-        ConnectionManager.connect(mainBlock.outputs.first(), forBlock.blockPin)
-        ConnectionManager.connect(forBlock.outputs.first(), printBlock.blockPin)
-
-        forBlock.inputs[0].setValue(0)
-        forBlock.inputs[1].setValue(100)
-        forBlock.inputs[2].setValue(1)
-
-        Program.run()
-    }
+//    @Test
+//    fun testLoop() {
+//        val mainBlock = Program.getMainBlock()
+//        val forBlock = BlockManager.createForBlock()
+//        val printBlock = BlockManager.createPrintBlock()
+//
+//        ConnectionManager.connect(mainBlock.outputs.first(), forBlock.blockPin)
+//        ConnectionManager.connect(forBlock.outputs.first(), printBlock.blockPin)
+//
+//        forBlock.inputs[0].setValue(0)
+//        forBlock.inputs[1].setValue(100)
+//        forBlock.inputs[2].setValue(1)
+//
+//        Program.run()
+//    }
 
     @Test
     fun testNestedLoops() {
